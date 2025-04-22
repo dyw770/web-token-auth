@@ -1,0 +1,66 @@
+package cn.dyw.auth.db.service.impl;
+
+import cn.dyw.auth.db.domain.SysUser;
+import cn.dyw.auth.db.domain.SysUserRole;
+import cn.dyw.auth.db.mapper.SysUserMapper;
+import cn.dyw.auth.db.model.UserDto;
+import cn.dyw.auth.db.service.ISysRoleService;
+import cn.dyw.auth.db.service.ISysUserRoleService;
+import cn.dyw.auth.db.service.ISysUserService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * @author dyw770
+ * @since 2025-04-18
+ */
+@Slf4j
+@Service
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
+        implements ISysUserService {
+
+    private final ISysRoleService roleService;
+    
+    private final ISysUserRoleService userRoleService;
+
+    public SysUserServiceImpl(ISysRoleService roleService, ISysUserRoleService userRoleService) {
+        this.roleService = roleService;
+        this.userRoleService = userRoleService;
+    }
+
+
+    @Override
+    public UserDto getUserByUsername(String username) {
+        return getBaseMapper().getUserByUsername(username);
+    }
+
+    @Override
+    public void addRoleForUser(String username, String roleCode) {
+        List<String> userRoles = roleService.userRoleList(username);
+        if (userRoles.contains(roleCode)) {
+            log.warn("{} 用户已经拥有 {} 角色（或者间接拥有）", username, roleCode);
+            return;
+        }
+        SysUserRole sysUserRole = new SysUserRole();
+        sysUserRole.setUsername(username);
+        sysUserRole.setRoleCode(roleCode);
+        sysUserRole.setAuthTime(LocalDateTime.now());
+        userRoleService.save(sysUserRole);
+    }
+
+    @Override
+    public void deleteRoleForUser(String username, String roleCode) {
+        userRoleService.lambdaUpdate()
+                .eq(SysUserRole::getUsername, username)
+                .eq(SysUserRole::getRoleCode, roleCode)
+                .remove();
+    }
+}
+
+
+
+

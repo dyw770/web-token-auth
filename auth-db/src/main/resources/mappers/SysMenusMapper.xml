@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dyw.auth.db.mapper.SysMenusMapper">
+    
+    <insert id="insertMenuForRole">
+        insert into sys_role_menu
+        select #{roleCode},
+        ancestor_menu_id,
+        now(),
+        now()
+        from (select distinct ancestor_menu_id
+        from sys_menu_hierarchy
+        <where>
+            <if test="menuIds != null and menuIds.size() > 0">
+                descendant_menu_id in
+                <foreach collection="menuIds" item="menuId" open="(" separator="," close=")">
+                    #{menuId}
+                </foreach>
+            </if>
+        </where>
+        ) t1
+    </insert>
+
+    <delete id="deleteMenuForRole">
+        delete rm1
+        from sys_role_menu rm1
+                 join (select descendant_role_code
+                       from sys_role_hierarchy
+                       where ancestor_role_code = #{roleCode}) t1 on rm1.role_code = t1.descendant_role_code
+        <where>
+            <if test="menuIds != null and menuIds.size() > 0">
+                rm1.menu_id in
+                <foreach collection="menuIds" item="menuId" open="(" separator="," close=")">
+                    #{menuId}
+                </foreach>
+            </if>
+        </where>
+    </delete>
+
+    <select id="queryMenuList" resultType="cn.dyw.auth.db.model.MenuDto">
+        select t1.id,
+               menu_name,
+               menu_router,
+               menu_icon,
+               menu_order,
+               create_time,
+               update_time,
+               t2.ancestor_menu_id as parent_menu_id
+        from sys_menus t1
+                 left join sys_menu_hierarchy t2
+                           on t1.id = t2.descendant_menu_id
+                               and t2.depth = 1
+        order by t1.menu_order
+    </select>
+    <select id="queryRoleMenuList" resultType="cn.dyw.auth.db.model.MenuDto">
+        select m2.id,
+               menu_name,
+               menu_router,
+               menu_icon,
+               menu_order,
+               create_time,
+               update_time,
+               smh.ancestor_menu_id as parent_menu_id
+        from (select distinct t2.menu_id
+              from (select descendant_role_code
+                    from sys_role_hierarchy
+                    where ancestor_role_code = #{roleCode}) t1
+                       join sys_role_menu t2
+                            on t1.descendant_role_code = t2.role_code) m1
+                 join sys_menus m2 on m1.menu_id = m2.id
+                 left join sys_menu_hierarchy smh
+                           on m1.menu_id = smh.descendant_menu_id and smh.depth = 1
+    </select>
+    <select id="queryUserMenuList" resultType="cn.dyw.auth.db.model.MenuDto">
+        select m2.id,
+               menu_name,
+               menu_router,
+               menu_icon,
+               menu_order,
+               create_time,
+               update_time,
+               smh.ancestor_menu_id as parent_menu_id
+        from (select distinct t2.menu_id
+              from (select distinct srh.descendant_role_code
+                    from sys_user_role sur
+                             join sys_role_hierarchy srh
+                                  on sur.role_code = srh.ancestor_role_code
+                    where sur.username = #{username}) t1
+                       join sys_role_menu t2
+                            on t1.descendant_role_code = t2.role_code) m1
+                 join sys_menus m2 on m1.menu_id = m2.id
+                 left join sys_menu_hierarchy smh
+                           on m1.menu_id = smh.descendant_menu_id and smh.depth = 1
+    </select>
+</mapper>

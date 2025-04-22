@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: spring-security-auth
+  data:
+    redis:
+      host: 192.168.19.15
+      port: 6379
+      database: 1
+      password: 20152046
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: P@ssw0rd2022
+    url: jdbc:mysql://192.168.19.15:3306/spring_security_auth?serverTimezone=GMT%2B8
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      filter:
+        commons-log:
+          enabled: true
+          statement-executable-sql-log-enable: true
+          statement-log-enabled: true
+          statement-create-after-log-enabled: false
+          statement-log-error-enabled: true
+          result-set-log-enabled: false
+          #statementPrepareAfterLogEnable
+          # 准备好的sql语句打印（此时为执行前）未进行参数拼接
+          statement-prepare-after-log-enabled: false
+          #isStatementParameterSetLogEnabled
+          #打印参数
+          statement-parameter-set-log-enabled: false
+          #statementExecuteAfterLogEnable
+          #sql语句执行完成后打印（执行后）未进行参数拼接
+          statement-execute-after-log-enabled: false
+          #statementCloseAfterLogEnable
+          statement-close-after-log-enabled: false
+mybatis-plus:
+  mapper-locations: classpath*:mappers/*.xml
+springdoc:
+  api-docs:
+    enabled: true
+    path: /doc/v3/api-docs
+  swagger-ui:
+    path: /doc/swagger-ui.html
+    enabled: true
+
+logging:
+  level:
+    cn.dyw: debug
+    org.springframework.security: DEBUG
+    druid.sql: debug
+app:
+  auth:
+    token-repository: redis

@@ -1,0 +1,22 @@
+rootProject.name = "web-token-auth"
+
+include(":auth-demo")
+include(":auth-common")
+include(":auth-core")
+include(":auth-db")
+
+pluginManagement {
+    repositories {
+        maven {
+            url = uri("https://maven.aliyun.com/repository/public")
+        }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+
+    plugins {
+        id("org.springframework.boot") version "3.4.4" apply false
+        id("io.spring.dependency-management") version "1.1.7" apply false
+    }
+}
+

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dyw.auth.db.mapper.SysMenuHierarchyMapper">
+
+
+    <insert id="savaMenuHierarchy">
+        INSERT INTO sys_menu_hierarchy (ancestor_menu_id, descendant_menu_id, depth)
+        SELECT ancestor_menu_id, #{menuId}, depth + 1
+        FROM sys_menu_hierarchy
+        WHERE descendant_menu_id = #{parentMenuId}
+        UNION ALL
+        SELECT #{menuId}, #{menuId}, 0;
+    </insert>
+    
+    <update id="updateMenuParentHierarchy">
+        insert into sys_menu_hierarchy(ancestor_menu_id, descendant_menu_id, depth)
+        select t1.ancestor_menu_id,
+               t2.descendant_menu_id,
+               t1.depth + t2.depth as depth
+        from (SELECT ancestor_menu_id, depth + 1 as depth
+              FROM sys_menu_hierarchy h1
+              WHERE descendant_menu_id = #{parentMenuId}) t1
+                 join (select h1.descendant_menu_id, depth
+                       from sys_menu_hierarchy h1
+                       where ancestor_menu_id = #{menuId}) t2
+    </update>
+    
+    <update id="updateMenuHierarchyToParent">
+        update sys_menu_hierarchy h1
+            join
+            (select descendant_menu_id
+             from sys_menu_hierarchy t1
+             where t1.ancestor_menu_id = #{menuId}
+               and t1.depth != 0)
+                t2 on t2.descendant_menu_id = h1.descendant_menu_id
+        set depth = depth - 1
+        where h1.ancestor_menu_id != #{menuId}
+          and h1.depth != 0
+    </update>
+    
+    <delete id="deleteMenuHierarchy">
+        delete from sys_menu_hierarchy
+        where ancestor_menu_id = #{menuId}
+           or descendant_menu_id = #{menuId}
+    </delete>
+
+    <delete id="deleteMenuParentHierarchy">
+        delete h1
+        from sys_menu_hierarchy h1
+                 join (select descendant_menu_id
+                       from sys_menu_hierarchy
+                       where ancestor_menu_id = #{menuId}) t1 on h1.descendant_menu_id = t1.descendant_menu_id
+                 join (select ancestor_menu_id
+                       from sys_menu_hierarchy
+                       where descendant_menu_id = #{menuId}) t3 on h1.ancestor_menu_id = t3.ancestor_menu_id
+        where h1.ancestor_menu_id != #{menuId}
+          and h1.depth != 0;
+    </delete>
+</mapper>

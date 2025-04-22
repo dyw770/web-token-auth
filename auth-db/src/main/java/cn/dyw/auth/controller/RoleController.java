@@ -1,0 +1,100 @@
+package cn.dyw.auth.controller;
+
+import cn.dyw.auth.db.domain.SysRole;
+import cn.dyw.auth.db.model.RoleDto;
+import cn.dyw.auth.db.service.ISysRoleService;
+import cn.dyw.auth.message.MessageCode;
+import cn.dyw.auth.message.Result;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * @author dyw770
+ * @since 2025-04-17
+ */
+@RestController
+@RequestMapping("role")
+public class RoleController {
+
+    private final ISysRoleService sysRoleService;
+
+    public RoleController(ISysRoleService sysRoleService) {
+        this.sysRoleService = sysRoleService;
+    }
+
+    /**
+     * 查询角色列表，返回树状结构数据
+     *
+     * @return 角色列表
+     */
+    @GetMapping("list")
+    public Result<List<RoleDto>> roleList() {
+        return Result.createSuccess(sysRoleService.roleList());
+    }
+
+    /**
+     * 保存角色信息
+     *
+     * @param sysRole        角色信息
+     * @param parentRoleCode 父级角色
+     * @return 保存成功
+     */
+    @PostMapping("/save")
+    public Result<Void> save(@RequestBody SysRole sysRole, @RequestParam(value = "parentRoleCode", required = false) String parentRoleCode) {
+        if (StringUtils.isNotBlank(parentRoleCode)) {
+            SysRole role = sysRoleService.getById(parentRoleCode);
+            if (ObjectUtils.isEmpty(role)) {
+                return Result.createFail(MessageCode.PARAM_ERROR, "父级角色不存在", null);
+            }
+        }
+        sysRoleService.savaRole(sysRole, parentRoleCode);
+        return Result.createSuccess();
+    }
+
+    /**
+     * 更新角色信息
+     *
+     * @param sysRole 角色信息
+     * @return 更新成功
+     */
+    @PostMapping("/update/role/info")
+    public Result<Void> updateRole(@RequestBody SysRole sysRole) {
+        sysRoleService.updateRole(sysRole);
+        return Result.createSuccess();
+    }
+
+    /**
+     * 更新角色的层级关系
+     *
+     * @param roleCode       角色
+     * @param parentRoleCode 新父级角色
+     * @return 更新成功
+     */
+    @GetMapping("/update/role/hierarchy")
+    public Result<Void> updateRoleHierarchy(@RequestParam("roleCode") String roleCode,
+                                            @RequestParam(value = "parentRoleCode", required = false, defaultValue = "") String parentRoleCode) {
+        if (StringUtils.isNotBlank(parentRoleCode)) {
+            SysRole role = sysRoleService.getById(parentRoleCode);
+            if (ObjectUtils.isEmpty(role)) {
+                return Result.createFail(MessageCode.PARAM_ERROR, "父级角色不存在", null);
+            }
+        }
+        sysRoleService.updateRoleHierarchy(roleCode, parentRoleCode);
+        return Result.createSuccess();
+    }
+
+    /**
+     * 删除角色
+     *
+     * @param roleCode 角色
+     * @return 删除成功
+     */
+    @GetMapping("/delete/{roleCode}")
+    public Result<Void> deleteRole(@PathVariable("roleCode") String roleCode) {
+        sysRoleService.deleteRole(roleCode);
+        return Result.createSuccess();
+    }
+}
