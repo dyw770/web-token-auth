@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @MapperScan(basePackages = "cn.dyw.auth.db.mapper")
-@ComponentScan(basePackages = "cn.dyw.auth")
+@ComponentScan(basePackages = "cn.dyw.auth.db")
 public class AuthJdbcAutoConfiguration {
 
 
