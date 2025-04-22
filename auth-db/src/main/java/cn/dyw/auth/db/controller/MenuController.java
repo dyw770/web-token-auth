@@ -5,7 +5,10 @@ import cn.dyw.auth.db.model.MenuDto;
 import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
  * @author dyw770
  * @since 2025-04-18
  */
+@Validated
 @RestController
 @RequestMapping("menu")
 public class MenuController {
@@ -59,7 +63,7 @@ public class MenuController {
      * @param menus 菜单信息
      * @return 更新成功
      */
-    @PostMapping("/update/menu/info")
+    @PostMapping("/update/info")
     public Result<Void> updateMenu(@RequestBody SysMenus menus) {
         menusService.updateMenu(menus);
         return Result.createSuccess();
@@ -72,7 +76,7 @@ public class MenuController {
      * @param parentMenuId 新菜单ID
      * @return 更新成功
      */
-    @GetMapping("/update/menu/hierarchy")
+    @GetMapping("/update/hierarchy")
     public Result<Void> updateMenuHierarchy(@RequestParam("menuId") Integer menuId,
                                             @RequestParam(value = "parentMenuId", required = false) Integer parentMenuId) {
         if (ObjectUtils.isNotEmpty(parentMenuId)) {
@@ -91,9 +95,60 @@ public class MenuController {
      * @param menuId 菜单ID
      * @return 删除成功
      */
-    @GetMapping("/delete/{menuId}")
+    @DeleteMapping("/delete/{menuId}")
     public Result<Void> deleteMenu(@PathVariable("menuId") Integer menuId) {
         menusService.deleteMenu(menuId);
+        return Result.createSuccess();
+    }
+
+    /**
+     * 查询角色菜单列表
+     *
+     * @param roleCode 角色
+     * @return 菜单列表
+     */
+    @GetMapping("/list/role/{roleCode}")
+    public Result<List<MenuDto>> roleMenuList(@PathVariable("roleCode") @NotBlank String roleCode) {
+        return Result.createSuccess(menusService.roleMenuList(roleCode));
+    }
+
+    /**
+     * 查询用户菜单列表
+     *
+     * @param username 用户名
+     * @return 菜单列表
+     */
+    @GetMapping("/list/user/{username}")
+    public Result<List<MenuDto>> userMenuList(@PathVariable("username") @NotBlank String username) {
+        return Result.createSuccess(menusService.userMenuList(username));
+    }
+
+    /**
+     * 为角色添加菜单
+     *
+     * @param menuIds  菜单ID集合
+     * @param roleCode 角色
+     * @return 添加成功
+     */
+    @PostMapping("/add/role")
+    public Result<Void> addMenuForRole(@RequestBody @NotEmpty List<Integer> menuIds,
+                                       @RequestParam("roleCode") @NotBlank String roleCode) {
+
+        menusService.addMenuForRole(menuIds, roleCode);
+        return Result.createSuccess();
+    }
+
+    /**
+     * 删除角色菜单
+     *
+     * @param menuIds  菜单ID集合， 允许传空集合， 表示删除所有菜单
+     * @param roleCode 角色
+     * @return 删除成功
+     */
+    @DeleteMapping("/delete/role")
+    public Result<Void> deleteMenuForRole(@RequestBody List<Integer> menuIds,
+                                          @RequestParam("roleCode") @NotBlank String roleCode) {
+        menusService.deleteMenuForRole(menuIds, roleCode);
         return Result.createSuccess();
     }
 }
