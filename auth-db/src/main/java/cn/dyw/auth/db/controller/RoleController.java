@@ -1,4 +1,4 @@
-package cn.dyw.auth.controller;
+package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.model.RoleDto;
