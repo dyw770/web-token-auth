@@ -14,6 +14,8 @@ dependencies {
     
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
+    compileOnly("com.github.therapi:therapi-runtime-javadoc")
+    annotationProcessor("com.github.therapi:therapi-runtime-javadoc-scribe")
     
     testImplementation("com.baomidou:mybatis-plus-generator")
     testImplementation("org.freemarker:freemarker")
