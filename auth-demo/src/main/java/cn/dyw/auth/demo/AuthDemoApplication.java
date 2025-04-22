@@ -1,11 +1,16 @@
 package cn.dyw.auth.demo;
 
-import org.mybatis.spring.annotation.MapperScan;
+import cn.dyw.auth.db.configuration.AuthJdbcAutoConfiguration;
+import cn.dyw.auth.security.configuration.SecurityAutoConfiguration;
+import cn.dyw.auth.security.configuration.SecurityRedisAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
 
-@SpringBootApplication(scanBasePackages = {"cn.dyw.auth"})
-@MapperScan("cn.dyw.auth.db.mapper")
+@SpringBootApplication
+@Import({AuthJdbcAutoConfiguration.class,
+        SecurityAutoConfiguration.class, 
+        SecurityRedisAutoConfiguration.class})
 public class AuthDemoApplication {
 
     public static void main(String[] args) {
