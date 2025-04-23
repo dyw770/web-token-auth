@@ -1,5 +1,6 @@
 package cn.dyw.auth.db.security;
 
+import cn.dyw.auth.db.service.ISysApiResourceService;
 import cn.dyw.auth.db.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
@@ -9,7 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcherEntry;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -20,17 +23,21 @@ import java.util.function.Supplier;
  * @since 2025-04-23
  */
 @Slf4j
+@Service
 public class JdbcAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
 
     private final List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
 
-    private static final AuthorizationDecision DENY = new AuthorizationDecision(false);
-
     private final AuthenticatedAuthorizationManager<RequestAuthorizationContext> authenticatedAuthorizationManager;
 
-    public JdbcAuthorizationManager() {
-        mappings = List.of();
+    private final ISysApiResourceService apiResourceService;
+
+    public JdbcAuthorizationManager(ISysApiResourceService apiResourceService) {
+        this.apiResourceService = apiResourceService;
+        mappings = new ArrayList<>();
         authenticatedAuthorizationManager = AuthenticatedAuthorizationManager.authenticated();
+
+//        List<ApiResourceDto> resourceList = apiResourceService.listAll();
     }
 
 

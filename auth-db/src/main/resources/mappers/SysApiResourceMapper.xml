@@ -2,4 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.dyw.auth.db.mapper.SysApiResourceMapper">
 
+    <resultMap id="ApiResourceDto" type="cn.dyw.auth.db.model.ApiResourceDto" autoMapping="true">
+        <id property="id" column="id"/>
+        <collection property="roles" javaType="java.util.ArrayList" ofType="java.lang.String">
+            <result column="role_code"/>
+        </collection>
+    </resultMap>
+    
+    <select id="queryAll" resultMap="ApiResourceDto">
+        select sar.id,
+               api_path,
+               api_method,
+               description,
+               create_time,
+               update_time,
+               srar.role_code
+        from sys_api_resource sar
+                 left join sys_role_api_resource srar
+                           on sar.id = srar.api_resource_id
+    </select>
 </mapper>

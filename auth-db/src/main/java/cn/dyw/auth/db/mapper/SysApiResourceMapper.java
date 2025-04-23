@@ -1,8 +1,11 @@
 package cn.dyw.auth.db.mapper;
 
 import cn.dyw.auth.db.domain.SysApiResource;
+import cn.dyw.auth.db.model.ApiResourceDto;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,5 +18,11 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysApiResourceMapper extends BaseMapper<SysApiResource> {
 
+    /**
+     * 查询所有api资源
+     *
+     * @return api资源
+     */
+    List<ApiResourceDto> queryAll();
 }
 
