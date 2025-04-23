@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * 文档配置
  *
  * @author dyw770
- * @date 2024-05-03
+ * @since 2024-05-03
  */
 @Configuration
 public class OpenApiDocConfiguration {

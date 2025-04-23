@@ -1,6 +1,8 @@
 package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysMenus;
+import cn.dyw.auth.db.message.MenuSaveRq;
+import cn.dyw.auth.db.message.MenuUpdateRq;
 import cn.dyw.auth.db.model.MenuDto;
 import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.message.MessageCode;
@@ -8,6 +10,7 @@ import cn.dyw.auth.message.Result;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,26 +49,31 @@ public class MenuController {
      * @return 保存成功
      */
     @PostMapping("/save")
-    public Result<Void> save(@RequestBody SysMenus menu, @RequestParam(value = "parentMenuId", required = false) Integer parentMenuId) {
+    public Result<Void> save(@RequestBody @Validated MenuSaveRq menu, 
+                             @RequestParam(value = "parentMenuId", required = false) Integer parentMenuId) {
         if (ObjectUtils.isNotEmpty(parentMenuId)) {
             SysMenus menus = menusService.getById(parentMenuId);
             if (ObjectUtils.isEmpty(menus)) {
                 return Result.createFail(MessageCode.PARAM_ERROR, "父级菜单不存在", null);
             }
         }
-        menusService.savaMenu(menu, parentMenuId);
+        SysMenus sysMenu = new SysMenus();
+        BeanUtils.copyProperties(menu, sysMenu);
+        menusService.savaMenu(sysMenu, parentMenuId);
         return Result.createSuccess();
     }
 
     /**
      * 更新菜单信息
      *
-     * @param menus 菜单信息
+     * @param rq 菜单信息
      * @return 更新成功
      */
     @PostMapping("/update/info")
-    public Result<Void> updateMenu(@RequestBody SysMenus menus) {
-        menusService.updateMenu(menus);
+    public Result<Void> updateMenu(@RequestBody @Validated MenuUpdateRq rq) {
+        SysMenus sysMenu = new SysMenus();
+        BeanUtils.copyProperties(rq, sysMenu);
+        menusService.updateMenu(sysMenu);
         return Result.createSuccess();
     }
 

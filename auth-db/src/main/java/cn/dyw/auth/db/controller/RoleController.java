@@ -1,12 +1,17 @@
 package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysRole;
+import cn.dyw.auth.db.message.RoleSavaRq;
+import cn.dyw.auth.db.message.RoleUpdateRq;
 import cn.dyw.auth.db.model.RoleDto;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,18 +43,28 @@ public class RoleController {
     /**
      * 保存角色信息
      *
-     * @param sysRole        角色信息
+     * @param rq             角色信息
      * @param parentRoleCode 父级角色
      * @return 保存成功
      */
     @PostMapping("/save")
-    public Result<Void> save(@RequestBody SysRole sysRole, @RequestParam(value = "parentRoleCode", required = false) String parentRoleCode) {
+    public Result<Void> save(@RequestBody @Validated RoleSavaRq rq,
+                             @RequestParam(value = "parentRoleCode", required = false) String parentRoleCode) {
         if (StringUtils.isNotBlank(parentRoleCode)) {
             SysRole role = sysRoleService.getById(parentRoleCode);
             if (ObjectUtils.isEmpty(role)) {
                 return Result.createFail(MessageCode.PARAM_ERROR, "父级角色不存在", null);
             }
         }
+
+        SysRole role = sysRoleService.getById(rq.getRoleCode());
+        if (ObjectUtils.isNotEmpty(role)) {
+            return Result.createFail(MessageCode.PARAM_ERROR, "角色已存在", null);
+        }
+
+        SysRole sysRole = new SysRole();
+        BeanUtils.copyProperties(rq, sysRole);
+        sysRole.setDel(false);
         sysRoleService.savaRole(sysRole, parentRoleCode);
         return Result.createSuccess();
     }
@@ -57,11 +72,13 @@ public class RoleController {
     /**
      * 更新角色信息
      *
-     * @param sysRole 角色信息
+     * @param rq 角色信息
      * @return 更新成功
      */
     @PostMapping("/update/info")
-    public Result<Void> updateRole(@RequestBody SysRole sysRole) {
+    public Result<Void> updateRole(@RequestBody @Validated RoleUpdateRq rq) {
+        SysRole sysRole = new SysRole();
+        BeanUtils.copyProperties(rq, sysRole);
         sysRoleService.updateRole(sysRole);
         return Result.createSuccess();
     }
@@ -93,7 +110,7 @@ public class RoleController {
      * @return 删除成功
      */
     @GetMapping("/delete/{roleCode}")
-    public Result<Void> deleteRole(@PathVariable("roleCode") String roleCode) {
+    public Result<Void> deleteRole(@PathVariable("roleCode") @NotBlank String roleCode) {
         sysRoleService.deleteRole(roleCode);
         return Result.createSuccess();
     }
