@@ -3,6 +3,8 @@ package cn.dyw.auth.db.message;
 import jakarta.validation.constraints.NotBlank;
 
 /**
+ * 修改角色
+ * 
  * @author dyw770
  * @since 2025-04-23
  */
