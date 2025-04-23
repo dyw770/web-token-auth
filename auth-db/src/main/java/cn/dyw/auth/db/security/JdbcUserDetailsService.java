@@ -1,4 +1,4 @@
-package cn.dyw.auth.db.service.impl;
+package cn.dyw.auth.db.security;
 
 import cn.dyw.auth.db.model.UserDto;
 import cn.dyw.auth.db.service.ISysUserService;
@@ -17,13 +17,13 @@ import java.util.List;
  * @since 2025-04-17
  */
 @Service
-public class SysUserDetailsService implements UserDetailsService {
+public class JdbcUserDetailsService implements UserDetailsService {
 
     private final ISysUserService sysUserService;
     
     private final String ROLE_PREFIX = "ROLE_";
 
-    public SysUserDetailsService(ISysUserService sysUserService) {
+    public JdbcUserDetailsService(ISysUserService sysUserService) {
         this.sysUserService = sysUserService;
     }
 

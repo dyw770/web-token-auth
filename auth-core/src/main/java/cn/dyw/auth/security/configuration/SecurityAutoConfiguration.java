@@ -1,13 +1,16 @@
 package cn.dyw.auth.security.configuration;
 
 import cn.dyw.auth.security.AuthProperties;
+import cn.dyw.auth.security.AuthorizeHttpRequestsCustomizer;
 import cn.dyw.auth.security.LoginLogoutHandler;
 import cn.dyw.auth.security.SecurityExceptionResolverHandler;
+import cn.dyw.auth.security.filter.SecurityTokenContextConfigurer;
 import cn.dyw.auth.security.repository.LocalMapSecurityTokenRepository;
 import cn.dyw.auth.security.repository.RequestTokenResolve;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,21 +21,76 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 /**
+ * spring security 自动配置
+ *
  * @author dyw770
  * @since 2025-02-14
  */
 @Slf4j
 @Configuration
+@EnableWebSecurity
 public class SecurityAutoConfiguration {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           AuthenticationManager authenticationManager,
+                                           SecurityTokenRepository securityTokenRepository,
+                                           TokenResolve tokenResolve,
+                                           SecurityExceptionResolverHandler exceptionResolverHandler,
+                                           AuthorizeHttpRequestsCustomizer customizer,
+                                           @Autowired(required = false) AuthorizationManager<RequestAuthorizationContext> authorizationManager) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .sessionManagement(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .securityContext(AbstractHttpConfigurer::disable)
+                .anonymous(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
+                .requestCache(AbstractHttpConfigurer::disable)
+                .with(
+                        new SecurityTokenContextConfigurer<>(),
+                        configurer ->
+                                configurer.securityContextRepository(securityTokenRepository)
+                                        .tokenResolve(tokenResolve)
+                )
+                .exceptionHandling(
+                        configurer ->
+                                configurer.accessDeniedHandler(exceptionResolverHandler)
+                                        .authenticationEntryPoint(exceptionResolverHandler)
+                )
+                .authenticationManager(authenticationManager)
+                .authorizeHttpRequests(authorize -> {
+                            customizer.consume(authorize);
+                            if (ObjectUtils.isEmpty(authorizationManager)) {
+                                authorize.anyRequest().authenticated();
+                            } else {
+                                authorize.anyRequest().access(authorizationManager);
+                            }
+
+                        }
+                );
+
+        return http.build();
+    }
 
     @Bean
     public TokenResolve tokenResolve(AuthProperties authProperties) {

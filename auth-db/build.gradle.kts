@@ -13,6 +13,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.apache.commons:commons-lang3")
     api("org.springframework.security:spring-security-core")
+    api("org.springframework.security:spring-security-web")
     api("org.springframework.boot:spring-boot-starter-validation")
     
     annotationProcessor("org.projectlombok:lombok")
