@@ -18,7 +18,13 @@ public enum MessageCode {
     TOKEN_INVALID(1003, "token无效或已过期"),
     TOKEN_NOT_SET(1004, "token未设置"),
     
+    BAD_CREDENTIALS(1005, "用户名或密码错误"),
+    
+    
     PARAM_ERROR(2000, "参数错误"),
+    
+    REQUEST_METHOD_ERROR(2003, "请求方法错误"),
+    REQUEST_BODY_ERROR(2004, "Request Body异常"),
     ;
 
 

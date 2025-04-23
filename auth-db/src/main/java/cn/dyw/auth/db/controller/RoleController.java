@@ -60,7 +60,7 @@ public class RoleController {
      * @param sysRole 角色信息
      * @return 更新成功
      */
-    @PostMapping("/update/role/info")
+    @PostMapping("/update/info")
     public Result<Void> updateRole(@RequestBody SysRole sysRole) {
         sysRoleService.updateRole(sysRole);
         return Result.createSuccess();
@@ -73,7 +73,7 @@ public class RoleController {
      * @param parentRoleCode 新父级角色
      * @return 更新成功
      */
-    @GetMapping("/update/role/hierarchy")
+    @GetMapping("/update/hierarchy")
     public Result<Void> updateRoleHierarchy(@RequestParam("roleCode") String roleCode,
                                             @RequestParam(value = "parentRoleCode", required = false, defaultValue = "") String parentRoleCode) {
         if (StringUtils.isNotBlank(parentRoleCode)) {

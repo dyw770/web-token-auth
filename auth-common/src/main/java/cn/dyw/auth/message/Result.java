@@ -58,6 +58,10 @@ public class Result<T> {
     public static <K> Result<K> createFail(MessageCode code, String msg, K data) {
         return new Result<>(code.getCode(), msg, false, data);
     }
+
+    public static Result<Void> createFailWithMsg(MessageCode code, String msg) {
+        return new Result<>(code.getCode(), msg, false, null);
+    }
     
     public static Result<Void> createFail(MessageCode code) {
         return new Result<>(code.getCode(), code.getMessage(), false, null);

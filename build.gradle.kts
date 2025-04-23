@@ -44,16 +44,18 @@ subprojects {
         useJUnitPlatform()
     }
     
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.add("-parameters")
+    }
+    
     dependencyManagement {
         dependencies {
             imports {
                 mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+                mavenBom("com.baomidou:mybatis-plus-bom:3.5.11")
             }
             
             dependency("com.alibaba:druid-spring-boot-3-starter:1.2.22")
-            
-            dependency("com.baomidou:mybatis-plus-spring-boot3-starter:3.5.11")
-            dependency("com.baomidou:mybatis-plus-generator:3.5.11")
             
             dependency("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
             

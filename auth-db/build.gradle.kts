@@ -8,6 +8,8 @@ dependencies {
     api(project(":auth-common"))
 
     api("com.baomidou:mybatis-plus-spring-boot3-starter")
+    api("com.baomidou:mybatis-plus-jsqlparser")
+    
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.apache.commons:commons-lang3")
     api("org.springframework.security:spring-security-core")

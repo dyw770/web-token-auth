@@ -12,6 +12,7 @@ dependencies {
     implementation("com.mysql:mysql-connector-j")
     
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
     compileOnly("com.github.therapi:therapi-runtime-javadoc")
