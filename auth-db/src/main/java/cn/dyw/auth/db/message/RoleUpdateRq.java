@@ -1,6 +1,7 @@
 package cn.dyw.auth.db.message;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 /**
  * 修改角色
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
  * @author dyw770
  * @since 2025-04-23
  */
+@Data
 public class RoleUpdateRq {
 
     /**
