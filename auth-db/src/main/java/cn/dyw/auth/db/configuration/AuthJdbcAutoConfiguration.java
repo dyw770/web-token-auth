@@ -22,7 +22,7 @@ import org.springframework.security.config.core.GrantedAuthorityDefaults;
 public class AuthJdbcAutoConfiguration {
 
     @Bean
-    @ConditionalOnProperty(prefix = "app.auth.jdbc", name = "enable-jdbc-api-auth", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "app.auth.jdbc", name = "enable-jdbc-api-auth", havingValue = "true")
     public JdbcAuthorizationManager jdbcAuthorizationManager(ISysApiResourceService apiResourceService,
                                                              ApplicationContext context,
                                                              GrantedAuthorityDefaults grantedAuthorityDefaults) {

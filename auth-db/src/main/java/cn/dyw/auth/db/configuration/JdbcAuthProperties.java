@@ -19,5 +19,5 @@ public class JdbcAuthProperties {
     /**
      * 是否启用jdbc api权限认证
      */
-    private boolean enableJdbcApiAuth = true;
+    private boolean enableJdbcApiAuth = false;
 }

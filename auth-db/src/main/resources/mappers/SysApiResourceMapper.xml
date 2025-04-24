@@ -4,23 +4,22 @@
 
     <resultMap id="ApiResourceDto" type="cn.dyw.auth.db.model.ApiResourceDto" autoMapping="true">
         <id property="id" column="id"/>
-        <collection property="roles" javaType="java.util.ArrayList" ofType="java.lang.String">
-            <result column="descendant_role_code"/>
-        </collection>
+        <collection property="auths" javaType="java.util.ArrayList" ofType="cn.dyw.auth.db.model.AuthDto"
+                    autoMapping="true"/>
     </resultMap>
 
     <select id="queryAll" resultMap="ApiResourceDto">
         select sar.id,
-               api_path,
-               api_method,
-               description,
-               create_time,
-               update_time,
-               srh.descendant_role_code
+               sar.api_path,
+               sar.match_type,
+               sar.api_method,
+               sar.description,
+               sar.create_time,
+               sar.update_time,
+               srar.auth_type,
+               srar.auth_object
         from sys_api_resource sar
-                 left join sys_role_api_resource srar
+                 left join sys_api_resource_auth srar
                            on sar.id = srar.api_resource_id
-                 left join sys_role_hierarchy srh
-                           on srar.role_code = srh.ancestor_role_code
     </select>
 </mapper>

@@ -24,5 +24,5 @@ public class ApiResourceDto extends SysApiResource {
      * 资源授权角色
      */
     @Getter
-    private List<String> roles = new ArrayList<>();
+    private List<AuthDto> auths = new ArrayList<>();
 }

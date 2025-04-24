@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author dyw770
- * @since 2025-04-18
+ * @since 2025-04-24
  */
 @Getter
 @Setter
@@ -29,6 +29,11 @@ public class SysApiResource {
      * api路径
      */
     private String apiPath;
+
+    /**
+     * 匹配类型
+     */
+    private MatchType matchType;
 
     /**
      * api方法
@@ -49,4 +54,18 @@ public class SysApiResource {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 资源匹配类型
+     */
+    public enum MatchType {
+        /**
+         * 正则
+         */
+        REGEX,
+        /**
+         * ant
+         */
+        ANT
+    }
 }

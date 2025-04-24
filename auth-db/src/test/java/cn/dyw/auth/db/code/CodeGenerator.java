@@ -39,7 +39,7 @@ public class CodeGenerator {
                 .globalConfig(builder -> builder
                         .disableOpenDir()
                         .author("dyw770")
-                        .outputDir(Paths.get(System.getProperty("user.dir")) + "/src/main/java")
+                        .outputDir(Paths.get(System.getProperty("user.dir")) + "/auth-db/src/main/java")
                         .commentDate("yyyy-MM-dd")
                 )
                 .packageConfig(builder -> builder
@@ -49,7 +49,7 @@ public class CodeGenerator {
                         .service("service")
                         .serviceImpl("service.impl")
                         .xml("mappers")
-                        .pathInfo(Collections.singletonMap(OutputFile.xml, Paths.get(System.getProperty("user.dir")) + "/src/main/resources/mappers"))
+                        .pathInfo(Collections.singletonMap(OutputFile.xml, Paths.get(System.getProperty("user.dir")) + "/auth-db/src/main/resources/mappers"))
                 )
                 .strategyConfig(builder -> {
                             builder
@@ -59,6 +59,11 @@ public class CodeGenerator {
                                     .controllerBuilder().disable()
                                     .mapperBuilder()
                                     .mapperAnnotation(Mapper.class);
+                            /*
+                            builder.addInclude("sys_api_resource", "sys_api_resource_auth")
+                                    .entityBuilder()
+                                    .enableFileOverride();
+                             */
                         }
                 )
                 .templateEngine(new FreemarkerTemplateEngine())

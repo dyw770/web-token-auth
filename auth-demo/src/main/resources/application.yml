@@ -51,3 +51,5 @@ logging:
 app:
   auth:
     token-repository: redis
+    jdbc:
+      enable-jdbc-api-auth: true
