@@ -1,16 +1,23 @@
 package cn.dyw.auth.db.security;
 
+import cn.dyw.auth.db.model.ApiResourceDto;
 import cn.dyw.auth.db.service.ISysApiResourceService;
 import cn.dyw.auth.db.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcherEntry;
-import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +30,6 @@ import java.util.function.Supplier;
  * @since 2025-04-23
  */
 @Slf4j
-@Service
 public class JdbcAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
 
     private final List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
@@ -32,12 +38,21 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
     private final ISysApiResourceService apiResourceService;
 
-    public JdbcAuthorizationManager(ISysApiResourceService apiResourceService) {
+    private final RequestMatcherRegistry requestMatcherRegistry;
+
+    private final GrantedAuthorityDefaults grantedAuthorityDefaults;
+
+    public JdbcAuthorizationManager(ISysApiResourceService apiResourceService,
+                                    ApplicationContext context,
+                                    GrantedAuthorityDefaults grantedAuthorityDefaults) {
         this.apiResourceService = apiResourceService;
+        this.grantedAuthorityDefaults = grantedAuthorityDefaults;
+
         mappings = new ArrayList<>();
         authenticatedAuthorizationManager = AuthenticatedAuthorizationManager.authenticated();
+        requestMatcherRegistry = new RequestMatcherRegistry(context);
 
-//        List<ApiResourceDto> resourceList = apiResourceService.listAll();
+        buildMapping();
     }
 
 
@@ -64,5 +79,44 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         return authenticatedAuthorizationManager.check(authentication, requestContext);
     }
 
+
+    public void buildMapping() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("初始化jdbc api 授权信息");
+        List<ApiResourceDto> resourceList = apiResourceService.listAll();
+        for (ApiResourceDto resource : resourceList) {
+            String apiPath = resource.getApiPath();
+            String method = resource.getApiMethod();
+            if (StringUtils.isBlank(apiPath)) {
+                continue;
+            }
+            List<RequestMatcher> matchers;
+            if (StringUtils.isBlank(method) || StringUtils.equalsIgnoreCase(method, "ALL")) {
+                matchers = requestMatcherRegistry.requestMatchers(apiPath);
+            } else {
+                matchers = requestMatcherRegistry.requestMatchers(HttpMethod.valueOf(method.toUpperCase()), apiPath);
+            }
+
+            // TODO 后续增加其他授权支持 如ip等
+            String[] list = resource.getRoles().toArray(String[]::new);
+            for (RequestMatcher matcher : matchers) {
+                // 如果没有配置角色则表示需要登陆才能访问
+                if (ArrayUtils.isEmpty(list)) {
+                    mappings.add(new RequestMatcherEntry<>(matcher, authenticatedAuthorizationManager));
+                } else {
+                    mappings.add(
+                            new RequestMatcherEntry<>(
+                                    matcher,
+                                    AuthorityAuthorizationManager.hasAnyRole(grantedAuthorityDefaults.getRolePrefix(), list)
+                            )
+                    );
+                }
+
+            }
+        }
+
+        stopWatch.stop();
+        log.info("初始化 jdbc api 授权信息 \n{}", stopWatch.prettyPrint());
+    }
 
 }
