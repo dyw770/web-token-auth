@@ -36,8 +36,6 @@ subprojects {
                 configurations.named("annotationProcessor").get()
             )
         }
-
-        configurations
     }
     
     tasks.withType<Test> {
