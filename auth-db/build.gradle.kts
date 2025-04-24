@@ -9,21 +9,21 @@ dependencies {
 
     api("com.baomidou:mybatis-plus-spring-boot3-starter")
     api("com.baomidou:mybatis-plus-jsqlparser")
-    
+
     api("org.apache.commons:commons-lang3")
-    
+
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.security:spring-security-core")
     api("org.springframework.security:spring-security-web")
     api("org.springframework.security:spring-security-config")
     api("org.springframework.boot:spring-boot-starter-validation")
-    
+
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
     compileOnly("com.github.therapi:therapi-runtime-javadoc")
     annotationProcessor("com.github.therapi:therapi-runtime-javadoc-scribe")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    
+
     testImplementation("com.baomidou:mybatis-plus-generator")
     testImplementation("org.freemarker:freemarker")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -33,9 +33,4 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-tasks.test {
-    useJUnitPlatform()
-    enabled = false
 }

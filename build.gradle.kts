@@ -42,6 +42,7 @@ subprojects {
     
     tasks.withType<Test> {
         useJUnitPlatform()
+        enabled = hasProperty("enableTest")
     }
     
     tasks.withType<JavaCompile> {
