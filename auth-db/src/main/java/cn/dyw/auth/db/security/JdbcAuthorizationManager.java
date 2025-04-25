@@ -170,7 +170,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
     }
 
     private void initAuthorizationManager(ApiResourceDto resource, Map<String, List<String>> roleMap) {
-        
+
         if (StringUtils.isBlank(resource.getApiPath())) {
             return;
         }
@@ -197,7 +197,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
         return switch (matchType) {
             case ANT -> requestMatcherRegistry.requestMatchers(createMethod(method), apiPath);
-            case REGEX -> Collections.singletonList(RegexRequestMatcher.regexMatcher(apiPath));
+            case REGEX -> Collections.singletonList(RegexRequestMatcher.regexMatcher(createMethod(method), apiPath));
         };
     }
 
