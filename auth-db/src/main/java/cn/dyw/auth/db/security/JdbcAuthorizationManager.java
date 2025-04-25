@@ -26,6 +26,8 @@ import org.springframework.util.StopWatch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,7 +41,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class JdbcAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
 
-    private final List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
+    private final CopyOnWriteArrayList<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
 
     private final AuthenticatedAuthorizationManager<RequestAuthorizationContext> authenticatedAuthorizationManager;
 
@@ -50,6 +52,8 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
     private final GrantedAuthorityDefaults grantedAuthorityDefaults;
 
     private final ISysRoleService roleService;
+
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final AuthorizationManager<RequestAuthorizationContext> permitAllAuthorizationManager =
             (a, o) -> new AuthorizationDecision(true);
@@ -65,7 +69,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         this.grantedAuthorityDefaults = grantedAuthorityDefaults;
         this.roleService = roleService;
 
-        mappings = new ArrayList<>();
+        mappings = new CopyOnWriteArrayList<>();
         authenticatedAuthorizationManager = AuthenticatedAuthorizationManager.authenticated();
         requestMatcherRegistry = new RequestMatcherRegistry(context);
 
@@ -80,6 +84,20 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
         log.debug("请求授权：{}", RequestUtils.requestLine(requestContext.getRequest()));
 
+        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+        try {
+            readLock.lock();
+            return doCheck(authentication, requestContext);
+        } catch (Exception e) {
+            log.error("权限校验时出现异常", e);
+        } finally {
+            readLock.unlock();
+        }
+        return denyAllAuthorizationManager.check(authentication, requestContext);
+    }
+
+    @SuppressWarnings("deprecation")
+    private AuthorizationDecision doCheck(Supplier<Authentication> authentication, RequestAuthorizationContext requestContext) {
         for (RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> mapping : this.mappings) {
 
             RequestMatcher matcher = mapping.getRequestMatcher();
@@ -102,7 +120,19 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         stopWatch.start("初始化jdbc api授权信息");
 
         List<ApiResourceDto> resourceList = apiResourceService.listAll();
-        Map<String, List<String>> roleMap = roleService.roleList()
+        Map<String, List<String>> roleMap = getRoleMap();
+
+
+        for (ApiResourceDto resource : resourceList) {
+            initAuthorizationManager(resource, roleMap);
+        }
+
+        stopWatch.stop();
+        log.info("初始化 jdbc api 授权信息 \n{}", stopWatch.prettyPrint());
+    }
+
+    private Map<String, List<String>> getRoleMap() {
+        return roleService.roleList()
                 .stream()
                 .collect(Collectors.toMap(RoleDto::getRoleCode, dto -> {
 
@@ -115,17 +145,10 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
                             .distinct()
                             .toList();
                 }));
-
-
-        for (ApiResourceDto resource : resourceList) {
-            initAuthorizationManager(resource, roleMap);
-        }
-
-        stopWatch.stop();
-        log.info("初始化 jdbc api 授权信息 \n{}", stopWatch.prettyPrint());
     }
 
     private void initAuthorizationManager(ApiResourceDto resource, Map<String, List<String>> roleMap) {
+
         String apiPath = resource.getApiPath();
         String method = resource.getApiMethod();
         if (StringUtils.isBlank(apiPath)) {
@@ -140,14 +163,25 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
         List<AuthorizationManager<RequestAuthorizationContext>> managers = getAuthorizationManagers(resource, roleMap);
         DelegatingAuthorizationManager authorizationManager = new DelegatingAuthorizationManager(managers);
-
+        List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> list = new ArrayList<>();
         for (RequestMatcher matcher : matchers) {
             // 如果没有配置 则表示需要登陆才能访问
             if (CollectionUtils.isEmpty(managers)) {
-                mappings.add(new RequestMatcherEntry<>(matcher, authenticatedAuthorizationManager));
+                list.add(new RequestMatcherEntry<>(matcher, authenticatedAuthorizationManager));
             } else {
-                mappings.add(new RequestMatcherEntry<>(matcher, authorizationManager));
+                list.add(new RequestMatcherEntry<>(matcher, authorizationManager));
             }
+        }
+
+        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+        try {
+            writeLock.lock();
+            mappings.clear();
+            mappings.addAll(list);
+        } catch (Exception e) {
+            log.error("更新资源授权信息失败", e);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -164,7 +198,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
                     case IP -> IpAddressAuthorizationManager.hasIpAddress(auth.getAuthObject());
                     case STATIC -> {
                         if (StringUtils.isBlank(auth.getAuthObject()) ||
-                                StringUtils.equalsIgnoreCase(auth.getAuthObject(), 
+                                StringUtils.equalsIgnoreCase(auth.getAuthObject(),
                                         Constants.AUTH_OBJECT_STATIC_PUBLIC)) {
                             yield permitAllAuthorizationManager;
                         } else {
