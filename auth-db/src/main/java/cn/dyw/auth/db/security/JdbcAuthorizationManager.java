@@ -19,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.IpAddressAuthorizationManager;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcherEntry;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 
@@ -41,7 +40,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class JdbcAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
 
-    private final CopyOnWriteArrayList<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
+    private final CopyOnWriteArrayList<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
 
     private final AuthenticatedAuthorizationManager<RequestAuthorizationContext> authenticatedAuthorizationManager;
 
@@ -98,18 +97,30 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
     @SuppressWarnings("deprecation")
     private AuthorizationDecision doCheck(Supplier<Authentication> authentication, RequestAuthorizationContext requestContext) {
-        for (RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> mapping : this.mappings) {
+        for (ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> mapping : this.mappings) {
 
             RequestMatcher matcher = mapping.getRequestMatcher();
             RequestMatcher.MatchResult matchResult = matcher.matcher(requestContext.getRequest());
             if (matchResult.isMatch()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("请求 {} 成功匹配, id: {}, path: {}, method: {}, type: {}", RequestUtils.requestLine(requestContext.getRequest()), 
+                            mapping.getDto().getId(), 
+                            mapping.getDto().getApiPath(), 
+                            mapping.getDto().getApiMethod(),
+                            mapping.getDto().getMatchType());
+                }
                 AuthorizationManager<RequestAuthorizationContext> manager = mapping.getEntry();
 
-                log.debug("请求 {} 使用 {} 检测权限", RequestUtils.requestLine(requestContext.getRequest()), manager);
+                if (log.isDebugEnabled()) {
+                    log.debug("请求 {} 使用 {} 检测权限", RequestUtils.requestLine(requestContext.getRequest()), manager);
+                }
                 return manager.check(authentication, requestContext);
             }
         }
-        log.debug("请求 {} 没有匹配到对应的权限配置", RequestUtils.requestLine(requestContext.getRequest()));
+        
+        if (log.isDebugEnabled()) {
+            log.debug("请求 {} 没有匹配到对应的权限配置", RequestUtils.requestLine(requestContext.getRequest()));
+        }
 
         return authenticatedAuthorizationManager.check(authentication, requestContext);
     }
@@ -163,13 +174,13 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
         List<AuthorizationManager<RequestAuthorizationContext>> managers = getAuthorizationManagers(resource, roleMap);
         DelegatingAuthorizationManager authorizationManager = new DelegatingAuthorizationManager(managers);
-        List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> list = new ArrayList<>();
+        List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> list = new ArrayList<>();
         for (RequestMatcher matcher : matchers) {
             // 如果没有配置 则表示需要登陆才能访问
             if (CollectionUtils.isEmpty(managers)) {
-                list.add(new RequestMatcherEntry<>(matcher, authenticatedAuthorizationManager));
+                list.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authenticatedAuthorizationManager));
             } else {
-                list.add(new RequestMatcherEntry<>(matcher, authorizationManager));
+                list.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authorizationManager));
             }
         }
 
