@@ -2,6 +2,7 @@ package cn.dyw.auth.db.configuration;
 
 import cn.dyw.auth.db.security.JdbcAuthorizationManager;
 import cn.dyw.auth.db.service.ISysApiResourceService;
+import cn.dyw.auth.db.service.ISysRoleService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,8 +26,9 @@ public class AuthJdbcAutoConfiguration {
     @ConditionalOnProperty(prefix = "app.auth.jdbc", name = "enable-jdbc-api-auth", havingValue = "true")
     public JdbcAuthorizationManager jdbcAuthorizationManager(ISysApiResourceService apiResourceService,
                                                              ApplicationContext context,
-                                                             GrantedAuthorityDefaults grantedAuthorityDefaults) {
-        return new JdbcAuthorizationManager(apiResourceService, context, grantedAuthorityDefaults);
+                                                             GrantedAuthorityDefaults grantedAuthorityDefaults,
+                                                             ISysRoleService roleService) {
+        return new JdbcAuthorizationManager(apiResourceService, context, grantedAuthorityDefaults, roleService);
     }
 
     @Bean

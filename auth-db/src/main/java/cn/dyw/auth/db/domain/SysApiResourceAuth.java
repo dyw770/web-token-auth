@@ -58,6 +58,11 @@ public class SysApiResourceAuth {
         /**
          * ip
          */
-        IP
+        IP,
+
+        /**
+         * 静态授权
+         */
+        STATIC
     }
 }

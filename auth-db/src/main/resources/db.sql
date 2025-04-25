@@ -45,22 +45,22 @@ drop table if exists sys_api_resource;
 create table if not exists sys_api_resource
 (
     `id`          int auto_increment primary key,
-    `api_path`    varchar(255)           not null comment 'api路径',
+    `api_path`    varchar(255)          not null comment 'api路径',
     `match_type`  enum ('ANT', 'REGEX') not null comment '匹配类型',
-    `api_method`  varchar(16)            not null comment 'api方法',
-    `description` varchar(255)           not null comment '描述',
-    `create_time` timestamp              not null default current_timestamp comment '创建时间',
-    `update_time` timestamp              not null default current_timestamp on update current_timestamp comment '更新时间'
+    `api_method`  varchar(16)           not null comment 'api方法',
+    `description` varchar(255)          not null comment '描述',
+    `create_time` timestamp             not null default current_timestamp comment '创建时间',
+    `update_time` timestamp             not null default current_timestamp on update current_timestamp comment '更新时间'
 ) comment 'api资源表';
 
 drop table if exists sys_api_resource_auth;
 create table if not exists sys_api_resource_auth
 (
-    `api_resource_id` int                 not null comment 'api资源id',
-    `auth_type`       enum ('ROLE', 'IP') not null comment '授权类型',
-    `auth_object`     varchar(128)        not null comment '授权对象',
-    `auth_time`       timestamp           not null default current_timestamp comment '授权时间',
-    `expired_time`    timestamp           not null default current_timestamp comment '过期时间',
+    `api_resource_id` int                           not null comment 'api资源id',
+    `auth_type`       enum ('ROLE', 'IP', 'STATIC') not null comment '授权类型',
+    `auth_object`     varchar(128)                  not null comment '授权对象',
+    `auth_time`       timestamp                     not null default current_timestamp comment '授权时间',
+    `expired_time`    timestamp                     not null default current_timestamp comment '过期时间',
     primary key (`api_resource_id`, `auth_type`, `auth_object`)
 ) comment 'api资源授权表';
 
