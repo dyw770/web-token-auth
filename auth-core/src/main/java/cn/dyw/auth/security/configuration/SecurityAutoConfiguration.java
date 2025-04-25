@@ -98,6 +98,7 @@ public class SecurityAutoConfiguration {
     }
 
     @Bean
+    @SuppressWarnings("deprecation")
     @ConditionalOnMissingBean(UserDetailsService.class)
     public UserDetailsService userDetailsService() {
         UserDetails userDetails = User.withDefaultPasswordEncoder()
