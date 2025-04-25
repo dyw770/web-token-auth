@@ -110,11 +110,12 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
                             mapping.getDto().getMatchType());
                 }
                 AuthorizationManager<RequestAuthorizationContext> manager = mapping.getEntry();
-
+                
+                AuthorizationDecision check = manager.check(authentication, requestContext);
                 if (log.isDebugEnabled()) {
-                    log.debug("请求 {} 使用 {} 检测权限", RequestUtils.requestLine(requestContext.getRequest()), manager);
+                    log.debug("请求 {} 使用 {} 检测权限结果: {}", RequestUtils.requestLine(requestContext.getRequest()), manager, check);
                 }
-                return manager.check(authentication, requestContext);
+                return check;
             }
         }
         
