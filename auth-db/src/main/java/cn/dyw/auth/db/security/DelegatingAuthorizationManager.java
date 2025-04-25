@@ -38,7 +38,13 @@ public class DelegatingAuthorizationManager implements AuthorizationManager<Requ
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
         for (AuthorizationManager<RequestAuthorizationContext> authorizationManager : authorizationManagers) {
             AuthorizationDecision check = authorizationManager.check(authentication, object);
-            log.debug("请求: {}  {} 权限认证结果: {}", RequestUtils.requestLine(object.getRequest()), authorizationManager, check);
+            if (log.isDebugEnabled()) {
+                log.debug("请求: {}, 授权对象: {}, 授权管理器: {} 权限认证结果: {}",
+                        RequestUtils.requestLine(object.getRequest()),
+                        authentication.get(),
+                        authorizationManager,
+                        check);
+            }
             if (check != null && check.isGranted()) {
                 continue;
             }
@@ -46,7 +52,7 @@ public class DelegatingAuthorizationManager implements AuthorizationManager<Requ
         }
         return allow;
     }
-    
+
     @Override
     public String toString() {
         return "DelegatingAuthorizationManager{" +

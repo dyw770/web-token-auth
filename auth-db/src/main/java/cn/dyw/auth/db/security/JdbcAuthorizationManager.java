@@ -22,7 +22,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -134,11 +133,19 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         List<ApiResourceDto> resourceList = apiResourceService.listAll();
         Map<String, List<String>> roleMap = getRoleMap();
 
-
-        for (ApiResourceDto resource : resourceList) {
-            initAuthorizationManager(resource, roleMap);
+        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+        try {
+            writeLock.lock();
+            mappings.clear();
+            for (ApiResourceDto resource : resourceList) {
+                initAuthorizationManager(resource, roleMap);
+            }
+        } catch (Exception e) {
+            log.error("更新资源授权信息失败", e);
+        } finally {
+            writeLock.unlock();
         }
-
+        
         stopWatch.stop();
         log.info("初始化 jdbc api 授权信息 \n{}", stopWatch.prettyPrint());
     }
@@ -175,25 +182,14 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
         List<AuthorizationManager<RequestAuthorizationContext>> managers = getAuthorizationManagers(resource, roleMap);
         DelegatingAuthorizationManager authorizationManager = new DelegatingAuthorizationManager(managers);
-        List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> list = new ArrayList<>();
+      
         for (RequestMatcher matcher : matchers) {
             // 如果没有配置 则表示需要登陆才能访问
             if (CollectionUtils.isEmpty(managers)) {
-                list.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authenticatedAuthorizationManager));
+                mappings.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authenticatedAuthorizationManager));
             } else {
-                list.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authorizationManager));
+                mappings.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authorizationManager));
             }
-        }
-
-        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-        try {
-            writeLock.lock();
-            mappings.clear();
-            mappings.addAll(list);
-        } catch (Exception e) {
-            log.error("更新资源授权信息失败", e);
-        } finally {
-            writeLock.unlock();
         }
     }
 
