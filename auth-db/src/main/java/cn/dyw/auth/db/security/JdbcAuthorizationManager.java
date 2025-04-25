@@ -1,6 +1,7 @@
 package cn.dyw.auth.db.security;
 
 import cn.dyw.auth.db.Constants;
+import cn.dyw.auth.db.domain.SysApiResource;
 import cn.dyw.auth.db.model.ApiResourceDto;
 import cn.dyw.auth.db.model.RoleDto;
 import cn.dyw.auth.db.service.ISysApiResourceService;
@@ -18,10 +19,12 @@ import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.IpAddressAuthorizationManager;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -102,14 +105,14 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
             RequestMatcher.MatchResult matchResult = matcher.matcher(requestContext.getRequest());
             if (matchResult.isMatch()) {
                 if (log.isDebugEnabled()) {
-                    log.debug("请求 {} 成功匹配, id: {}, path: {}, method: {}, type: {}", RequestUtils.requestLine(requestContext.getRequest()), 
-                            mapping.getDto().getId(), 
-                            mapping.getDto().getApiPath(), 
+                    log.debug("请求 {} 成功匹配, id: {}, path: {}, method: {}, type: {}", RequestUtils.requestLine(requestContext.getRequest()),
+                            mapping.getDto().getId(),
+                            mapping.getDto().getApiPath(),
                             mapping.getDto().getApiMethod(),
                             mapping.getDto().getMatchType());
                 }
                 AuthorizationManager<RequestAuthorizationContext> manager = mapping.getEntry();
-                
+
                 AuthorizationDecision check = manager.check(authentication, requestContext);
                 if (log.isDebugEnabled()) {
                     log.debug("请求 {} 使用 {} 检测权限结果: {}", RequestUtils.requestLine(requestContext.getRequest()), manager, check);
@@ -117,7 +120,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
                 return check;
             }
         }
-        
+
         if (log.isDebugEnabled()) {
             log.debug("请求 {} 没有匹配到对应的权限配置", RequestUtils.requestLine(requestContext.getRequest()));
         }
@@ -145,7 +148,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         } finally {
             writeLock.unlock();
         }
-        
+
         stopWatch.stop();
         log.info("初始化 jdbc api 授权信息 \n{}", stopWatch.prettyPrint());
     }
@@ -167,22 +170,15 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
     }
 
     private void initAuthorizationManager(ApiResourceDto resource, Map<String, List<String>> roleMap) {
-
-        String apiPath = resource.getApiPath();
-        String method = resource.getApiMethod();
-        if (StringUtils.isBlank(apiPath)) {
+        
+        if (StringUtils.isBlank(resource.getApiPath())) {
             return;
         }
-        List<RequestMatcher> matchers;
-        if (StringUtils.isBlank(method) || StringUtils.equalsIgnoreCase(method, Constants.API_RESOURCE_METHOD_ALL)) {
-            matchers = requestMatcherRegistry.requestMatchers(apiPath);
-        } else {
-            matchers = requestMatcherRegistry.requestMatchers(HttpMethod.valueOf(method.toUpperCase()), apiPath);
-        }
+        List<RequestMatcher> matchers = createMatcher(resource);
 
         List<AuthorizationManager<RequestAuthorizationContext>> managers = getAuthorizationManagers(resource, roleMap);
         DelegatingAuthorizationManager authorizationManager = new DelegatingAuthorizationManager(managers);
-      
+
         for (RequestMatcher matcher : matchers) {
             // 如果没有配置 则表示需要登陆才能访问
             if (CollectionUtils.isEmpty(managers)) {
@@ -191,6 +187,25 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
                 mappings.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authorizationManager));
             }
         }
+    }
+
+    public List<RequestMatcher> createMatcher(ApiResourceDto resource) {
+        String apiPath = resource.getApiPath();
+        String method = resource.getApiMethod();
+
+        SysApiResource.MatchType matchType = resource.getMatchType();
+
+        return switch (matchType) {
+            case ANT -> requestMatcherRegistry.requestMatchers(createMethod(method), apiPath);
+            case REGEX -> Collections.singletonList(RegexRequestMatcher.regexMatcher(apiPath));
+        };
+    }
+
+    public HttpMethod createMethod(String method) {
+        if (StringUtils.isBlank(method) || StringUtils.equalsIgnoreCase(method, Constants.API_RESOURCE_METHOD_ALL)) {
+            return null;
+        }
+        return HttpMethod.valueOf(method.toUpperCase());
     }
 
     private List<AuthorizationManager<RequestAuthorizationContext>> getAuthorizationManagers(ApiResourceDto resource,
