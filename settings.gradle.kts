@@ -1,10 +1,5 @@
 rootProject.name = "web-token-auth"
 
-include(":auth-demo")
-include(":auth-common")
-include(":auth-core")
-include(":auth-db")
-
 pluginManagement {
     repositories {
         maven {
@@ -20,3 +15,10 @@ pluginManagement {
     }
 }
 
+
+include(":auth-demo")
+include(":auth-common")
+include(":auth-core")
+include(":auth-db")
+include(":auth-annotation")
+include(":auth-support")
