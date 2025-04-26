@@ -8,6 +8,8 @@ package cn.dyw.auth.annotation;
  */
 public @interface SystemEvent {
 
+    String module() default "";
+    
     /**
      * 日志模版，使用 {} 表示可变参数
      *
