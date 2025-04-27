@@ -6,6 +6,7 @@ import cn.dyw.auth.support.expression.AnnotatedElementKey;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -99,6 +100,9 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
         }
 
         String[] execute = annotation.execute();
+        if (ArrayUtils.isEmpty(execute)) {
+            systemEventHandler.handle(new SystemEventModel(annotation.message(), annotation.module(), new Object[0]));
+        }
 
         Object[] objects = Stream.of(execute)
                 .filter(StringUtils::isNotBlank)
