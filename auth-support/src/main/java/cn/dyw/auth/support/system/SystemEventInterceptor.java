@@ -40,7 +40,7 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
 
     private final SystemEventHandler systemEventHandler;
     
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
 
     public SystemEventInterceptor(SystemEventHandler systemEventHandler) {
         this.systemEventHandler = systemEventHandler;
