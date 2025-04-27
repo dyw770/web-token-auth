@@ -19,6 +19,7 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.StopWatch;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -38,6 +39,8 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
     private final StandardEvaluationContext originalEvaluationContext = new StandardEvaluationContext();
 
     private final SystemEventHandler systemEventHandler;
+    
+    private StopWatch stopWatch = new StopWatch();
 
     public SystemEventInterceptor(SystemEventHandler systemEventHandler) {
         this.systemEventHandler = systemEventHandler;
@@ -62,7 +65,12 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
             throw ex;
         }
         try {
+            stopWatch.start("System Event Log");
             execute(result, target, method, invocation.getArguments());
+            stopWatch.stop();
+            if (log.isDebugEnabled()) {
+                log.debug("SystemEvent 注解处理耗时\n{}", stopWatch.prettyPrint());
+            }
         } catch (Exception e) {
             log.debug("执行system event aop 拦截器逻辑时发生异常", e);
         }
