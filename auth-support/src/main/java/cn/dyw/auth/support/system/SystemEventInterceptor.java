@@ -75,7 +75,7 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
                 log.debug("SystemEvent 注解处理耗时\n{}", stopWatch.prettyPrint());
             }
         } catch (Exception e) {
-            log.debug("执行system event aop 拦截器逻辑时发生异常", e);
+            log.error("执行system event aop 拦截器逻辑时发生异常", e);
         }
 
         return result;
