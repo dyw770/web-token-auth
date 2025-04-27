@@ -33,7 +33,12 @@ public class SystemEventExpressionEvaluator {
      * The name of the variable holding the result object.
      */
     public static final String RESULT_VARIABLE = "result";
-    
+
+    /**
+     * 异常时的变量名
+     */
+    public static final String THROWABLE_VARIABLE_NAME = "throwable";
+
     private final Map<ExpressionKey, Expression> keyCache = new ConcurrentHashMap<>(64);
 
     private final SystemEventEvaluationContextFactory evaluationContextFactory;
@@ -66,11 +71,36 @@ public class SystemEventExpressionEvaluator {
                 method, args, target, targetClass);
         SystemEventEvaluationContext evaluationContext = this.evaluationContextFactory
                 .forOperation(rootObject, targetMethod, args);
+        evaluationContext.addUnavailableVariable(THROWABLE_VARIABLE_NAME);
         if (result == RESULT_UNAVAILABLE) {
             evaluationContext.addUnavailableVariable(RESULT_VARIABLE);
         } else if (result != NO_RESULT) {
             evaluationContext.setVariable(RESULT_VARIABLE, result);
         }
+        return evaluationContext;
+    }
+
+    /**
+     * Create an {@link EvaluationContext}.
+     *
+     * @param method      the method
+     * @param args        the method arguments
+     * @param target      the target object
+     * @param targetClass the target class
+     * @param throwable   throwable
+     *                    {@link #NO_RESULT} if there is no return at this time
+     * @return the evaluation context
+     */
+    public EvaluationContext createEvaluationContext(Method method, Object[] args, Object target, Class<?> targetClass, Method targetMethod,
+                                                     Throwable throwable) {
+
+        SystemEventExpressionRootObject rootObject = new SystemEventExpressionRootObject(
+                method, args, target, targetClass);
+        SystemEventEvaluationContext evaluationContext = this.evaluationContextFactory
+                .forOperation(rootObject, targetMethod, args);
+        evaluationContext.addUnavailableVariable(RESULT_VARIABLE);
+        
+        evaluationContext.setVariable(THROWABLE_VARIABLE_NAME, throwable);
         return evaluationContext;
     }
 

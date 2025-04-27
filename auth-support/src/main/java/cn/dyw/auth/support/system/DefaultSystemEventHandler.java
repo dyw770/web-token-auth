@@ -13,9 +13,15 @@ import java.text.MessageFormat;
 @Slf4j
 public class DefaultSystemEventHandler implements SystemEventHandler {
 
+
     @Override
-    public void handle(SystemEventModel model) {
-        String format = MessageFormat.format(model.message(), model.args());
-        log.debug("执行事件记录：\n{}", format);
+    public void handle(SystemEventModel model, Object[] args) {
+        String format = MessageFormat.format(model.message(), args);
+        log.debug("System Event 注解拦截：{}", format);
+    }
+
+    @Override
+    public void handleThrowable(SystemEventModel model, Throwable throwable, Object args) {
+        log.debug("System Event 注解异常时拦截：{}", args, throwable);
     }
 }

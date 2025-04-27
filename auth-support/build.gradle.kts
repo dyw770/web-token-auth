@@ -14,7 +14,6 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     
     compileOnly("org.springframework:spring-context")
-    compileOnly("org.springframework:spring-security")
     compileOnly("org.springframework.security:spring-security-config")
     compileOnly("org.springframework.security:spring-security-web")
     compileOnly("org.springframework:spring-webmvc")

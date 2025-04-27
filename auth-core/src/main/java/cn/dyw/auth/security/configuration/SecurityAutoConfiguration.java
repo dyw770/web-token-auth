@@ -1,7 +1,8 @@
 package cn.dyw.auth.security.configuration;
 
+import cn.dyw.auth.core.AuthorizeHttpRequestsCustomizer;
+import cn.dyw.auth.core.HttpSecurityCustomizer;
 import cn.dyw.auth.security.AuthProperties;
-import cn.dyw.auth.security.AuthorizeHttpRequestsCustomizer;
 import cn.dyw.auth.security.LoginLogoutHandler;
 import cn.dyw.auth.security.SecurityExceptionResolverHandler;
 import cn.dyw.auth.security.filter.SecurityTokenContextConfigurer;
@@ -37,6 +38,8 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import java.util.List;
+
 /**
  * spring security 自动配置
  *
@@ -55,6 +58,7 @@ public class SecurityAutoConfiguration {
                                            TokenResolve tokenResolve,
                                            SecurityExceptionResolverHandler exceptionResolverHandler,
                                            AuthorizeHttpRequestsCustomizer customizer,
+                                           List<HttpSecurityCustomizer> httpSecurityCustomizers,
                                            @Autowired(required = false) AuthorizationManager<RequestAuthorizationContext> authorizationManager) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -88,6 +92,10 @@ public class SecurityAutoConfiguration {
 
                         }
                 );
+        
+        for (HttpSecurityCustomizer httpSecurityCustomizer : httpSecurityCustomizers) {
+            httpSecurityCustomizer.customize(http);
+        }
 
         return http.build();
     }

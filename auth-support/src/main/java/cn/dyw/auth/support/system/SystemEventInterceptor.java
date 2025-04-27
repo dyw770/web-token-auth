@@ -5,6 +5,8 @@ import cn.dyw.auth.annotation.SystemEvent;
 import cn.dyw.auth.support.SystemEventHandler;
 import cn.dyw.auth.support.SystemEventModel;
 import cn.dyw.auth.support.expression.AnnotatedElementKey;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -22,7 +24,6 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-import org.springframework.util.StopWatch;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -41,12 +42,12 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
 
     private final StandardEvaluationContext originalEvaluationContext = new StandardEvaluationContext();
 
-    private final SystemEventHandler systemEventHandler;
+    @Getter
+    @Setter
+    private SystemEventHandler systemEventHandler;
 
-    private final StopWatch stopWatch = new StopWatch();
-
-    public SystemEventInterceptor(SystemEventHandler systemEventHandler) {
-        this.systemEventHandler = systemEventHandler;
+    public SystemEventInterceptor() {
+        systemEventHandler = new DefaultSystemEventHandler();
         expressionEvaluator = new SystemEventExpressionEvaluator(
                 new SystemEventEvaluationContextFactory(this.originalEvaluationContext)
         );
@@ -65,15 +66,15 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
             result = invocation.proceed();
         } catch (Throwable ex) {
             log.debug("system event aop 拦截器执行方法时异常", ex);
+            try {
+                execute(target, method, invocation.getArguments(), ex);
+            } catch (Exception e) {
+                log.error("执行system event aop 拦截器逻辑时发生异常", e);
+            }
             throw ex;
         }
         try {
-            stopWatch.start("System Event Log");
             execute(result, target, method, invocation.getArguments());
-            stopWatch.stop();
-            if (log.isDebugEnabled()) {
-                log.debug("SystemEvent 注解处理耗时\n{}", stopWatch.prettyPrint());
-            }
         } catch (Exception e) {
             log.error("执行system event aop 拦截器逻辑时发生异常", e);
         }
@@ -81,9 +82,84 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
         return result;
     }
 
-
+    /**
+     * 处理结果
+     *
+     * @param result 目标方法返回结果
+     * @param target 目标对象
+     * @param method 目标方法
+     * @param args   目标方法参数
+     */
     protected void execute(Object result, Object target, Method method, Object[] args) {
 
+        AnnotationInfo annotationInfo = getAnnotationInfo(target, method);
+        if (annotationInfo == null) return;
+
+
+        EvaluationContext context;
+        if (ObjectUtils.isEmpty(result) || method.getReturnType().isAssignableFrom(void.class)) {
+            context = expressionEvaluator.createEvaluationContext(
+                    method, 
+                    args, 
+                    target,
+                    annotationInfo.targetClass, 
+                    annotationInfo.targetMethod, 
+                    SystemEventExpressionEvaluator.NO_RESULT
+            );
+        } else {
+            context = expressionEvaluator.createEvaluationContext(
+                    method, 
+                    args, 
+                    target,
+                    annotationInfo.targetClass,
+                    annotationInfo.targetMethod, 
+                    result
+            );
+        }
+
+        String[] execute = annotationInfo.systemEventModel.args();
+        if (ArrayUtils.isEmpty(execute)) {
+            systemEventHandler.handle(annotationInfo.systemEventModel, new Object[0]);
+            return;
+        }
+
+        Object[] objects = Stream.of(execute)
+                .filter(StringUtils::isNotBlank)
+                .map(expression ->
+                        expressionEvaluator.execute(
+                                expression, new AnnotatedElementKey(annotationInfo.targetMethod, annotationInfo.targetClass), context)
+                )
+                .toArray(Object[]::new);
+
+        systemEventHandler.handle(annotationInfo.systemEventModel, objects);
+    }
+
+    /**
+     * 处理异常
+     *
+     * @param target    目标对象
+     * @param method    目标方法
+     * @param args      目标方法参数
+     * @param throwable 异常
+     */
+    protected void execute(Object target, Method method, Object[] args, Throwable throwable) {
+
+        AnnotationInfo result = getAnnotationInfo(target, method);
+        if (result == null) return;
+
+        EvaluationContext context = expressionEvaluator.createEvaluationContext(method, args, target, result.targetClass(), result.targetMethod(), throwable);
+
+        String exception = result.annotation().throwable();
+        if (StringUtils.isEmpty(exception)) {
+            systemEventHandler.handleThrowable(result.systemEventModel(), throwable, exception);
+            return;
+        }
+
+        Object execute = expressionEvaluator.execute(exception, new AnnotatedElementKey(result.targetMethod(), result.targetClass()), context);
+        systemEventHandler.handleThrowable(result.systemEventModel(), throwable, execute);
+    }
+
+    private AnnotationInfo getAnnotationInfo(Object target, Method method) {
         // Check whether aspect is enabled (to cope with cases where the AJ is pulled in automatically)
         Class<?> targetClass = AopProxyUtils.ultimateTargetClass(target);
         Method targetMethod = (!Proxy.isProxyClass(targetClass) ?
@@ -92,29 +168,20 @@ public class SystemEventInterceptor implements MethodInterceptor, BeanFactoryAwa
         SystemEvent annotation = AnnotatedElementUtils.getMergedAnnotation(method, SystemEvent.class);
 
         if (ObjectUtils.isEmpty(annotation)) {
-            return;
-        }
-        EvaluationContext context;
-        if (ObjectUtils.isEmpty(result) || method.getReturnType().isAssignableFrom(void.class)) {
-            context = expressionEvaluator.createEvaluationContext(method, args, target, targetClass, targetMethod, SystemEventExpressionEvaluator.NO_RESULT);
-        } else {
-            context = expressionEvaluator.createEvaluationContext(method, args, target, targetClass, targetMethod, result);
+            return null;
         }
 
-        String[] execute = annotation.execute();
-        if (ArrayUtils.isEmpty(execute)) {
-            systemEventHandler.handle(new SystemEventModel(annotation.message(), annotation.module(), new Object[0]));
-        }
+        SystemEventModel systemEventModel = new SystemEventModel(
+                annotation.message(),
+                annotation.module(),
+                annotation.execute(),
+                annotation.throwable()
+        );
+        return new AnnotationInfo(targetClass, targetMethod, annotation, systemEventModel);
+    }
 
-        Object[] objects = Stream.of(execute)
-                .filter(StringUtils::isNotBlank)
-                .map(expression ->
-                        expressionEvaluator.execute(
-                                expression, new AnnotatedElementKey(targetMethod, targetClass), context)
-                )
-                .toArray(Object[]::new);
-
-        systemEventHandler.handle(new SystemEventModel(annotation.message(), annotation.module(), objects));
+    private record AnnotationInfo(Class<?> targetClass, Method targetMethod, SystemEvent annotation,
+                                  SystemEventModel systemEventModel) {
     }
 
     @Override

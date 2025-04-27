@@ -32,4 +32,11 @@ public @interface SystemEvent {
      * @return spel 表达式
      */
     String[] execute() default {};
+
+    /**
+     * 异常时执行的spel表达式
+     *
+     * @return spel 表示式
+     */
+    String throwable() default "";
 }

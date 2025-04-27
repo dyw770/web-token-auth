@@ -1,6 +1,6 @@
 package cn.dyw.auth.demo.configuration;
 
-import cn.dyw.auth.security.AuthorizeHttpRequestsCustomizer;
+import cn.dyw.auth.core.AuthorizeHttpRequestsCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
