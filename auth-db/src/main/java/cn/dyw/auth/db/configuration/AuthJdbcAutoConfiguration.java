@@ -1,5 +1,6 @@
 package cn.dyw.auth.db.configuration;
 
+import cn.dyw.auth.db.event.AuthChangedApplicationListener;
 import cn.dyw.auth.db.security.JdbcAuthorizationManager;
 import cn.dyw.auth.db.service.ISysApiResourceService;
 import cn.dyw.auth.db.service.ISysRoleService;
@@ -29,6 +30,12 @@ public class AuthJdbcAutoConfiguration {
                                                              GrantedAuthorityDefaults grantedAuthorityDefaults,
                                                              ISysRoleService roleService) {
         return new JdbcAuthorizationManager(apiResourceService, context, grantedAuthorityDefaults, roleService);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "app.auth.jdbc", name = "enable-jdbc-api-auth", havingValue = "true")
+    public AuthChangedApplicationListener authChangedApplicationListener(JdbcAuthorizationManager authorizationManager) {
+        return new AuthChangedApplicationListener(authorizationManager);
     }
 
     @Bean
