@@ -7,7 +7,7 @@ import org.springframework.util.ObjectUtils;
 import java.lang.reflect.AnnotatedElement;
 
 /**
- * 注解key的, 唯一标识一个注解
+ * 方法, 唯一标识一个方法
  * <p>
  * 该代码来自 spring-context
  *

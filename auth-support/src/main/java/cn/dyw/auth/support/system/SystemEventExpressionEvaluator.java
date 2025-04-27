@@ -33,13 +33,8 @@ public class SystemEventExpressionEvaluator {
      * The name of the variable holding the result object.
      */
     public static final String RESULT_VARIABLE = "result";
-
-
+    
     private final Map<ExpressionKey, Expression> keyCache = new ConcurrentHashMap<>(64);
-
-    private final Map<ExpressionKey, Expression> conditionCache = new ConcurrentHashMap<>(64);
-
-    private final Map<ExpressionKey, Expression> unlessCache = new ConcurrentHashMap<>(64);
 
     private final SystemEventEvaluationContextFactory evaluationContextFactory;
 
@@ -80,18 +75,8 @@ public class SystemEventExpressionEvaluator {
     }
 
     @Nullable
-    public Object key(String keyExpression, AnnotatedElementKey methodKey, EvaluationContext evalContext) {
+    public Object execute(String keyExpression, AnnotatedElementKey methodKey, EvaluationContext evalContext) {
         return getExpression(this.keyCache, methodKey, keyExpression).getValue(evalContext);
-    }
-
-    public boolean condition(String conditionExpression, AnnotatedElementKey methodKey, EvaluationContext evalContext) {
-        return (Boolean.TRUE.equals(getExpression(this.conditionCache, methodKey, conditionExpression).getValue(
-                evalContext, Boolean.class)));
-    }
-
-    public boolean unless(String unlessExpression, AnnotatedElementKey methodKey, EvaluationContext evalContext) {
-        return (Boolean.TRUE.equals(getExpression(this.unlessCache, methodKey, unlessExpression).getValue(
-                evalContext, Boolean.class)));
     }
 
 
@@ -131,7 +116,5 @@ public class SystemEventExpressionEvaluator {
      */
     void clear() {
         this.keyCache.clear();
-        this.conditionCache.clear();
-        this.unlessCache.clear();
     }
 }
