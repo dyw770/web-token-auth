@@ -8,11 +8,18 @@ dependencies {
     
     api("org.springframework:spring-expression")
     api("org.springframework:spring-aop")
-    compileOnly("org.springframework:spring-context")
 
     api("org.apache.commons:commons-lang3")
     
     implementation("org.slf4j:slf4j-api")
+    
+    compileOnly("org.springframework:spring-context")
+    compileOnly("org.springframework:spring-security")
+    compileOnly("org.springframework.security:spring-security-config")
+    compileOnly("org.springframework.security:spring-security-web")
+    compileOnly("org.springframework:spring-webmvc")
+
+    compileOnly("jakarta.servlet:jakarta.servlet-api")
 
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
