@@ -1,4 +1,4 @@
-package cn.dyw.auth.support.system;
+package cn.dyw.auth.support;
 
 /**
  * @author dyw770

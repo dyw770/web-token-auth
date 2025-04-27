@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     api(project(":auth-annotation"))
+    api(project(":auth-common"))
     
     api("org.springframework:spring-expression")
     api("org.springframework:spring-aop")

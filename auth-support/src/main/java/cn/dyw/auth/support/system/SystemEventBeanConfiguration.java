@@ -1,6 +1,7 @@
 package cn.dyw.auth.support.system;
 
 import cn.dyw.auth.annotation.SystemEvent;
+import cn.dyw.auth.support.SystemEventHandler;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
