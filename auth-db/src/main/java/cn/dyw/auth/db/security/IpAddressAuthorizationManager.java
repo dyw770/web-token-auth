@@ -40,6 +40,7 @@ public class IpAddressAuthorizationManager implements AuthorizationManager<Reque
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public AuthorizationDecision check(Supplier<Authentication> authentication,
                                        RequestAuthorizationContext requestAuthorizationContext) {
 
