@@ -2,6 +2,7 @@ package cn.dyw.auth.support.access;
 
 import cn.dyw.auth.support.SystemAccessHandler;
 import cn.dyw.auth.support.SystemAccessModel;
+import cn.dyw.auth.utils.RequestUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,7 +63,7 @@ public class SystemAccessFilter extends OncePerRequestFilter {
             String url = request.getRequestURL().toString();
             String method = request.getMethod();
             long duration = Duration.between(startTime, endTime).getSeconds();
-            String accessIp = request.getRemoteAddr();
+            String accessIp = RequestUtils.getClientIp(request);
             String accessUa = request.getHeader(HttpHeaders.USER_AGENT);
             String accessResultType = response.getContentType();
             // TODO 暂未实现记录这个值

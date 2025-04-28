@@ -7,4 +7,5 @@ dependencies {
     compileOnly("com.github.therapi:therapi-runtime-javadoc")
     annotationProcessor("com.github.therapi:therapi-runtime-javadoc-scribe")
     compileOnly("org.springframework.security:spring-security-config")
+    compileOnly("jakarta.servlet:jakarta.servlet-api")
 }
