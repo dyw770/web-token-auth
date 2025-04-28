@@ -41,7 +41,7 @@ public class DelegatingAuthorizationManager implements AuthorizationManager<Requ
             if (log.isDebugEnabled()) {
                 log.debug("请求: {}, 授权对象: {}, 授权管理器: {} 权限认证结果: {}",
                         RequestUtils.requestLine(object.getRequest()),
-                        authentication.get(),
+                        authentication.get().getName(),
                         authorizationManager,
                         check);
             }
