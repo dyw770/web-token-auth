@@ -3,10 +3,6 @@ plugins {
     id("org.springframework.boot") apply false
 }
 
-
-group = "cn.dyw"
-version = "0.0.1-SNAPSHOT"
-
 allprojects {
 
     repositories {
@@ -15,6 +11,9 @@ allprojects {
         }
         mavenCentral()
     }
+
+    group = "cn.dyw"
+    version = "0.0.1-SNAPSHOT"
 }
 
 subprojects {
