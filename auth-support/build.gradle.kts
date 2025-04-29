@@ -8,8 +8,6 @@ dependencies {
     
     api("org.springframework:spring-expression")
     api("org.springframework:spring-aop")
-
-    api("org.apache.commons:commons-lang3")
     
     implementation("org.slf4j:slf4j-api")
     
