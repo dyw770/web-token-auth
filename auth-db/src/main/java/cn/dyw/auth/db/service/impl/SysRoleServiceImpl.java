@@ -3,6 +3,7 @@ package cn.dyw.auth.db.service.impl;
 import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.mapper.SysRoleMapper;
+import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.model.RoleDto;
 import cn.dyw.auth.db.service.ISysRoleHierarchyService;
 import cn.dyw.auth.db.service.ISysRoleService;
@@ -77,7 +78,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
         userRoleService.lambdaUpdate()
                 .eq(SysUserRole::getRoleCode, roleCode)
                 .remove();
-        
+
     }
 
     @Override
@@ -104,6 +105,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
                         dto -> StringUtils.isBlank(dto.getParentRoleCode())
                 ).toList();
     }
+
+    @Override
+    public List<ParentRoleDto> parentRoleList() {
+        return getBaseMapper().queryParentRoleList();
+    }
+
 
     @Override
     public List<String> userRoleList(String username) {

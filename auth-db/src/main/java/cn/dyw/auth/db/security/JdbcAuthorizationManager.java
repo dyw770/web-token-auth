@@ -2,8 +2,10 @@ package cn.dyw.auth.db.security;
 
 import cn.dyw.auth.db.Constants;
 import cn.dyw.auth.db.domain.SysApiResource;
+import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.model.ApiResourceDto;
-import cn.dyw.auth.db.model.RoleDto;
+import cn.dyw.auth.db.model.AuthDto;
+import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.service.ISysApiResourceService;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.utils.RequestUtils;
@@ -23,6 +25,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +33,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * jdbc 权限管理器
@@ -55,16 +57,11 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private final AuthorizationManager<RequestAuthorizationContext> permitAllAuthorizationManager =
-            (a, o) -> new AuthorizationDecision(true);
+    private final AuthorizationManager<RequestAuthorizationContext> permitAllAuthorizationManager = (a, o) -> new AuthorizationDecision(true);
 
-    private final AuthorizationManager<RequestAuthorizationContext> denyAllAuthorizationManager =
-            (a, o) -> new AuthorizationDecision(false);
+    private final AuthorizationManager<RequestAuthorizationContext> denyAllAuthorizationManager = (a, o) -> new AuthorizationDecision(false);
 
-    public JdbcAuthorizationManager(ISysApiResourceService apiResourceService,
-                                    ApplicationContext context,
-                                    GrantedAuthorityDefaults grantedAuthorityDefaults,
-                                    ISysRoleService roleService) {
+    public JdbcAuthorizationManager(ISysApiResourceService apiResourceService, ApplicationContext context, GrantedAuthorityDefaults grantedAuthorityDefaults, ISysRoleService roleService) {
         this.apiResourceService = apiResourceService;
         this.grantedAuthorityDefaults = grantedAuthorityDefaults;
         this.roleService = roleService;
@@ -79,8 +76,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
     @Override
     @SuppressWarnings("deprecation")
-    public AuthorizationDecision check(Supplier<Authentication> authentication,
-                                       RequestAuthorizationContext requestContext) {
+    public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext requestContext) {
 
         log.debug("请求授权：{}", RequestUtils.requestLine(requestContext.getRequest()));
 
@@ -104,11 +100,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
             RequestMatcher.MatchResult matchResult = matcher.matcher(requestContext.getRequest());
             if (matchResult.isMatch()) {
                 if (log.isDebugEnabled()) {
-                    log.debug("请求 {} 成功匹配, id: {}, path: {}, method: {}, type: {}", RequestUtils.requestLine(requestContext.getRequest()),
-                            mapping.getDto().getId(),
-                            mapping.getDto().getApiPath(),
-                            mapping.getDto().getApiMethod(),
-                            mapping.getDto().getMatchType());
+                    log.debug("请求 {} 成功匹配, id: {}, path: {}, method: {}, type: {}", RequestUtils.requestLine(requestContext.getRequest()), mapping.getDto().getId(), mapping.getDto().getApiPath(), mapping.getDto().getApiMethod(), mapping.getDto().getMatchType());
                 }
                 AuthorizationManager<RequestAuthorizationContext> manager = mapping.getEntry();
 
@@ -139,9 +131,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         try {
             writeLock.lock();
             mappings.clear();
-            for (ApiResourceDto resource : resourceList) {
-                initAuthorizationManager(resource, roleMap);
-            }
+            initAuthorizationManager(resourceList, roleMap);
         } catch (Exception e) {
             log.error("更新资源授权信息失败", e);
         } finally {
@@ -153,19 +143,18 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
     }
 
     private Map<String, List<String>> getRoleMap() {
-        return roleService.roleList()
-                .stream()
-                .collect(Collectors.toMap(RoleDto::getRoleCode, dto -> {
+        List<ParentRoleDto> list = roleService.parentRoleList();
+        return list.stream()
+                .collect(Collectors.toMap(
+                        ParentRoleDto::getRoleCode,
+                        ParentRoleDto::getParentRoleCode
+                ));
+    }
 
-                    List<String> childrenRoles = dto.getChildren()
-                            .stream()
-                            .map(RoleDto::getRoleCode)
-                            .toList();
-
-                    return Stream.concat(childrenRoles.stream(), Stream.of(dto.getRoleCode()))
-                            .distinct()
-                            .toList();
-                }));
+    private void initAuthorizationManager(List<ApiResourceDto> resourceList, Map<String, List<String>> roleMap) {
+        for (ApiResourceDto apiResourceDto : resourceList) {
+            initAuthorizationManager(apiResourceDto, roleMap);
+        }
     }
 
     private void initAuthorizationManager(ApiResourceDto resource, Map<String, List<String>> roleMap) {
@@ -173,16 +162,14 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         if (StringUtils.isBlank(resource.getApiPath())) {
             return;
         }
-        List<RequestMatcher> matchers = createMatcher(resource);
 
         List<AuthorizationManager<RequestAuthorizationContext>> managers = getAuthorizationManagers(resource, roleMap);
-        DelegatingAuthorizationManager authorizationManager = new DelegatingAuthorizationManager(managers);
 
-        for (RequestMatcher matcher : matchers) {
-            // 如果没有配置 则表示需要登陆才能访问
-            if (CollectionUtils.isEmpty(managers)) {
-                mappings.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authenticatedAuthorizationManager));
-            } else {
+        // 如果没有配置授权模式则不处理，交给最外层的登录授权管理器处理
+        if (!CollectionUtils.isEmpty(managers)) {
+            List<RequestMatcher> matchers = createMatcher(resource);
+            DelegatingAuthorizationManager authorizationManager = new DelegatingAuthorizationManager(managers);
+            for (RequestMatcher matcher : matchers) {
                 mappings.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authorizationManager));
             }
         }
@@ -207,28 +194,77 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         return HttpMethod.valueOf(method.toUpperCase());
     }
 
-    private List<AuthorizationManager<RequestAuthorizationContext>> getAuthorizationManagers(ApiResourceDto resource,
-                                                                                             Map<String, List<String>> roleMap) {
-        // TODO 
-        // 还需要优化，将角色合并到一个AuthorizationManager
-        Stream<AuthorizationManager<RequestAuthorizationContext>> managerStream = resource.getAuths()
+    /**
+     * 根据资源授权信息创建授权管理器
+     *
+     * @param resource 资源信息
+     * @param roleMap  角色层级关系
+     * @return 授权管理器
+     */
+    private List<AuthorizationManager<RequestAuthorizationContext>> getAuthorizationManagers(ApiResourceDto resource, Map<String, List<String>> roleMap) {
+
+        Map<SysApiResourceAuth.AuthType, List<AuthDto>> authMap = resource.getAuths().stream().collect(Collectors.groupingBy(AuthDto::getAuthType));
+
+        List<AuthorizationManager<RequestAuthorizationContext>> managers = new ArrayList<>();
+        for (SysApiResourceAuth.AuthType authType : authMap.keySet()) {
+
+            switch (authType) {
+                case ROLE -> managers.add(roleAuthorizationManagers(authMap.get(authType), roleMap));
+                case IP -> managers.add(ipAuthorizationManagers(authMap.get(authType)));
+                case STATIC -> managers.add(staticAuthorizationManagers(authMap.get(authType)));
+                default -> log.warn("未知的授权类型: {}", authType);
+            }
+        }
+
+        return managers;
+    }
+
+    /**
+     * 角色授权
+     *
+     * @param auths   角色授权信息
+     * @param roleMap 角色层级信息
+     * @return 授权管理器
+     */
+    private AuthorizationManager<RequestAuthorizationContext> roleAuthorizationManagers(List<AuthDto> auths, Map<String, List<String>> roleMap) {
+
+        String[] roles = auths
                 .stream()
-                .map(auth -> switch (auth.getAuthType()) {
-                    case ROLE -> AuthorityAuthorizationManager.hasAnyRole(
-                            grantedAuthorityDefaults.getRolePrefix(),
-                            roleMap.get(auth.getAuthObject()).toArray(new String[0]));
-                    case IP -> IpAddressAuthorizationManager.hasIpAddress(auth.getAuthObject());
-                    case STATIC -> {
-                        if (StringUtils.isBlank(auth.getAuthObject()) ||
-                                StringUtils.equalsIgnoreCase(auth.getAuthObject(),
-                                        Constants.AUTH_OBJECT_STATIC_PUBLIC)) {
-                            yield permitAllAuthorizationManager;
-                        } else {
-                            yield denyAllAuthorizationManager;
-                        }
-                    }
-                });
-        return managerStream.toList();
+                .filter(auth -> auth.getAuthType() == SysApiResourceAuth.AuthType.ROLE)
+                .flatMap(auth -> roleMap.get(auth.getAuthObject()).stream())
+                .distinct()
+                .toArray(String[]::new);
+
+        return AuthorityAuthorizationManager.hasAnyRole(grantedAuthorityDefaults.getRolePrefix(), roles);
+    }
+
+    /**
+     * ip授权
+     *
+     * @param auths 授权信息
+     * @return 授权管理器
+     */
+    private AuthorizationManager<RequestAuthorizationContext> ipAuthorizationManagers(List<AuthDto> auths) {
+        List<String> ips = auths.stream()
+                .filter(auth -> auth.getAuthType() == SysApiResourceAuth.AuthType.IP)
+                .map(AuthDto::getAuthObject)
+                .toList();
+
+        return IpAddressAuthorizationManager.hasIpAddress(ips);
+    }
+
+    /**
+     * 静态规则授权
+     *
+     * @param auths 授权信息
+     * @return 授权管理器
+     */
+    private AuthorizationManager<RequestAuthorizationContext> staticAuthorizationManagers(List<AuthDto> auths) {
+        long count = auths.stream().filter(auth ->
+                StringUtils.equalsIgnoreCase(auth.getAuthObject(), Constants.AUTH_OBJECT_STATIC_PUBLIC)
+        ).count();
+
+        return count > 0 ? permitAllAuthorizationManager : denyAllAuthorizationManager;
     }
 
 }

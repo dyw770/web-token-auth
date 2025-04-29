@@ -5,13 +5,20 @@
 <mapper namespace="cn.dyw.auth.db.mapper.SysRoleMapper">
 
     <resultMap id="BaseResultMap" type="cn.dyw.auth.db.domain.SysRole">
-            <id property="roleCode" column="role_code" />
-            <result property="description" column="description" />
-            <result property="del" column="del" />
-            <result property="createTime" column="create_time" />
-            <result property="updateTime" column="update_time" />
+        <id property="roleCode" column="role_code"/>
+        <result property="description" column="description"/>
+        <result property="del" column="del"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
-    
+
+    <resultMap id="ParentRoleDto" type="cn.dyw.auth.db.model.ParentRoleDto" autoMapping="true">
+        <id property="roleCode" column="descendant_role_code"/>
+        <collection property="parentRoleCode" javaType="java.util.ArrayList" ofType="java.lang.String">
+            <result column="ancestor_role_code"/>
+        </collection>
+    </resultMap>
+
     <select id="queryRoleList" resultType="cn.dyw.auth.db.model.RoleDto">
         select t1.role_code,
                t1.description,
@@ -25,13 +32,18 @@
                                and t2.depth = 1
         where t1.del = false
     </select>
-    
+
     <select id="queryRoleCodeByUser" resultType="java.lang.String">
         select distinct srh.descendant_role_code
         from sys_user_role sur
                  join sys_role_hierarchy srh
                       on sur.role_code = srh.ancestor_role_code
         where sur.username = #{username}
+    </select>
+    <select id="queryParentRoleList" resultMap="ParentRoleDto">
+        select ancestor_role_code,
+               descendant_role_code
+        from sys_role_hierarchy
     </select>
 
 </mapper>

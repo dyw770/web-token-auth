@@ -1,7 +1,6 @@
 package cn.dyw.auth.db.security;
 
 import cn.dyw.auth.utils.RequestUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
@@ -21,21 +20,20 @@ public class IpAddressAuthorizationManager implements AuthorizationManager<Reque
 
     private final List<IpAddressMatcher> ipAddressMatchers;
 
-    private final String ipAddress;
+    private final List<String> ipAddress;
 
-    private IpAddressAuthorizationManager(String ipAddress) {
+    private IpAddressAuthorizationManager(List<String> ipAddress) {
         this.ipAddress = ipAddress;
         this.ipAddressMatchers = new ArrayList<>();
 
-        String[] ips = StringUtils.split(ipAddress, ",");
-        for (String ip : ips) {
+        for (String ip : ipAddress) {
             this.ipAddressMatchers.add(new IpAddressMatcher(ip));
         }
     }
 
 
-    public static IpAddressAuthorizationManager hasIpAddress(String ipAddress) {
-        Assert.notNull(ipAddress, "ipAddress cannot be null");
+    public static IpAddressAuthorizationManager hasIpAddress(List<String> ipAddress) {
+        Assert.notEmpty(ipAddress, "ipAddress cannot be null");
         return new IpAddressAuthorizationManager(ipAddress);
     }
 
