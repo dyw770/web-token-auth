@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2025-02-11
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/user")
 public class LoginController {
 
     private final LoginLogoutHandler loginLogoutHandler;
