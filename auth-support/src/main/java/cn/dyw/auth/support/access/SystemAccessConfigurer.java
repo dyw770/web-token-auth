@@ -6,7 +6,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.header.HeaderWriterFilter;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 /**
  * 配置过滤器
@@ -31,6 +31,6 @@ public class SystemAccessConfigurer<H extends HttpSecurityBuilder<H>>
         if (ObjectUtils.isNotEmpty(systemAccessHandler)) {
             systemAccessFilter.setSystemAccessHandler(systemAccessHandler);
         }
-        http.addFilterBefore(systemAccessFilter, HeaderWriterFilter.class);
+        http.addFilterBefore(systemAccessFilter, AnonymousAuthenticationFilter.class);
     }
 }

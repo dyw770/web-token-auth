@@ -41,6 +41,7 @@ public class SystemAccessFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         LocalDateTime startTime = LocalDateTime.now();
+        String username = getUsername();
         try {
             filterChain.doFilter(request, response);
         } catch (Exception e) {
@@ -48,18 +49,16 @@ public class SystemAccessFilter extends OncePerRequestFilter {
             throw e;
         } finally {
             LocalDateTime endTime = LocalDateTime.now();
-            accessLog(request, response, startTime, endTime);
+            accessLog(request, response, startTime, endTime, username);
         }
     }
     
-    private void accessLog(HttpServletRequest request, HttpServletResponse response, LocalDateTime startTime, LocalDateTime endTime) {
+    private void accessLog(HttpServletRequest request,
+                           HttpServletResponse response,
+                           LocalDateTime startTime,
+                           LocalDateTime endTime,
+                           String username) {
         try {
-            SecurityContext context = SecurityContextHolder.getDeferredContext().get();
-            String username = ANONYMOUS_USER;
-            if (ObjectUtils.isNotEmpty(context) && ObjectUtils.isNotEmpty(context.getAuthentication())) {
-                username = context.getAuthentication().getName();
-            }
-
             String url = request.getRequestURL().toString();
             String method = request.getMethod();
             long duration = Duration.between(startTime, endTime).getSeconds();
@@ -93,5 +92,13 @@ public class SystemAccessFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             log.error("记录访问日志时发生异常，日志将放弃记录", e);
         }
+    }
+    
+    private String getUsername() {
+        SecurityContext context = SecurityContextHolder.getDeferredContext().get();
+        if (ObjectUtils.isNotEmpty(context) && ObjectUtils.isNotEmpty(context.getAuthentication())) {
+            return context.getAuthentication().getName();
+        }
+        return ANONYMOUS_USER;
     }
 }
