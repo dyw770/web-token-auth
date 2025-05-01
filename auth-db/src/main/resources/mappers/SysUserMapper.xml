@@ -25,6 +25,7 @@
         select username,
                nickname,
                password,
+               avatar,
                enabled,
                account_non_expired,
                credentials_non_expired,
