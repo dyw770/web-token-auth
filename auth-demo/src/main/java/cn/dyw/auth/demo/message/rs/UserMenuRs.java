@@ -1,5 +1,6 @@
 package cn.dyw.auth.demo.message.rs;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -11,7 +12,8 @@ import java.util.List;
  */
 @Data
 public class UserMenuRs {
-    
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String path;
 
     private Integer menuId;
