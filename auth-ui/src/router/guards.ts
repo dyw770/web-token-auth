@@ -42,7 +42,15 @@ function setupRoutes(router: Router) {
         }
         // 正常访问页面
         else {
-          next()
+          // TODO 校验是否允许访问
+          if (menuStore.menuPaths.includes(to.fullPath)) {
+            next()
+          }
+          else {
+            next({
+              name: 'notFound',
+            })
+          }
         }
       }
       else {
@@ -107,7 +115,6 @@ function setupRoutes(router: Router) {
         })
       }
       else {
-        // TODO 校验是否允许访问
         next()
       }
     }

@@ -1,10 +1,9 @@
-import type { Menu, Route } from '#/global'
-import type { RouteRecordRaw } from 'vue-router'
+import type {Menu} from '#/global'
 import apiApp from '@/api/modules/app'
 import menu from '@/menu'
-import { resolveRoutePath } from '@/utils'
-import { cloneDeep } from 'es-toolkit'
-import useRouteStore from './route'
+import {constantRoutes, systemRoutes} from '@/router/routes.ts'
+import {resolveRoutePath} from '@/utils'
+import {cloneDeep} from 'es-toolkit'
 import useSettingsStore from './settings'
 import useUserStore from './user'
 
@@ -14,71 +13,17 @@ const useMenuStore = defineStore(
   () => {
     const settingsStore = useSettingsStore()
     const userStore = useUserStore()
-    const routeStore = useRouteStore()
+
 
     const filesystemMenusRaw = ref<Menu.recordMainRaw[]>([])
     const actived = ref(0)
+    const menuPaths = ref<string[]>([])
 
-    // 将原始路由转换成导航菜单
-    function convertRouteToMenu(routes: Route.recordMainRaw[]): Menu.recordMainRaw[] {
-      const returnMenus: Menu.recordMainRaw[] = []
-      routes.forEach((item) => {
-        if (item.children.length > 0) {
-          if (settingsStore.settings.menu.mode === 'single') {
-            returnMenus.length === 0 && returnMenus.push({
-              meta: {},
-              children: [],
-            })
-            returnMenus[0].children.push(...convertRouteToMenuRecursive(item.children))
-          }
-          else {
-            const menuItem: Menu.recordMainRaw = {
-              meta: {
-                title: item?.meta?.title,
-                icon: item?.meta?.icon,
-                auth: item?.meta?.auth,
-              },
-              children: [],
-            }
-            menuItem.children = convertRouteToMenuRecursive(item.children)
-            returnMenus.push(menuItem)
-          }
-        }
-      })
-      return returnMenus
-    }
-    function convertRouteToMenuRecursive(routes: RouteRecordRaw[], basePath = ''): Menu.recordRaw[] {
-      const returnMenus: Menu.recordRaw[] = []
-      routes.forEach((item) => {
-        const menuItem: Menu.recordRaw = {
-          path: resolveRoutePath(basePath, item.path),
-          meta: {
-            title: item?.meta?.title,
-            icon: item?.meta?.icon,
-            defaultOpened: item?.meta?.defaultOpened,
-            auth: item?.meta?.auth,
-            menu: item?.meta?.menu,
-            link: item?.meta?.link,
-          },
-        }
-        if (item.children) {
-          menuItem.children = convertRouteToMenuRecursive(item.children, menuItem.path)
-        }
-        returnMenus.push(menuItem)
-      })
-      return returnMenus
-    }
+
 
     // 完整导航数据
     const allMenus = computed(() => {
-      let returnMenus: Menu.recordMainRaw[] = []
-      if (settingsStore.settings.app.routeBaseOn !== 'filesystem') {
-        returnMenus = convertRouteToMenu(routeStore.routesRaw)
-      }
-      else {
-        returnMenus = filesystemMenusRaw.value
-      }
-      returnMenus = filesystemMenusRaw.value
+      let returnMenus: Menu.recordMainRaw[] = filesystemMenusRaw.value
       // 如果权限功能开启，则需要对导航数据进行筛选过滤
       if (settingsStore.settings.app.enablePermission) {
         returnMenus = filterAsyncMenus(returnMenus, userStore.permissions)
@@ -203,8 +148,36 @@ const useMenuStore = defineStore(
     async function generateMenusAtBack() {
       await apiApp.menuList().then(async (res) => {
         filesystemMenusRaw.value = (res.data as Menu.recordMainRaw[]).filter(item => item.children.length !== 0)
+        treeMenuToList()
       }).catch(() => {})
     }
+
+    // 将菜单的路径存储在数组中，用于后续校验是否允许访问
+    function treeMenuToList() {
+      const list: any[] = []
+      for (const mainMenuRaw of filesystemMenusRaw.value) {
+        if (mainMenuRaw.children.length > 0) {
+          list.push(...mainMenuRaw.children)
+        }
+      }
+
+      list.push(...constantRoutes)
+      list.push(...systemRoutes)
+
+      let item: Menu.recordRaw | undefined
+      while (list.length > 0) {
+        item = list.pop()
+        if (item) {
+          if (item.path) {
+            menuPaths.value.push(item.path)
+          }
+          if (item.children) {
+            list.push(...item.children)
+          }
+        }
+      }
+    }
+
     // 设置主导航
     function isPathInMenus(menus: Menu.recordRaw[], path: string) {
       let flag = false
@@ -233,6 +206,7 @@ const useMenuStore = defineStore(
     return {
       actived,
       allMenus,
+      menuPaths,
       sidebarMenus,
       sidebarMenusFirstDeepestPath,
       sidebarMenusHasOnlyMenu,
