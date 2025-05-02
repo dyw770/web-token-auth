@@ -93,9 +93,14 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     }
 
     @Override
-    public List<MenuDto> userMenuList(String username) {
+    public List<MenuDto> userMenuTreeList(String username) {
         List<MenuDto> menuDtoList = getBaseMapper().queryUserMenuList(username);
         return treeMenu(menuDtoList);
+    }
+
+    @Override
+    public List<MenuDto> userMenuList(String username) {
+        return getBaseMapper().queryUserMenuList(username);
     }
 
     @Override

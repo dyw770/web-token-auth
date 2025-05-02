@@ -53,3 +53,6 @@ coverage
 *.local
 
 *.tsbuildinfo
+
+.eslintcache
+.stylelintcache

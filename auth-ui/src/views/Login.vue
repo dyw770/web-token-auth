@@ -1,79 +1,178 @@
-<template>
-  <div class="login-container">
-    <el-form ref="ruleFormRef" :model="form" label-position="left" label-width="80px" class="login-form" :rules="rules">
-      <h2>用户登录</h2>
-      <el-form-item label="用户名" prop="username" required>
-        <el-input v-model="form.username" type="text" placeholder="请输入用户名"/>
-      </el-form-item>
-      <el-form-item label="密码" prop="password" required>
-        <el-input v-model="form.password" type="password" placeholder="请输入密码"/>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm(ruleFormRef)" block>登录</el-button>
-      </el-form-item>
-    </el-form>
-  </div>
-</template>
+<route lang="yaml">
+meta:
+  title: 登录
+  constant: true
+  layout: false
+</route>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
-import {useRouter} from "vue-router";
-import type {FormInstance, FormRules} from "element-plus";
-import useUserStore from "@/stores/modules/user.ts";
+import LoginForm from '@/components/AccountForm/LoginForm.vue'
+import RegisterForm from '@/components/AccountForm/RegisterForm.vue'
+import ResetPasswordForm from '@/components/AccountForm/ResetPasswordForm.vue'
+import ColorScheme from '@/layouts/components/Topbar/Toolbar/ColorScheme/index.vue'
+import useSettingsStore from '@/store/modules/settings'
 
-const userStore = useUserStore();
-const router = useRouter();
-
-const form = ref({
-  username: '',
-  password: ''
-});
-
-const ruleFormRef = ref<FormInstance>();
-
-const rules = reactive<FormRules<typeof form>>({
-  username: [{required: true, trigger: 'blur', message: '请输入用户名'}],
-  password: [{required: true, trigger: 'blur', message: '请输入密码'}],
+defineOptions({
+  name: 'Login',
 })
 
-const submitForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.validate((valid) => {
-    if (valid) {
-      userStore.login(form.value)
-        .then(() => {
-          router.push('/')
-        })
-    }
-  })
-}
+const route = useRoute()
+const router = useRouter()
+const settingsStore = useSettingsStore()
 
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.resetFields()
-}
+const redirect = ref(route.query.redirect?.toString() ?? settingsStore.settings.home.fullPath)
+const account = ref<string>()
+// 表单类型
+const formType = ref<'login' | 'register' | 'resetPassword'>('login')
 </script>
 
+<template>
+  <div class="bg-banner" />
+  <div class="absolute right-4 top-4 z-1 flex-center border rounded-lg bg-background p-1 text-base">
+    <ColorScheme v-if="settingsStore.settings.toolbar.colorScheme" />
+  </div>
+  <div class="login-box">
+    <div class="login-banner">
+      <img src="@/assets/images/logo.svg" class="absolute inset-s-4 inset-t-4 h-8 rounded">
+      <img src="@/assets/images/login-banner.png" class="banner">
+    </div>
+    <div class="login-form flex-col-center">
+      <Transition name="fade" mode="out-in">
+        <LoginForm
+          v-if="formType === 'login'"
+          :account
+          @on-login="router.push(redirect)"
+          @on-register="(val) => { formType = 'register'; account = val }"
+          @on-reset-password="(val) => { formType = 'resetPassword'; account = val }"
+        />
+        <RegisterForm
+          v-else-if="formType === 'register'"
+          :account
+          @on-register="(val) => { formType = 'login'; account = val }"
+          @on-login="formType = 'login'"
+        />
+        <ResetPasswordForm
+          v-else-if="formType === 'resetPassword'"
+          :account
+          @on-reset-password="(val) => { formType = 'login'; account = val }"
+          @on-login="formType = 'login'"
+        />
+      </Transition>
+    </div>
+  </div>
+  <FaCopyright class="copyright" />
+</template>
+
 <style scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f5f7fa;
-}
-
-.login-form {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+.bg-banner {
+  position: fixed;
+  z-index: 0;
   width: 100%;
-  max-width: 420px;
+  height: 100%;
+  background:
+    radial-gradient(closest-side, hsl(var(--border) / 10%) 30%, hsl(var(--primary) / 20%) 30%, hsl(var(--border) / 30%) 50%) no-repeat,
+    radial-gradient(closest-side, hsl(var(--border) / 10%) 30%, hsl(var(--primary) / 20%) 30%, hsl(var(--border) / 30%) 50%) no-repeat;
+  background-position: 100% 100%, 0% 0%;
+  background-size: 200vw 200vh;
+  filter: blur(100px);
 }
 
-.login-form h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
+[data-mode="mobile"] {
+  .login-box {
+    position: relative;
+    flex-direction: column;
+    justify-content: start;
+    width: 100%;
+
+    .login-banner {
+      width: 100%;
+      padding: 20px 0;
+
+      .banner {
+        position: relative;
+        top: inherit;
+        right: inherit;
+        display: inherit;
+        width: 100%;
+        max-width: 375px;
+        margin: 0 auto;
+        transform: translateY(0);
+      }
+    }
+
+    .login-form {
+      width: 100%;
+    }
+  }
+
+  .copyright {
+    position: relative;
+  }
+}
+
+.login-box {
+  position: absolute;
+  display: flex;
+  overflow: hidden;
+  background-color: hsl(var(--background));
+
+  [data-mode="pc"] & {
+    --uno: shadow-md rounded-md;
+
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  .login-banner {
+    --uno: bg-muted dark:bg-muted/30;
+
+    position: relative;
+    width: 450px;
+    overflow: hidden;
+
+    &::before {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      content: "";
+      background:
+        radial-gradient(closest-side, hsl(var(--border) / 10%) 30%, hsl(var(--primary) / 20%) 30%, hsl(var(--border) / 30%) 50%) no-repeat,
+        radial-gradient(closest-side, hsl(var(--border) / 10%) 30%, hsl(var(--primary) / 20%) 30%, hsl(var(--border) / 30%) 50%) no-repeat;
+      background-position: 100% 100%, 0% 0%;
+      background-size: 200vw 200vh;
+      filter: blur(100px);
+    }
+
+    .banner {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      transform: translateY(-50%);
+    }
+  }
+
+  .login-form {
+    width: 500px;
+    transition: height 0.15s ease;
+  }
+}
+
+.copyright {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 20px;
+  margin: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

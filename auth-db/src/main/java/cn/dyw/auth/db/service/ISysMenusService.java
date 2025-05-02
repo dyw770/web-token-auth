@@ -67,6 +67,14 @@ public interface ISysMenusService extends IService<SysMenus> {
      * @param username 用户名
      * @return 菜单
      */
+    List<MenuDto> userMenuTreeList(String username);
+
+    /**
+     * 查询用户的菜单列表
+     *
+     * @param username 用户名
+     * @return 菜单
+     */
     List<MenuDto> userMenuList(String username);
 
     /**

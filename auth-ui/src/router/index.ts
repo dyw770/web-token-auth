@@ -1,21 +1,22 @@
+import pinia from '@/store'
+import useSettingsStore from '@/store/modules/settings'
+import {loadingFadeOut} from 'virtual:app-loading'
 import {createRouter, createWebHistory} from 'vue-router'
-import home from '@/views/Home.vue'
-
+import setupExtensions from './extensions'
+import setupGuards from './guards'
+// 路由相关数据
+import {constantRoutes, constantRoutesByFilesystem} from './routes'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: home,
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('@/views/Login.vue'),
-    },
-  ],
+  history: createWebHistory(),
+  routes: useSettingsStore(pinia).settings.app.routeBaseOn === 'filesystem' ? constantRoutesByFilesystem : constantRoutes,
+})
+
+setupGuards(router)
+setupExtensions(router)
+
+router.isReady().then(() => {
+  loadingFadeOut()
 })
 
 export default router

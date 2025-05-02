@@ -22,7 +22,6 @@ public class MenuSaveRq {
     /**
      * 菜单路由
      */
-    @NotBlank
     private String menuRouter;
 
     /**

@@ -128,7 +128,7 @@ public class MenuController {
      */
     @GetMapping("/list/user/{username}")
     public Result<List<MenuDto>> userMenuList(@PathVariable("username") @NotBlank String username) {
-        return Result.createSuccess(menusService.userMenuList(username));
+        return Result.createSuccess(menusService.userMenuTreeList(username));
     }
 
     /**

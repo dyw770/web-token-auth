@@ -1,10 +1,9 @@
-import useUserStore from '@/stores/modules/user'
+import useUserStore from '@/store/modules/user'
 import axios from 'axios'
 import {toast} from 'vue-sonner'
 
-
 const api = axios.create({
-  baseURL: import.meta.env.VITE_APP_API_BASEURL,
+  baseURL: (import.meta.env.DEV && import.meta.env.VITE_OPEN_PROXY) ? '/proxy/' : import.meta.env.VITE_APP_API_BASEURL,
   timeout: 1000 * 60,
   responseType: 'json',
 })
@@ -41,8 +40,7 @@ api.interceptors.response.use(
       if (response.data.code >= 1000 && response.data.code < 1100) {
         useUserStore().requestLogout()
       }
-      debugger
-      toast.warning('授权异常', {
+      toast.error('授权异常', {
         description: response.data.msg,
       })
       return Promise.reject(response.data)
@@ -55,12 +53,13 @@ api.interceptors.response.use(
       throw error
     }
     let message = error.message
-    debugger
     if (message === 'Network Error') {
       message = '服务器网络故障'
-    } else if (message.includes('timeout')) {
+    }
+    else if (message.includes('timeout')) {
       message = '接口请求超时'
-    } else if (message.includes('Request failed with status code')) {
+    }
+    else if (message.includes('Request failed with status code')) {
       message = `接口${message.substring(message.length - 3)}异常`
     }
     toast.error('请求异常', {
