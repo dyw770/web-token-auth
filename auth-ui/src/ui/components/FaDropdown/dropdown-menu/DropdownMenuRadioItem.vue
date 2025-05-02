@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {DropdownMenuRadioItemEmits, DropdownMenuRadioItemProps} from 'reka-ui'
-import {DropdownMenuItemIndicator, DropdownMenuRadioItem, useForwardPropsEmits,} from 'reka-ui'
+import {DropdownMenuItemIndicator, DropdownMenuRadioItem, useForwardPropsEmits} from 'reka-ui'
 import type {HTMLAttributes} from 'vue'
 import {computed} from 'vue'
 import {cn} from '@/utils'

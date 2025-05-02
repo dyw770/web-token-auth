@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {ContextMenuContentEmits, ContextMenuContentProps} from 'reka-ui'
-import {ContextMenuContent, ContextMenuPortal, useForwardPropsEmits,} from 'reka-ui'
+import {ContextMenuContent, ContextMenuPortal, useForwardPropsEmits} from 'reka-ui'
 import type {HTMLAttributes} from 'vue'
 import {computed} from 'vue'
 import {cn} from '@/utils'

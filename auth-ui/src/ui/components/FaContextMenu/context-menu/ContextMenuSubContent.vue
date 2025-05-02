@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {DropdownMenuSubContentEmits, DropdownMenuSubContentProps} from 'reka-ui'
-import {ContextMenuSubContent, useForwardPropsEmits,} from 'reka-ui'
+import {ContextMenuSubContent, useForwardPropsEmits} from 'reka-ui'
 import type {HTMLAttributes} from 'vue'
 import {computed} from 'vue'
 import {cn} from '@/utils'

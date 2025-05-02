@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {HTMLAttributes} from 'vue'
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from './card'
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from './card'
 
 defineOptions({
   name: 'FaCard',

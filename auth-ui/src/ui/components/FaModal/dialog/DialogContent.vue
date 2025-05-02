@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {DialogContentEmits, DialogContentProps} from 'reka-ui'
-import {DialogClose, DialogContent, DialogPortal, useForwardPropsEmits,} from 'reka-ui'
+import {DialogClose, DialogContent, DialogPortal, useForwardPropsEmits} from 'reka-ui'
 import type {HTMLAttributes} from 'vue'
 import {computed} from 'vue'
 import {cn} from '@/utils'
@@ -86,7 +86,7 @@ const id = inject('ModalId')
     >
       <slot />
       <div class="absolute inset-e-4 top-4 flex-center gap-2">
-        <button v-if="props.maximizable" class="rounded-sm bg-transparent opacity-70 ring-offset-background transition-opacity hidden disabled:pointer-events-none sm:inline-block data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring" @click="handleMaximize">
+        <button v-if="props.maximizable" class="hidden rounded-sm bg-transparent opacity-70 ring-offset-background transition-opacity disabled:pointer-events-none sm:inline-block data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring" @click="handleMaximize">
           <Maximize v-if="!props.maximize" class="h-4 w-4" />
           <Minimize v-else class="h-4 w-4" />
         </button>

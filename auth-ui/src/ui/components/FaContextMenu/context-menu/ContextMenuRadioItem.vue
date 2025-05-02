@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {ContextMenuRadioItemEmits, ContextMenuRadioItemProps} from 'reka-ui'
-import {ContextMenuItemIndicator, ContextMenuRadioItem, useForwardPropsEmits,} from 'reka-ui'
+import {ContextMenuItemIndicator, ContextMenuRadioItem, useForwardPropsEmits} from 'reka-ui'
 import type {HTMLAttributes} from 'vue'
 import {computed} from 'vue'
 import {cn} from '@/utils'

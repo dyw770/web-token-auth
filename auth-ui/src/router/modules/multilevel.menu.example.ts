@@ -1,4 +1,4 @@
-import type { RouteRecordRaw } from 'vue-router'
+import type {RouteRecordRaw} from 'vue-router'
 
 function Layout() {
   return import('@/layouts/index.vue')
@@ -60,6 +60,14 @@ const routes: RouteRecordRaw = {
               component: () => import('@/views/multilevel_menu_example/level2/level3/page2.vue'),
               meta: {
                 title: '导航2-2-2',
+              },
+            },
+            {
+              path: 'page3',
+              name: 'multilevelMenuExample2-2-3',
+              component: () => import('@/views/multilevel_menu_example/level2/level3/page3.vue'),
+              meta: {
+                title: '导航2-2-3',
               },
             },
           ],

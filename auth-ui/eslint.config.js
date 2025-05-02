@@ -13,6 +13,7 @@ export default antfu(
     rules: {
       'eslint-comments/no-unlimited-disable': 'off',
       'curly': ['error', 'all'],
+      'unused-imports/no-unused-vars': 'off',
       'ts/no-unused-expressions': ['error', {
         allowShortCircuit: true,
         allowTernary: true,

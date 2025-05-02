@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {ContextMenuSubTriggerProps} from 'reka-ui'
-import {ContextMenuSubTrigger, useForwardProps,} from 'reka-ui'
+import {ContextMenuSubTrigger, useForwardProps} from 'reka-ui'
 import type {HTMLAttributes} from 'vue'
 import {computed} from 'vue'
 import {cn} from '@/utils'
