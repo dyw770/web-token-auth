@@ -18,7 +18,8 @@
 
     <resultMap id="UserDto" type="cn.dyw.auth.db.model.UserDto" autoMapping="true">
         <id property="username" column="username"/>
-        <association property="roles" select="cn.dyw.auth.db.mapper.SysRoleMapper.queryRoleCodeByUser" column="username"/>
+        <association property="roles" select="cn.dyw.auth.db.mapper.SysRoleMapper.queryRoleCodeByUser"
+                     column="username"/>
     </resultMap>
 
     <select id="getUserByUsername" resultMap="UserDto">
@@ -32,8 +33,32 @@
                account_non_locked,
                create_time,
                update_time
-        from sys_user 
+        from sys_user
         where username = #{username}
+    </select>
+    <select id="userList" resultType="cn.dyw.auth.db.message.rs.UserRs">
+        select
+        username,
+        nickname,
+        password,
+        avatar,
+        enabled,
+        account_non_expired,
+        credentials_non_expired,
+        account_non_locked,
+        create_time
+        from sys_user
+        <where>
+            <if test="rq.username != null and rq.username != ''">
+                and username like concat(#{rq.username}, '%')
+            </if>
+            <if test="rq.nickname != null and rq.nickname != ''">
+                and nickname like concat(#{rq.nickname}, '%')
+            </if>
+            <if test="rq.enabled != null">
+                and enabled = #{rq.enabled}
+            </if>
+        </where>
     </select>
 
 </mapper>

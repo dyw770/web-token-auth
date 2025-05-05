@@ -55,6 +55,7 @@ declare namespace Settings {
      */
     routeBaseOn?: 'frontend' | 'backend' | 'filesystem'
   }
+
   interface home {
     /**
      * 是否开启主页
@@ -72,6 +73,7 @@ declare namespace Settings {
      */
     fullPath?: string
   }
+
   interface layout {
     /**
      * 是否开启移动端适配，开启后当页面宽度小于 1024px 时自动切换为移动端展示
@@ -79,6 +81,7 @@ declare namespace Settings {
      */
     enableMobileAdaptation?: boolean
   }
+
   interface menu {
     /**
      * 导航栏数据来源，当 `app.routeBaseOn: 'filesystem'` 时生效
@@ -121,6 +124,7 @@ declare namespace Settings {
      */
     enableHotkeys?: boolean
   }
+
   interface topbar {
     /**
      * 模式
@@ -130,6 +134,7 @@ declare namespace Settings {
      */
     mode?: 'static' | 'fixed' | 'sticky'
   }
+
   interface tabbar {
     /**
      * 是否开启标签栏
@@ -147,6 +152,7 @@ declare namespace Settings {
      */
     enableHotkeys?: boolean
   }
+
   interface toolbar {
     /**
      * 是否开启工具栏
@@ -179,6 +185,7 @@ declare namespace Settings {
      */
     colorScheme?: boolean
   }
+
   interface mainPage {
     /**
      * 是否开启页面快捷键
@@ -186,6 +193,7 @@ declare namespace Settings {
      */
     enableHotkeys?: boolean
   }
+
   interface navSearch {
     /**
      * 是否开启导航搜索快捷键
@@ -193,6 +201,7 @@ declare namespace Settings {
      */
     enableHotkeys?: boolean
   }
+
   interface copyright {
     /**
      * 是否开启底部版权，同时在路由 meta 对象里可以单独设置某个路由是否显示底部版权信息
@@ -220,6 +229,7 @@ declare namespace Settings {
      */
     beian?: string
   }
+
   interface all {
     /** 应用设置 */
     app?: app
@@ -284,6 +294,7 @@ declare namespace Menu {
     }
     children?: recordRaw[]
   }
+
   /** 主导航 */
   interface recordMainRaw {
     meta?: {

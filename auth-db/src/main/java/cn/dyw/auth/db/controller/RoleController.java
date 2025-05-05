@@ -1,8 +1,8 @@
 package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysRole;
-import cn.dyw.auth.db.message.RoleSavaRq;
-import cn.dyw.auth.db.message.RoleUpdateRq;
+import cn.dyw.auth.db.message.rq.RoleSavaRq;
+import cn.dyw.auth.db.message.rq.RoleUpdateRq;
 import cn.dyw.auth.db.model.RoleDto;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.message.MessageCode;
@@ -21,7 +21,7 @@ import java.util.List;
  * @since 2025-04-17
  */
 @RestController
-@RequestMapping("role")
+@RequestMapping("/role")
 public class RoleController {
 
     private final ISysRoleService sysRoleService;

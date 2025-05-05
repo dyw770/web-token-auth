@@ -3,7 +3,7 @@
 <mapper namespace="cn.dyw.auth.db.mapper.SysMenusMapper">
     
     <insert id="insertMenuForRole">
-        insert into sys_role_menu
+        insert ignore sys_role_menu
         select #{roleCode},
         ancestor_menu_id,
         now(),

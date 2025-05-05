@@ -1,8 +1,8 @@
 package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysMenus;
-import cn.dyw.auth.db.message.MenuSaveRq;
-import cn.dyw.auth.db.message.MenuUpdateRq;
+import cn.dyw.auth.db.message.rq.MenuSaveRq;
+import cn.dyw.auth.db.message.rq.MenuUpdateRq;
 import cn.dyw.auth.db.model.MenuDto;
 import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.message.MessageCode;

@@ -20,4 +20,9 @@ public class JdbcAuthProperties {
      * 是否启用jdbc api权限认证
      */
     private boolean enableJdbcApiAuth = false;
+
+    /**
+     * url前缀
+     */
+    private String apiContextPath = "/admin";
 }

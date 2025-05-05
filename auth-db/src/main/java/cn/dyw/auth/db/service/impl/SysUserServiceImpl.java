@@ -3,10 +3,13 @@ package cn.dyw.auth.db.service.impl;
 import cn.dyw.auth.db.domain.SysUser;
 import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.mapper.SysUserMapper;
+import cn.dyw.auth.db.message.rq.UserSearchRq;
+import cn.dyw.auth.db.message.rs.UserRs;
 import cn.dyw.auth.db.model.UserDto;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,6 +61,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
                 .eq(SysUserRole::getUsername, username)
                 .eq(SysUserRole::getRoleCode, roleCode)
                 .remove();
+    }
+
+    @Override
+    public Page<UserRs> userList(UserSearchRq rq) {
+        Page<UserRs> page = rq.toPage();
+        return getBaseMapper().userList(rq, page);
     }
 }
 
