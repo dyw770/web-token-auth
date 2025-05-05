@@ -66,7 +66,7 @@ const rules = {
 // 表单引用
 const userFormRef = ref()
 
-const defaultUserAddRq = () => {
+const defaultUserAddRq = (): User.UserCreateRq => {
   return {
     username: '',
     nickname: '',

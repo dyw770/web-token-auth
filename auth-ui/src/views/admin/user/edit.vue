@@ -67,11 +67,12 @@ const rules = {
 // 表单引用
 const userFormRef = ref()
 
-const defaultUserEditRq = () => {
+const defaultUserEditRq = (): User.UserEditRq => {
   return {
     username: user?.username ? user?.username : '',
     nickname: user?.nickname ? user?.nickname : '',
     password: '',
+    avatar: user?.avatar ? user?.avatar : undefined,
     enabled: user?.enabled ? user?.enabled : true,
   }
 }
@@ -82,7 +83,7 @@ const hideEditUserDialog = () => {
   show.value = false
 }
 
-const userEditRq = ref<User.UserCreateRq>(defaultUserEditRq())
+const userEditRq = ref<User.UserEditRq>(defaultUserEditRq())
 
 // 提交新增用户
 const submitEditUser = async () => {
