@@ -1,5 +1,6 @@
 package cn.dyw.auth.message;
 
+import cn.dyw.auth.exception.BusinessException;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.sql.SqlInjectionUtils;
@@ -25,15 +26,15 @@ public class OrderRq {
     private boolean asc = true;
 
     /**
-     * 数据库中真是的列
+     * 数据库中真实的列名
      *
      * @return 列名
      */
     public String getSqlColumn() {
-        if (SqlInjectionUtils.check(this.column)) {
+        if (!SqlInjectionUtils.check(this.column)) {
             return StringUtils.camelToUnderline(column);
         } else {
-            return null;
+            throw new BusinessException(MessageCode.SQL_CHECK_ERROR);
         }
     }
 

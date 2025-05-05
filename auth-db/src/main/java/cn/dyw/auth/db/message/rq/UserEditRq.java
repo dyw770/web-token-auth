@@ -25,12 +25,13 @@ public class UserEditRq {
      * 昵称
      */
     @NotBlank
-    @Length(max = 12)
+    @Length(min = 3, max = 12)
     private String nickname;
 
     /**
      * 密码
      */
+    @Length(min = 6, max = 16)
     private String password;
 
     /**

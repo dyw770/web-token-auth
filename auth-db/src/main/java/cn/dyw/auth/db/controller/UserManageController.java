@@ -9,10 +9,12 @@ import cn.dyw.auth.db.service.ISysUserService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
  * @author dyw770
  * @since 2025-05-03
  */
+@Validated
 @RestController
 @RequestMapping("${app.auth.jdbc.api-context-path:/admin}/user")
 public class UserManageController {
@@ -43,12 +46,12 @@ public class UserManageController {
      * @return 结果
      */
     @PostMapping("list")
-    public Result<Page<UserRs>> userList(@RequestBody UserSearchRq rq) {
+    public Result<Page<UserRs>> userList(@RequestBody @Validated UserSearchRq rq) {
         return Result.createSuccess(userService.userList(rq));
     }
 
     @PostMapping("add")
-    public Result<Void> addUser(@RequestBody UserCreateRq rq) {
+    public Result<Void> addUser(@RequestBody @Validated UserCreateRq rq) {
         SysUser sysUser = userService.getById(rq.getUsername());
         if (ObjectUtils.isNotEmpty(sysUser)) {
             return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "用户名已存在");
@@ -73,7 +76,7 @@ public class UserManageController {
      * @return 修改成功
      */
     @PutMapping("edit")
-    public Result<Void> editUser(@RequestBody UserEditRq rq) {
+    public Result<Void> editUser(@RequestBody @Validated UserEditRq rq) {
         SysUser sysUser = userService.getById(rq.getUsername());
         if (ObjectUtils.isEmpty(sysUser)) {
             return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "用户名不存在");
@@ -98,7 +101,7 @@ public class UserManageController {
      * @return 结果
      */
     @GetMapping("/lock/{username}")
-    public Result<Void> lockUser(@PathVariable String username) {
+    public Result<Void> lockUser(@PathVariable @NotBlank String username) {
         SysUser sysUser = userService.getById(username);
         if (ObjectUtils.isEmpty(sysUser)) {
             return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "用户名不存在");
@@ -117,7 +120,7 @@ public class UserManageController {
      * @return 结果
      */
     @GetMapping("/enable/{username}")
-    public Result<Void> enableUser(@PathVariable String username) {
+    public Result<Void> enableUser(@PathVariable @NotBlank String username) {
         SysUser sysUser = userService.getById(username);
         if (ObjectUtils.isEmpty(sysUser)) {
             return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "用户名不存在");

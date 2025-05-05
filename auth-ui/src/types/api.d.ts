@@ -28,6 +28,7 @@ interface PageRq {
 }
 
 declare namespace User {
+
   interface UserSearchRq extends PageRq {
     username?: string | undefined
     nickname?: string | undefined,
@@ -43,6 +44,20 @@ declare namespace User {
     credentialsNonExpired: boolean
     accountNonLocked: boolean
     createTime: string
+    roles: Array<UserRoleRs>
+  }
+
+  interface UserRoleRs {
+
+    /**
+     * 角色ID
+     */
+    roleCode: string
+
+    /**
+     * 角色名
+     */
+    roleName:string
   }
 
   /**

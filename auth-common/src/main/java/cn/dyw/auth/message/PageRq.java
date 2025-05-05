@@ -35,6 +35,18 @@ public class PageRq {
     private OrderRq[] orders;
 
     /**
+     * 获取偏移量
+     * @return 当前页码的偏移量
+     */
+    public long getOffset() {
+        long current = page;
+        if (current <= 1L) {
+            return 0L;
+        }
+        return Math.max((current - 1) * getSize(), 0L);
+    }
+
+    /**
      * 构建 mybatis plus 分页对象
      *
      * @param <T> T

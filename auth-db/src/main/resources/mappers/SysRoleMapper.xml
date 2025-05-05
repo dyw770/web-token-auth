@@ -22,6 +22,7 @@
     <select id="queryRoleList" resultType="cn.dyw.auth.db.model.RoleDto">
         select t1.role_code,
                t1.description,
+               t1.role_name,
                t1.del,
                t1.create_time,
                t1.update_time,

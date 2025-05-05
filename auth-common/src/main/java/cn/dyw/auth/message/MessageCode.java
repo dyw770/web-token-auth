@@ -27,6 +27,8 @@ public enum MessageCode {
 
     // 3000 权限相关
     NOT_PERMISSION(3001, "没有权限"),
+    
+    SQL_CHECK_ERROR(4000, "SQL校验异常"),
     ;
 
 

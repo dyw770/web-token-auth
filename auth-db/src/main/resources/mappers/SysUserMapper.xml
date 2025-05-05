@@ -22,6 +22,13 @@
                      column="username"/>
     </resultMap>
 
+
+    <resultMap id="UserRs" type="cn.dyw.auth.db.message.rs.UserRs" autoMapping="true">
+        <id property="username" column="username"/>
+        <collection property="roles" autoMapping="true" 
+                    ofType="cn.dyw.auth.db.message.rs.UserRoleRs"/>
+    </resultMap>
+
     <select id="getUserByUsername" resultMap="UserDto">
         select username,
                nickname,
@@ -36,7 +43,21 @@
         from sys_user
         where username = #{username}
     </select>
-    <select id="userList" resultType="cn.dyw.auth.db.message.rs.UserRs">
+    
+    <select id="userList" resultMap="UserRs">
+        select
+        t1.username,
+        t1.nickname,
+        t1.password,
+        t1.avatar,
+        t1.enabled,
+        t1.account_non_expired,
+        t1.credentials_non_expired,
+        t1.account_non_locked,
+        t1.create_time,
+        t3.role_code,
+        t3.role_name
+        from (
         select
         username,
         nickname,
@@ -47,6 +68,26 @@
         credentials_non_expired,
         account_non_locked,
         create_time
+        from sys_user
+        <include refid="Page"/>
+        ) t1 left join sys_user_role t2
+        on t1.username = t2.username
+        left join sys_role t3
+        on t2.role_code = t3.role_code
+        <where>
+            <if test="rq.username != null and rq.username != ''">
+                and t1.username like concat(#{rq.username}, '%')
+            </if>
+            <if test="rq.nickname != null and rq.nickname != ''">
+                and t1.nickname like concat(#{rq.nickname}, '%')
+            </if>
+            <if test="rq.enabled != null">
+                and t1.enabled = #{rq.enabled}
+            </if>
+        </where>
+    </select>
+    <select id="userListCount" resultType="java.lang.Long">
+        select count(1)
         from sys_user
         <where>
             <if test="rq.username != null and rq.username != ''">
@@ -60,5 +101,15 @@
             </if>
         </where>
     </select>
+
+    <sql id="Page">
+        <if test="page.orders != null and page.orders.length != 0">
+            order by
+            <foreach item="order" collection="page.orders" separator="," close="">
+                ${order.sqlColumn} <if test="order.asc">asc</if><if test="!order.asc">desc</if>
+            </foreach>
+        </if>
+        limit #{page.offset}, #{page.size}
+    </sql>
 
 </mapper>

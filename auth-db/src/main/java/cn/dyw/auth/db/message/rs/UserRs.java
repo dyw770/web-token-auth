@@ -3,6 +3,7 @@ package cn.dyw.auth.db.message.rs;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户信息
@@ -51,5 +52,9 @@ public class UserRs {
      * 创建时间
      */
     private LocalDateTime createTime;
-    
+
+    /**
+     * 角色列表
+     */
+    private List<UserRoleRs> roles;
 }

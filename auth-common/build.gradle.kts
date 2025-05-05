@@ -18,4 +18,6 @@ dependencies {
     compileOnly("com.baomidou:mybatis-plus-extension")
     
     api("org.apache.commons:commons-lang3")
+    
+    api(project(":auth-annotation"))
 }

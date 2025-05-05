@@ -9,6 +9,7 @@ import cn.dyw.auth.db.model.UserDto;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
+import cn.dyw.auth.utils.PageUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         implements ISysUserService {
 
     private final ISysRoleService roleService;
-    
+
     private final ISysUserRoleService userRoleService;
 
     public SysUserServiceImpl(ISysRoleService roleService, ISysUserRoleService userRoleService) {
@@ -65,8 +66,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Override
     public Page<UserRs> userList(UserSearchRq rq) {
-        Page<UserRs> page = rq.toPage();
-        return getBaseMapper().userList(rq, page);
+        return PageUtils.queryPage(rq,
+                () -> getBaseMapper().userList(rq, rq), 
+                () -> getBaseMapper().userListCount(rq));
     }
 }
 

@@ -28,6 +28,11 @@ public class SysRole {
     private String roleCode;
 
     /**
+     * 角色名
+     */
+    private String roleName;
+
+    /**
      * 角色描述
      */
     private String description;

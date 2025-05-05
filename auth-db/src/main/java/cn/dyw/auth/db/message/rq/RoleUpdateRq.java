@@ -2,6 +2,7 @@ package cn.dyw.auth.db.message.rq;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * 修改角色
@@ -17,10 +18,17 @@ public class RoleUpdateRq {
      */
     @NotBlank
     private String roleCode;
+    
+    /**
+     * 角色名
+     */
+    @Length(min = 2, max = 12)
+    private String roleName;
 
     /**
      * 角色描述
      */
+    @Length(max = 128)
     private String description;
 
     /**

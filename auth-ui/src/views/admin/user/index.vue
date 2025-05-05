@@ -61,6 +61,11 @@
           {{ row.accountNonLocked ? '未锁定' : '已锁定' }}
         </template>
       </el-table-column>
+      <el-table-column prop="roles" label="角色" align="center">
+        <template #default="{ row }">
+          <el-tag v-for="role in row.roles" type="primary">{{role.roleName}}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间" align="center"/>
       <el-table-column label="操作" align="center" width="320px">
         <template #default="{ row }">
