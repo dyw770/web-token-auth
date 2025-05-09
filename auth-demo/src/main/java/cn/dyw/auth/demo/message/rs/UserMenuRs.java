@@ -25,4 +25,12 @@ public class UserMenuRs {
     public void addChildren(UserMenuRs rs) {
         this.children.add(rs);
     }
+
+    /**
+     * 返回一个name属性，用于前台创建路由匹配
+     * @return 唯一name
+     */
+    public String getName() {
+        return menuId.toString();
+    }
 }

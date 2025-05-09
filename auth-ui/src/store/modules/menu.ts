@@ -1,11 +1,11 @@
 import type {Menu} from '#/global'
 import apiApp from '@/api/modules/app'
 import menu from '@/menu'
-import {constantRoutes, systemRoutes} from '@/router/routes.ts'
 import {resolveRoutePath} from '@/utils'
 import {cloneDeep} from 'es-toolkit'
 import useSettingsStore from './settings'
 import useUserStore from './user'
+import {createRouterMatcher, type RouterMatcher} from "vue-router";
 
 const useMenuStore = defineStore(
   // 唯一ID
@@ -19,7 +19,9 @@ const useMenuStore = defineStore(
     const actived = ref(0)
     const menuPaths = ref<string[]>([])
 
-
+    // 路由匹配器
+    const routesMatcher = ref<RouterMatcher>()
+    // 根据路径获取匹配的路由
 
     // 完整导航数据
     const allMenus = computed(() => {
@@ -155,27 +157,18 @@ const useMenuStore = defineStore(
     // 将菜单的路径存储在数组中，用于后续校验是否允许访问
     function treeMenuToList() {
       const list: any[] = []
-      for (const mainMenuRaw of filesystemMenusRaw.value) {
-        if (mainMenuRaw.children.length > 0) {
-          list.push(...mainMenuRaw.children)
+      filesystemMenusRaw.value.forEach((route) => {
+        if (route.children) {
+          list.push(...route.children)
         }
-      }
+      })
 
-      list.push(...constantRoutes)
-      list.push(...systemRoutes)
+      routesMatcher.value = createRouterMatcher(list, {})
+    }
 
-      let item: Menu.recordRaw | undefined
-      while (list.length > 0) {
-        item = list.pop()
-        if (item) {
-          if (item.path) {
-            menuPaths.value.push(item.path)
-          }
-          if (item.children) {
-            list.push(...item.children)
-          }
-        }
-      }
+    function hasAuthMenu(path: string): boolean {
+      const result = routesMatcher.value?.resolve({ path }, undefined as any)?.matched
+      return !!(result && result.length > 0);
     }
 
     // 设置主导航
@@ -214,6 +207,7 @@ const useMenuStore = defineStore(
       generateMenusAtFront,
       generateMenusAtBack,
       setActived,
+      hasAuthMenu
     }
   },
 )

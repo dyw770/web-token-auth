@@ -43,10 +43,11 @@ function setupRoutes(router: Router) {
         // 正常访问页面
         else {
           // TODO 校验是否允许访问
-          if (menuStore.menuPaths.includes(to.fullPath)) {
+          if ( to.fullPath == '/' || to.name == 'login' || to.name == 'reload') {
             next()
-          }
-          else {
+          } else if (menuStore.hasAuthMenu(to.fullPath)) {
+            next()
+          } else {
             next({
               name: 'notFound',
             })
