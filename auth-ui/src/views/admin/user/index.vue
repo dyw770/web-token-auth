@@ -71,7 +71,7 @@
         <template #default="{ row }">
           <el-button-group>
             <el-button type="primary" size="small" @click="showEditUserDialog(row)">编辑</el-button>
-            <el-button size="small">授权</el-button>
+            <el-button size="small" @click="showAuthDialog(row)">授权</el-button>
             <el-button type="danger" size="small" @click="enableUser(row)">{{ row.enabled ? '禁用' : '启用' }}</el-button>
             <el-button type="warning" size="small" @click="lockUser(row)">{{ row.accountNonLocked ? '锁定' : '解锁' }}</el-button>
           </el-button-group>
@@ -87,6 +87,7 @@
 
     <Add v-model="addUserDialog" @success="refresh"/>
     <Edit v-model="editUserDialog" :user="editUser" @success="refresh" v-if="editUserDialog"/>
+    <Auth :user="authUser" v-model="authDialog" @success="refresh" v-if="authDialog" />
   </FaPageMain>
 </template>
 
@@ -97,9 +98,11 @@ import type {User} from '#/api'
 import Add from "@/views/admin/user/add.vue";
 import Edit from "@/views/admin/user/edit.vue";
 import {toast} from "vue-sonner";
+import Auth from "@/views/admin/user/auth.vue";
 
 const addUserDialog = ref(false)
 const editUserDialog = ref(false)
+const authDialog = ref(false)
 
 const showAddUserDialog = () => {
   addUserDialog.value = true
@@ -109,6 +112,12 @@ const editUser = ref<User.UserRs>()
 const showEditUserDialog = (user: User.UserRs) => {
   editUser.value = user
   editUserDialog.value = true
+}
+
+const authUser = ref<User.UserRs>()
+const showAuthDialog = (user: User.UserRs) => {
+  authUser.value = user
+  authDialog.value = true
 }
 
 const searchRq = ref<User.UserSearchRq>({

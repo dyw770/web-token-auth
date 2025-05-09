@@ -10,6 +10,7 @@ import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户管理
@@ -129,6 +131,19 @@ public class UserManageController {
                 .eq(SysUser::getUsername, username)
                 .set(SysUser::getEnabled, !sysUser.getEnabled())
                 .update();
+        return Result.createSuccess();
+    }
+
+    /**
+     * 设置用户角色
+     * @param roles 用户角色
+     * @param username 用户名
+     * @return 结果
+     */
+    @PostMapping("/role/{username}")
+    public Result<Void> addRoleForUser(@RequestBody @NotNull List<String> roles, @PathVariable String username) {
+        userService.addRoleForUser(username, roles);
+        // TODO 刷新用户角色缓存
         return Result.createSuccess();
     }
 }

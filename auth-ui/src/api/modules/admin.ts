@@ -11,5 +11,9 @@ export default {
 
   userLock: (username: string) => api.get(`/admin/user/lock/${username}`),
 
-  userEnable: (username: string) => api.get(`/admin/user/enable/${username}`)
+  userEnable: (username: string) => api.get(`/admin/user/enable/${username}`),
+
+  roleList: () => api.get('/admin/role/list'),
+
+  addRoleForUser: (username: string, roleCode: string[]) => api.post(`/admin/user/role/${username}`, roleCode),
 }

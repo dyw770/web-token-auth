@@ -57,7 +57,7 @@ declare namespace User {
     /**
      * 角色名
      */
-    roleName:string
+    roleName: string
   }
 
   /**
@@ -121,5 +121,49 @@ declare namespace User {
   }
 }
 
+declare namespace Role {
+  interface RoleListRs {
+    /**
+     * 角色编码，作为主键唯一标识一个角色。
+     */
+    roleCode: string;
 
-export {PageRq, User}
+    /**
+     * 角色名称，用于展示和权限配置。
+     */
+    roleName: string;
+
+    /**
+     * 角色描述，可为空。
+     */
+    description?: string;
+
+    /**
+     * 是否已删除的标志。
+     */
+    del: boolean;
+
+    /**
+     * 创建时间，通常为 ISO 格式字符串。
+     */
+    createTime: string;
+
+    /**
+     * 更新时间，通常为 ISO 格式字符串。
+     */
+    updateTime: string;
+
+
+    /**
+     * 父角色的编码，用于构建角色树结构。
+     */
+    parentRoleCode: string;
+
+    /**
+     * 子角色列表，表示当前角色的直接子角色集合。
+     */
+    children: RoleListRs[];
+  }
+}
+
+export {PageRq, User, Role}

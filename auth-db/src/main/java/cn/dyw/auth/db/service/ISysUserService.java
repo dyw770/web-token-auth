@@ -7,6 +7,8 @@ import cn.dyw.auth.db.model.UserDto;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户表 服务类
@@ -19,6 +21,7 @@ public interface ISysUserService extends IService<SysUser> {
 
     /**
      * 查询用户信息
+     *
      * @param username 用户名
      * @return 结果
      */
@@ -26,13 +29,23 @@ public interface ISysUserService extends IService<SysUser> {
 
     /**
      * 为用户添加角色
+     *
      * @param username 用户名
      * @param roleCode 角色代码
      */
     void addRoleForUser(String username, String roleCode);
 
     /**
+     * 为用户添加角色
+     *
+     * @param username  用户名
+     * @param roleCodes 角色代码
+     */
+    void addRoleForUser(String username, List<String> roleCodes);
+
+    /**
      * 删除用户角色
+     *
      * @param username 用户名
      * @param roleCode 角色代码
      */
@@ -40,6 +53,7 @@ public interface ISysUserService extends IService<SysUser> {
 
     /**
      * 查询用户列表
+     *
      * @param rq 查询参数
      * @return 用户列表
      */

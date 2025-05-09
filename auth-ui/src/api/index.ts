@@ -39,10 +39,14 @@ api.interceptors.response.use(
     if (response.data.code !== 0) {
       if (response.data.code >= 1000 && response.data.code < 1100) {
         useUserStore().requestLogout()
+        toast.error('授权异常', {
+          description: response.data.msg,
+        })
+      } else {
+        toast.error('请求错误', {
+          description: response.data.msg,
+        })
       }
-      toast.error('授权异常', {
-        description: response.data.msg,
-      })
       return Promise.reject(response.data)
     }
     return Promise.resolve(response.data)
