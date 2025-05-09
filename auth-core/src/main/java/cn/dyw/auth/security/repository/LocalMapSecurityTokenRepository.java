@@ -64,7 +64,7 @@ public class LocalMapSecurityTokenRepository implements SecurityTokenRepository 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 TokenAuthenticationToken authenticationToken =
                         new TokenAuthenticationToken(
-                                token.getPrincipal(),
+                                userDetails,
                                 token.getCredentials(),
                                 token.getToken(),
                                 userDetails.getAuthorities());

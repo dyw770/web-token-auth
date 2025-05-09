@@ -68,19 +68,19 @@ public class RedisMapSecurityTokenRepository implements SecurityTokenRepository 
 
     @Override
     public void refreshUser(String username) {
-        Set<String> keys = redisTemplate.keys(keyPrefix + username + ":");
+        Set<String> keys = redisTemplate.keys(keyPrefix + username + ":*");
         if (keys.isEmpty()) {
             return;
         }
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         for (String key : keys) {
             ValueOperations<String, TokenWrapper> operations = redisTemplate.opsForValue();
             TokenWrapper wrapper = operations.get(key);
             if (ObjectUtils.isEmpty(wrapper) || wrapper.isExpired()) {
                 continue;
             }
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             TokenAuthenticationToken authenticationToken = new TokenAuthenticationToken(
-                    wrapper.getToken().getPrincipal(),
+                    userDetails,
                     wrapper.getToken().getCredentials(),
                     wrapper.getToken().getToken(),
                     userDetails.getAuthorities());
@@ -164,7 +164,7 @@ public class RedisMapSecurityTokenRepository implements SecurityTokenRepository 
     @Override
     public int userTokens(String username) {
         if (StringUtils.hasText(username)) {
-            Set<String> keys = redisTemplate.keys(keyPrefix + username + ":");
+            Set<String> keys = redisTemplate.keys(keyPrefix + username + ":*");
             return keys.size();
         } else {
             return 0;   
