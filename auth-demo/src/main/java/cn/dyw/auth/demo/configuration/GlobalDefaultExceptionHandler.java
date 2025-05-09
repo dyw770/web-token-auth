@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.util.StringUtils;
@@ -76,6 +77,18 @@ public class GlobalDefaultExceptionHandler {
     public Result<Void> badCredentialsExceptionHandler(Exception e, HttpServletRequest request) {
         log(e, request);
         return Result.createFail(MessageCode.BAD_CREDENTIALS);
+    }
+
+    /**
+     * 账号相关异常
+     * @param e 异常
+     * @param request 请求信息
+     * @return 响应
+     */
+    @ExceptionHandler(DisabledException.class) 
+    public Result<Void> disabledExceptionHandler(Exception e, HttpServletRequest request) {
+        log(e, request);
+        return Result.createFailWithMsg(MessageCode.ACCOUNT_ERROR, e.getMessage());
     }
 
     /**

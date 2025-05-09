@@ -20,6 +20,8 @@ public enum MessageCode {
 
     BAD_CREDENTIALS(1100, "用户名或密码错误"),
     
+    ACCOUNT_ERROR(1110, "账号相关异常"),
+    
     PARAM_ERROR(2000, "参数错误"),
     
     REQUEST_METHOD_ERROR(2003, "请求方法错误"),
