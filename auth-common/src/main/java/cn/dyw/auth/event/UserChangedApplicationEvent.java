@@ -1,8 +1,7 @@
-package cn.dyw.auth.security.event;
+package cn.dyw.auth.event;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Clock;
 
@@ -15,16 +14,16 @@ import java.time.Clock;
 public class UserChangedApplicationEvent extends ApplicationEvent {
     
     @Getter
-    private final UserDetails userDetails;
+    private final String username;
 
-    public UserChangedApplicationEvent(UserDetails source) {
+    public UserChangedApplicationEvent(String source) {
         super(source);
-        this.userDetails = source;
+        this.username = source;
     }
 
-    public UserChangedApplicationEvent(UserDetails source, Clock clock) {
+    public UserChangedApplicationEvent(String source, Clock clock) {
         super(source, clock);
-        this.userDetails = source;
+        this.username = source;
     }
     
     

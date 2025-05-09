@@ -1,4 +1,4 @@
-package cn.dyw.auth.db.event;
+package cn.dyw.auth.event;
 
 import org.springframework.context.ApplicationEvent;
 

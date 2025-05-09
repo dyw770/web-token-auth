@@ -1,6 +1,7 @@
 package cn.dyw.auth.db.event;
 
 import cn.dyw.auth.db.security.JdbcAuthorizationManager;
+import cn.dyw.auth.event.AuthChangedApplicationEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.lang.Nullable;

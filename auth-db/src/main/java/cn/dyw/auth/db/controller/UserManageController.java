@@ -6,6 +6,7 @@ import cn.dyw.auth.db.message.rq.UserEditRq;
 import cn.dyw.auth.db.message.rq.UserSearchRq;
 import cn.dyw.auth.db.message.rs.UserRs;
 import cn.dyw.auth.db.service.ISysUserService;
+import cn.dyw.auth.event.UserChangedApplicationEvent;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,6 +15,7 @@ import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +37,13 @@ public class UserManageController {
     private final ISysUserService userService;
 
     private final PasswordEncoder passwordEncoder;
+    
+    private final ApplicationContext context;
 
-    public UserManageController(ISysUserService userService, PasswordEncoder passwordEncoder) {
+    public UserManageController(ISysUserService userService, PasswordEncoder passwordEncoder, ApplicationContext context) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.context = context;
     }
 
     /**
@@ -143,7 +148,7 @@ public class UserManageController {
     @PostMapping("/role/{username}")
     public Result<Void> addRoleForUser(@RequestBody @NotNull List<String> roles, @PathVariable String username) {
         userService.addRoleForUser(username, roles);
-        // TODO 刷新用户角色缓存
+        context.publishEvent(new UserChangedApplicationEvent(username));
         return Result.createSuccess();
     }
 }

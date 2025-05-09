@@ -1,5 +1,6 @@
 package cn.dyw.auth.security.event;
 
+import cn.dyw.auth.event.UserChangedApplicationEvent;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
@@ -22,7 +23,7 @@ public class UserChangedApplicationListener implements ApplicationListener<UserC
 
     @Override
     public void onApplicationEvent(@Nullable UserChangedApplicationEvent event) {
-        log.info("用户[{}]信息发生改变，将刷新用户缓存", event.getUserDetails().getUsername());
-        tokenRepository.refreshUser(event.getUserDetails().getUsername());
+        log.info("用户[{}]信息发生改变，将刷新用户缓存", event.getUsername());
+        tokenRepository.refreshUser(event.getUsername());
     }
 }

@@ -5,6 +5,7 @@ import cn.dyw.auth.core.HttpSecurityCustomizer;
 import cn.dyw.auth.security.AuthProperties;
 import cn.dyw.auth.security.LoginLogoutHandler;
 import cn.dyw.auth.security.SecurityExceptionResolverHandler;
+import cn.dyw.auth.security.event.UserChangedApplicationListener;
 import cn.dyw.auth.security.filter.SecurityTokenContextConfigurer;
 import cn.dyw.auth.security.repository.LocalMapSecurityTokenRepository;
 import cn.dyw.auth.security.repository.RequestTokenResolve;
@@ -145,6 +146,11 @@ public class SecurityAutoConfiguration {
     @Bean
     public SecurityExceptionResolverHandler securityExceptionResolverHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         return new SecurityExceptionResolverHandler(resolver);
+    }
+    
+    @Bean
+    public UserChangedApplicationListener userChangedApplicationListener(SecurityTokenRepository tokenRepository) {
+        return new UserChangedApplicationListener(tokenRepository);
     }
 
     @Bean
