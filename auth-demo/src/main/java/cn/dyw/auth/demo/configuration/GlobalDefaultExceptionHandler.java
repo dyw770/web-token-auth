@@ -17,6 +17,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.FieldError;
@@ -85,8 +86,8 @@ public class GlobalDefaultExceptionHandler {
      * @param request 请求信息
      * @return 响应
      */
-    @ExceptionHandler(DisabledException.class) 
-    public Result<Void> disabledExceptionHandler(Exception e, HttpServletRequest request) {
+    @ExceptionHandler({DisabledException.class, LockedException.class}) 
+    public Result<Void> accountExceptionHandler(Exception e, HttpServletRequest request) {
         log(e, request);
         return Result.createFailWithMsg(MessageCode.ACCOUNT_ERROR, e.getMessage());
     }
