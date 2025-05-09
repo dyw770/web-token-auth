@@ -21,6 +21,12 @@ public interface SecurityTokenRepository {
     void savaToken(TokenAuthenticationToken token);
 
     /**
+     * 刷新用户信息
+     * @param username
+     */
+    void refreshUser(String username);
+
+    /**
      * 获取token
      *
      * @param token 用户token

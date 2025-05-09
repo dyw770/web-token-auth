@@ -19,6 +19,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 
 import java.util.List;
@@ -57,13 +58,15 @@ public class SecurityRedisAutoConfiguration {
     @ConditionalOnProperty(prefix = "app.auth", name = "token-repository", havingValue = "redis")
     public SecurityTokenRepository redisSecurityTokenRepository(AuthProperties authProperties,
                                                                 TokenResolve tokenResolve,
-                                                                RedisTemplate<String, TokenWrapper> redisTemplate) {
+                                                                RedisTemplate<String, TokenWrapper> redisTemplate,
+                                                                UserDetailsService userDetailsService) {
         return new RedisMapSecurityTokenRepository(
                 redisTemplate,
                 tokenResolve,
                 authProperties.getExpireTime(),
                 authProperties.getRemoveTime(),
-                authProperties.getRedisKeyPrefix());
+                authProperties.getRedisKeyPrefix(),
+                userDetailsService);
     }
 
 }

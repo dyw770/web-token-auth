@@ -2,6 +2,10 @@ package cn.dyw.auth.security.repository;
 
 import cn.dyw.auth.security.TokenAuthenticationToken;
 import cn.dyw.auth.security.repository.jackson.TokenWrapper;
+import io.micrometer.common.util.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocalMapSecurityTokenRepository implements SecurityTokenRepository {
 
     private final Map<String, TokenWrapper> map;
+    
+    private final UserDetailsService userDetailsService;
 
     /**
      * 过期时间 秒
@@ -26,7 +32,10 @@ public class LocalMapSecurityTokenRepository implements SecurityTokenRepository 
      */
     private final long removeTime;
 
-    public LocalMapSecurityTokenRepository(long expireTime, long removeTime) {
+    public LocalMapSecurityTokenRepository(UserDetailsService userDetailsService,
+                                           long expireTime, 
+                                           long removeTime) {
+        this.userDetailsService = userDetailsService;
         this.map = new ConcurrentHashMap<>(32);
         this.expireTime = expireTime;
         this.removeTime = removeTime;
@@ -36,6 +45,33 @@ public class LocalMapSecurityTokenRepository implements SecurityTokenRepository 
     public void savaToken(TokenAuthenticationToken token) {
         TokenWrapper wrapper = new TokenWrapper(token, expireTime);
         map.put(token.getToken(), wrapper);
+    }
+
+    @Override
+    public void refreshUser(String username) {
+        if (StringUtils.isEmpty(username)) {
+            return;
+        }
+
+        for (Map.Entry<String, TokenWrapper> entry : map.entrySet()) {
+            TokenWrapper wrapper = entry.getValue();
+            if (ObjectUtils.isEmpty(wrapper) || wrapper.isExpired()) {
+                continue;
+            }
+            if (wrapper.getToken().getName().equals(username)) {
+      
+                TokenAuthenticationToken token = wrapper.getToken();
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                TokenAuthenticationToken authenticationToken =
+                        new TokenAuthenticationToken(
+                                token.getPrincipal(),
+                                token.getCredentials(),
+                                token.getToken(),
+                                userDetails.getAuthorities());
+                
+                map.put(entry.getKey(), new TokenWrapper(authenticationToken, wrapper.getExpireTime()));
+            }
+        }
     }
 
     @Override
