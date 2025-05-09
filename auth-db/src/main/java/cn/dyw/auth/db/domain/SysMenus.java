@@ -46,6 +46,11 @@ public class SysMenus {
     private Integer menuOrder;
 
     /**
+     * 是否显示在导航栏
+     */
+    private Boolean navShow;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;
