@@ -10,7 +10,7 @@ const routes: RouteRecordRaw = {
   name: 'admin',
   redirect: '/admin/user',
   meta: {
-    title: '用户',
+    title: '管理',
     icon: 'ant-design:user-outline',
   },
   children: [
@@ -22,6 +22,15 @@ const routes: RouteRecordRaw = {
         title: '用户管理',
         icon: 'ant-design:user-outline',
       },
+    },
+    {
+      path: '/admin/role',
+        component: () => import('@/views/admin/role/index.vue'),
+      name: 'adminRole',
+      meta: {
+      title: '角色管理',
+        icon: 'ant-design:team-outlined',
+    },
     }
   ]
 }

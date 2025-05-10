@@ -139,11 +139,6 @@ declare namespace Role {
     description?: string;
 
     /**
-     * 是否已删除的标志。
-     */
-    del: boolean;
-
-    /**
      * 创建时间，通常为 ISO 格式字符串。
      */
     createTime: string;
@@ -157,12 +152,39 @@ declare namespace Role {
     /**
      * 父角色的编码，用于构建角色树结构。
      */
-    parentRoleCode: string;
+    parentRoleCode?: string;
 
     /**
      * 子角色列表，表示当前角色的直接子角色集合。
      */
     children: RoleListRs[];
+  }
+
+  /**
+   * 新增角色请求参数
+   */
+  interface RoleSaveRq {
+    /**
+     * 角色编码（2-12个字符，非空）
+     * @required
+     * @minLength 2
+     * @maxLength 12
+     */
+    roleCode: string;
+
+    /**
+     * 角色名称（2-12个字符，非空）
+     * @required
+     * @minLength 2
+     * @maxLength 12
+     */
+    roleName: string;
+
+    /**
+     * 角色描述（最多128个字符）
+     * @maxLength 128
+     */
+    description?: string;
   }
 }
 

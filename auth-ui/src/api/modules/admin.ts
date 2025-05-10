@@ -1,5 +1,5 @@
 import api from '../index'
-import type {User} from "#/api";
+import type {Role, User} from "#/api";
 
 export default {
   // 获取用户列表
@@ -16,4 +16,14 @@ export default {
   roleList: () => api.get('/admin/role/list'),
 
   addRoleForUser: (username: string, roleCode: string[]) => api.post(`/admin/user/role/${username}`, roleCode),
+
+  roleAdd: (role: Role.RoleSaveRq, parentRoleCode?: string) => {
+    if (parentRoleCode) {
+      return api.post(`/admin/role/save?parentRoleCode=${parentRoleCode}`, role)
+    } else {
+      return api.post('/admin/role/save', role)
+    }
+  },
+
+  roleDelete: (roleCode: string) => api.get(`/admin/role/delete/${roleCode}`),
 }

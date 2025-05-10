@@ -35,4 +35,9 @@ public class MenuSaveRq {
      */
     @NotNull
     private Integer menuOrder;
+
+    /**
+     * 是否显示在导航栏
+     */
+    private Boolean navShow;
 }
