@@ -127,7 +127,7 @@ const refresh = async () => {
 
 const roleDelete = async (role: Role.RoleListRs) => {
   await ElMessageBox.confirm(
-    `确认删除角色<strong style="color: red">${role.roleName}</strong>?`,
+    `确认删除角色<strong class="text-red-500">${role.roleName}</strong>?`,
     '删除角色',
     {
       distinguishCancelAndClose: true,
