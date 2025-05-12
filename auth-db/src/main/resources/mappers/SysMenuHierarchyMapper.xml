@@ -35,6 +35,10 @@
              where t1.ancestor_menu_id = #{menuId}
                and t1.depth != 0)
                 t2 on t2.descendant_menu_id = h1.descendant_menu_id
+            join (select ancestor_menu_id
+                  from sys_menu_hierarchy t1
+                  where t1.descendant_menu_id = #{menuId}
+                    and t1.depth != 0) t3 on t3.ancestor_menu_id = h1.ancestor_menu_id
         set depth = depth - 1
         where h1.ancestor_menu_id != #{menuId}
           and h1.depth != 0

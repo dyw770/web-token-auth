@@ -40,6 +40,10 @@
              where t1.ancestor_role_code = #{roleCode}
                and t1.depth != 0)
                 t2 on t2.descendant_role_code = h1.descendant_role_code
+            join (select ancestor_role_code
+                  from sys_role_hierarchy t1
+                  where t1.descendant_role_code = #{roleCode}
+                    and t1.depth != 0) t3 on t3.ancestor_role_code = h1.ancestor_role_code
         set depth = depth - 1
         where h1.ancestor_role_code != #{roleCode}
           and h1.depth != 0
