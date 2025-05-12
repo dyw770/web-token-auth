@@ -64,6 +64,7 @@ import {toast} from "vue-sonner";
 import Edit from "@/views/admin/role/edit.vue";
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import type {AllowDropType, NodeDropType} from 'element-plus/es/components/tree/src/tree.type'
+import type {DragEvents} from 'element-plus/es/components/tree/src/model/useDragNode'
 
 interface TreeRole extends Role.RoleListRs {
   showButton?: boolean
@@ -83,14 +84,15 @@ const showAddRoleDialog = (parentRole?: string) => {
   showAddRole.value = true
 }
 
-const allowDrop = (draggingNode: Node, dropNode: Node, type: AllowDropType) => {
+const allowDrop = (_draggingNode: Node, _dropNode: Node, type: AllowDropType) => {
   return type === 'inner'
 }
 
 const handleDrop = async (
   draggingNode: Node,
   dropNode: Node,
-  dropType: NodeDropType
+  dropType: NodeDropType,
+  _ev: DragEvents
 ) => {
 
   // 如果是拖拽到内部
