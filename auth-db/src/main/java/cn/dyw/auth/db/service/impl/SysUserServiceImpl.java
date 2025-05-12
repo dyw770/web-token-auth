@@ -12,7 +12,6 @@ import cn.dyw.auth.db.service.ISysUserRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
 import cn.dyw.auth.exception.ExtensionBusinessException;
 import cn.dyw.auth.message.MessageCode;
-import cn.dyw.auth.utils.PageUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -117,9 +116,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Override
     public Page<UserRs> userList(UserSearchRq rq) {
-        return PageUtils.queryPage(rq,
-                () -> getBaseMapper().userList(rq, rq),
-                () -> getBaseMapper().userListCount(rq));
+        return getBaseMapper().userList(rq, rq.toPage());
     }
 }
 

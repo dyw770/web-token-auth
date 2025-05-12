@@ -3,9 +3,12 @@ package cn.dyw.auth.db.service.impl;
 import cn.dyw.auth.SpringSecurityAuthApplicationTests;
 import cn.dyw.auth.db.domain.SysUser;
 import cn.dyw.auth.db.domain.SysUserRole;
+import cn.dyw.auth.db.message.rq.UserSearchRq;
+import cn.dyw.auth.db.message.rs.UserRs;
 import cn.dyw.auth.db.model.UserDto;
 import cn.dyw.auth.db.service.ISysUserRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +43,16 @@ public class SysUserServiceImplTest {
         UserDto user = userService.getUserByUsername("test");
         log.info("查询用户：{}", user);
         assertNotNull(user);
+    }
+
+    @Test
+    public void userList() {
+        UserSearchRq userSearchRq = new UserSearchRq();
+        userSearchRq.setPage(1);
+        userSearchRq.setSize(10);
+        Page<UserRs> users = userService.userList(userSearchRq);
+        log.info("查询用户列表：{}", users);
+        assertNotNull(users);
     }
     
     @Test
