@@ -22,12 +22,12 @@ import java.util.List;
  */
 @Validated
 @RestController
-@RequestMapping("menu")
-public class MenuController {
+@RequestMapping("${app.auth.jdbc.api-context-path:/admin}/menu")
+public class MenuManageController {
 
     private final ISysMenusService menusService;
 
-    public MenuController(ISysMenusService menusService) {
+    public MenuManageController(ISysMenusService menusService) {
         this.menusService = menusService;
     }
 

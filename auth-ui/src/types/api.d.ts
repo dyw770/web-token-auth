@@ -213,4 +213,58 @@ declare namespace Role {
   }
 }
 
-export {PageRq, User, Role}
+namespace Menu {
+  interface MenuListRs {
+    /**
+     * 主键ID
+     */
+    id: number;
+
+    /**
+     * 菜单名
+     */
+    menuName: string;
+
+    /**
+     * 菜单路由
+     */
+    menuRouter: string;
+
+    /**
+     * 菜单图标
+     */
+    menuIcon: string;
+
+    /**
+     * 菜单顺序
+     */
+    menuOrder: number;
+
+    /**
+     * 是否显示在导航栏
+     */
+    navShow: boolean;
+
+    /**
+     * 创建时间
+     */
+    createTime: string; // 使用 string 表示 ISO 时间格式，如 "2025-04-18T12:00:00"
+
+    /**
+     * 更新时间
+     */
+    updateTime: string;
+
+    /**
+     * 父菜单ID
+     */
+    parentMenuId?: number;
+
+    /**
+     * 子菜单列表
+     */
+    children: MenuDto[];
+  }
+}
+
+export {PageRq, User, Role, Menu}

@@ -25,12 +25,21 @@ const routes: RouteRecordRaw = {
     },
     {
       path: '/admin/role',
-        component: () => import('@/views/admin/role/index.vue'),
+      component: () => import('@/views/admin/role/index.vue'),
       name: 'adminRole',
       meta: {
-      title: '角色管理',
+        title: '角色管理',
         icon: 'ant-design:team-outlined',
+      },
     },
+    {
+      path: '/admin/menu',
+      component: () => import('@/views/admin/menu/index.vue'),
+      name: 'adminMenu',
+      meta: {
+        title: '菜单管理',
+        icon: 'ant-design:menu-outlined',
+      },
     }
   ]
 }

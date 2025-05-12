@@ -36,4 +36,6 @@ export default {
       return  api.get(`/admin/role/update/hierarchy?roleCode=${roleCode}`)
     }
   },
+
+  menuList: () => api.get('/admin/menu/list'),
 }
