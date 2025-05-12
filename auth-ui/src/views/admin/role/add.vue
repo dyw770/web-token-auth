@@ -2,18 +2,15 @@
   <!-- 新增弹窗 -->
   <el-dialog v-model="show" title="新增用户" width="500px">
     <el-form ref="roleFormRef" :model="roleAddRq" label-width="100px" :rules="rules">
-      <el-form label-width="80px">
-        <el-form-item label="角色ID" required>
-          <el-input v-model="roleAddRq.roleCode"/>
-        </el-form-item>
-        <el-form-item label="角色名称" required>
-          <el-input v-model="roleAddRq.roleName"/>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input type="textarea" v-model="roleAddRq.description"/>
-        </el-form-item>
-      </el-form>
-
+      <el-form-item label="角色ID" prop="roleCode" required>
+        <el-input v-model="roleAddRq.roleCode"/>
+      </el-form-item>
+      <el-form-item label="角色名称" prop="roleName" required>
+        <el-input v-model="roleAddRq.roleName"/>
+      </el-form-item>
+      <el-form-item label="描述" prop="description">
+        <el-input type="textarea" v-model="roleAddRq.description"/>
+      </el-form-item>
       <el-form-item>
         <el-button @click="hideAddRoleDialog">取消</el-button>
         <el-button type="primary" @click="submitAddRole">提交</el-button>
@@ -41,15 +38,15 @@ const emit = defineEmits({
 
 const rules = {
   roleCode: [
-    { required: true, message: '角色编码不能为空', trigger: 'blur' },
-    { min: 2, max: 12, message: '角色编码长度必须在2到12个字符之间', trigger: 'blur' }
+    {required: true, message: '角色编码不能为空', trigger: 'blur'},
+    {min: 2, max: 12, message: '角色编码长度必须在2到12个字符之间', trigger: 'blur'}
   ],
   roleName: [
-    { required: true, message: '角色名称不能为空', trigger: 'blur' },
-    { min: 2, max: 12, message: '角色名称长度必须在2到12个字符之间', trigger: 'blur' }
+    {required: true, message: '角色名称不能为空', trigger: 'blur'},
+    {min: 2, max: 12, message: '角色名称长度必须在2到12个字符之间', trigger: 'blur'}
   ],
   description: [
-    { max: 128, message: '描述不能超过128个字符', trigger: 'blur' }
+    {max: 128, message: '描述不能超过128个字符', trigger: 'blur'}
   ]
 }
 
@@ -78,7 +75,7 @@ const submitAddRole = async () => {
     await roleFormRef.value.validate()
     await adminApi.roleAdd(roleAddRq.value, parentRoleCode)
     toast.success('角色创建成功')
-    show.value = false
+    hideAddRoleDialog()
     emit('success')
   } catch (error) {
     toast.error('创建角色失败，请检查输入')

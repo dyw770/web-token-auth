@@ -186,6 +186,31 @@ declare namespace Role {
      */
     description?: string;
   }
+
+  /**
+   * 修改角色请求参数
+   */
+  interface RoleUpdateRq {
+    /**
+     * 角色编码（非空）
+     */
+    roleCode: string;
+
+    /**
+     * 角色名称（长度限制：2~12个字符）
+     */
+    roleName: string;
+
+    /**
+     * 角色描述（最大长度：128个字符）
+     */
+    description?: string;
+
+    /**
+     * 是否删除
+     */
+    del?: boolean;
+  }
 }
 
 export {PageRq, User, Role}

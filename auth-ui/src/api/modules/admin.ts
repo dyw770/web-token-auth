@@ -26,4 +26,14 @@ export default {
   },
 
   roleDelete: (roleCode: string) => api.get(`/admin/role/delete/${roleCode}`),
+
+  roleUpdate: (roleInfo: Role.RoleUpdateRq) => api.post('/admin/role/update/info', roleInfo),
+
+  roleUpdateHierarchy: (roleCode: string, parentRoleCode: string) => {
+    if (parentRoleCode) {
+      return  api.get(`/admin/role/update/hierarchy?roleCode=${roleCode}&parentRoleCode=${parentRoleCode}`)
+    } else {
+      return  api.get(`/admin/role/update/hierarchy?roleCode=${roleCode}`)
+    }
+  },
 }

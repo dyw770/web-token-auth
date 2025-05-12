@@ -11,6 +11,9 @@
           :data="treeData"
           default-expand-all
           node-key="roleCode"
+          draggable
+          :allow-drop="allowDrop"
+          @node-drop="handleDrop"
           :expand-on-click-node="false"
           highlight-current
           :props="defaultProps"
@@ -28,9 +31,6 @@
                   <el-button size="small" @click="showAddRoleDialog(data.roleCode)">
                     <FaIcon name="ant-design:plus-outlined"/>
                   </el-button>
-                  <el-button type="info" size="small">
-                    <FaIcon name="ant-design:edit-outlined"/>
-                  </el-button>
                   <el-button type="danger" size="small" @click="roleDelete(data)">
                     <FaIcon name="ant-design:delete-outlined"/>
                   </el-button>
@@ -47,31 +47,9 @@
         </el-tree>
       </el-card>
 
-      <!-- 右侧表单 -->
-      <el-card>
-        <template #header>
-          <span>角色详情</span>
-        </template>
-        <el-form label-width="80px">
-          <el-form-item label="角色ID">
-            <el-input v-model="currentRole.roleCode" disabled/>
-          </el-form-item>
-          <el-form-item label="角色名称">
-            <el-input v-model="currentRole.roleName" disabled/>
-          </el-form-item>
-          <el-form-item label="描述">
-            <el-input type="textarea" v-model="currentRole.description" disabled/>
-          </el-form-item>
-          <el-form-item label="创建时间">
-            <el-input v-model="currentRole.createTime" disabled/>
-          </el-form-item>
-          <el-form-item label="更新时间">
-            <el-input v-model="currentRole.updateTime" disabled/>
-          </el-form-item>
-        </el-form>
-      </el-card>
+      <!-- 右侧角色信息 -->
+      <edit :current-role="currentRole" @edit-success="refresh"/>
     </div>
-
     <add v-model="showAddRole" :parent-role-code="parentRoleCode" @success="refresh"/>
   </FaPageMain>
 </template>
@@ -83,6 +61,9 @@ import {ref} from "vue";
 import {ElMessageBox, type TreeInstance} from "element-plus";
 import Add from "@/views/admin/role/add.vue";
 import {toast} from "vue-sonner";
+import Edit from "@/views/admin/role/edit.vue";
+import type Node from 'element-plus/es/components/tree/src/model/node'
+import type {AllowDropType, NodeDropType} from 'element-plus/es/components/tree/src/tree.type'
 
 interface TreeRole extends Role.RoleListRs {
   showButton?: boolean
@@ -95,18 +76,37 @@ const treeRef = ref<TreeInstance>()
 
 const treeData = ref<TreeRole[]>()
 
-const currentRole = ref<TreeRole>({
-  roleCode: '',
-  roleName: '',
-  description: '',
-  createTime: '',
-  updateTime: '',
-  children: [],
-})
+const currentRole = ref<TreeRole>()
 
 const showAddRoleDialog = (parentRole?: string) => {
   parentRoleCode.value = parentRole
   showAddRole.value = true
+}
+
+const allowDrop = (draggingNode: Node, dropNode: Node, type: AllowDropType) => {
+  return type === 'inner'
+}
+
+const handleDrop = async (
+  draggingNode: Node,
+  dropNode: Node,
+  dropType: NodeDropType
+) => {
+
+  // 如果是拖拽到内部
+  if (dropType === 'inner') {
+    if (dropNode.data.parentRoleCode !== draggingNode.data.roleCode) {
+      await adminApi.roleUpdateHierarchy(draggingNode.data.roleCode, dropNode.data.roleCode)
+      await refresh()
+    }
+  }
+  // 如果是拖拽到某个节点的兄弟节点上
+  if (dropType === 'after' || dropType === 'before') {
+    if(draggingNode.data.parentRoleCode !== dropNode.parent?.data.roleCode) {
+      await adminApi.roleUpdateHierarchy(draggingNode.data.roleCode, dropNode.parent?.data.roleCode)
+      await refresh()
+    }
+  }
 }
 
 onMounted(async () => {
