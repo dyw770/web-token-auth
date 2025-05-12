@@ -3,6 +3,7 @@ package cn.dyw.auth.db.message.rq;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * 新增菜单
@@ -17,6 +18,7 @@ public class MenuSaveRq {
      * 菜单名
      */
     @NotBlank
+    @Length(min = 2, max = 12)
     private String menuName;
 
     /**
@@ -39,5 +41,6 @@ public class MenuSaveRq {
     /**
      * 是否显示在导航栏
      */
+    @NotNull
     private Boolean navShow;
 }

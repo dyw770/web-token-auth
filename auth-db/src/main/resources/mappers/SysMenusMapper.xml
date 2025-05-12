@@ -45,6 +45,7 @@
                menu_order,
                create_time,
                update_time,
+               t1.nav_show,
                t2.ancestor_menu_id as parent_menu_id
         from sys_menus t1
                  left join sys_menu_hierarchy t2

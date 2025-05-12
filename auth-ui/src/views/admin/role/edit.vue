@@ -7,7 +7,7 @@
     <div v-show="!currentRole">
       <div class="text-center">
         <FaIcon name="ant-design:file-outlined" size="64px"/>
-        <p class="text-gray-500">请先选择一个角色</p>
+        <p class="text-gray-500">暂无数据</p>
       </div>
     </div>
     <el-form label-width="80px" v-show="currentRole" ref="roleFormRef" :rules="rules" :model="editRole">

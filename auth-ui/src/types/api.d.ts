@@ -263,7 +263,66 @@ namespace Menu {
     /**
      * 子菜单列表
      */
-    children: MenuDto[];
+    children: MenuListRs[];
+  }
+
+  interface MenuSaveRq {
+    /**
+     * 菜单名 - 必填且长度在2到12之间
+     */
+    menuName: string;
+
+    /**
+     * 菜单路由 - 可选
+     */
+    menuRouter?: string;
+
+    /**
+     * 菜单图标 - 必填且不能为空
+     */
+    menuIcon: string;
+
+    /**
+     * 菜单顺序 - 必填且不能为 null
+     */
+    menuOrder: number;
+
+    /**
+     * 是否显示在导航栏 - 必填且不能为 null
+     */
+    navShow: boolean;
+  }
+
+  interface MenuUpdateRq {
+    /**
+     * 菜单ID - 必填且最小值为1
+     */
+    id: number;
+
+    /**
+     * 菜单名 - 必填且长度在2到12之间
+     */
+    menuName: string;
+
+    /**
+     * 菜单路由 - 可选
+     */
+    menuRouter?: string;
+
+    /**
+     * 菜单图标 - 必填且不能为空
+     */
+    menuIcon: string;
+
+    /**
+     * 菜单顺序 - 必填且不能为 null
+     */
+    menuOrder: number;
+
+    /**
+     * 是否显示在导航栏 - 必填且不能为 null
+     */
+    navShow: boolean;
   }
 }
 

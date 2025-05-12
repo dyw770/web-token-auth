@@ -7,7 +7,7 @@
           <span>菜单列表</span>
         </template>
         <div>
-          <el-button v-show="treeData?.length !== 0" class="w-full">新增根菜单</el-button>
+          <el-button v-show="treeData?.length !== 0" class="w-full" @click="addMenu(undefined)">新增根菜单</el-button>
         </div>
         <el-tree
           ref="treeRef"
@@ -24,6 +24,7 @@
             <div
               @mouseenter="data.showButton = true"
               @mouseleave="data.showButton = false"
+              @click="currentMenu = data"
               class="tree-node"
             >
               <span>
@@ -32,13 +33,13 @@
               </span>
               <span v-show="data.showButton" class="tree-node-buttons">
                 <el-button-group>
-                  <el-button size="small">
+                  <el-button size="small" @click="addMenu(data.id)">
                     <FaIcon name="ant-design:plus-outlined"/>
                   </el-button>
                      <el-button size="small">
                     <FaIcon name="ant-design:edit-outlined"/>
                   </el-button>
-                  <el-button type="danger" size="small">
+                  <el-button type="danger" size="small" @click="deleteMenu(data)">
                     <FaIcon name="ant-design:delete-outlined"/>
                   </el-button>
                 </el-button-group>
@@ -59,11 +60,11 @@
         <template #header>
           <span>菜单详情</span>
         </template>
-        <div>
-
-        </div>
+        <edit :menu="currentMenu" @edit-success="refresh" class="w-160" />
       </el-card>
     </div>
+
+    <add v-model="showAddMenu" :parent-menu-id="parentMenuId" @success="refresh" />
   </FaPageMain>
 </template>
 
@@ -73,16 +74,45 @@ import type Node from "element-plus/es/components/tree/src/model/node";
 import type {AllowDropType} from "element-plus/es/components/tree/src/tree.type";
 import {ref} from "vue";
 import type {Menu} from "#/api";
+import Add from "@/views/admin/menu/add.vue";
+import {ElMessageBox} from "element-plus";
+import Edit from "@/views/admin/menu/edit.vue";
 
 interface MenuTree extends Menu.MenuListRs {
   showButton: boolean
 }
 
+const currentMenu = ref<MenuTree>()
+
 const treeData = ref<MenuTree[]>()
+
+const showAddMenu = ref(false)
+const parentMenuId = ref<number>()
 
 const refresh = async () => {
   const {data} = await adminApi.menuList()
   treeData.value = data
+}
+
+const addMenu = (menuId?: number) => {
+  showAddMenu.value = true;
+  parentMenuId.value = menuId
+}
+
+const deleteMenu = async (menu: MenuTree) => {
+  ElMessageBox.confirm(
+    `确认删除菜单<strong class="text-red-500">${menu.menuName}</strong>?`,
+    '删除菜单',
+    {
+      distinguishCancelAndClose: true,
+      dangerouslyUseHTMLString: true,
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+    }
+  ).then(async () => {
+    await adminApi.menuDelete(menu.id)
+    await refresh()
+  })
 }
 
 onMounted(async () => {

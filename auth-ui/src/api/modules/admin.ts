@@ -1,5 +1,5 @@
 import api from '../index'
-import type {Role, User} from "#/api";
+import type {Menu, Role, User} from "#/api";
 
 export default {
   // 获取用户列表
@@ -38,4 +38,16 @@ export default {
   },
 
   menuList: () => api.get('/admin/menu/list'),
+
+  menuAdd: (menu: Menu.MenuSaveRq, parentMenuId?: number) => {
+    if (parentMenuId) {
+      return api.post(`/admin/menu/save?parentMenuId=${parentMenuId}`, menu)
+    } else {
+      return api.post('/admin/menu/save', menu)
+    }
+  },
+
+  menuDelete: (menuId: number) => api.delete(`/admin/menu/delete/${menuId}`),
+
+  menuUpdate: (menuInfo: Menu.MenuUpdateRq) => api.post('/admin/menu/update/info', menuInfo),
 }
