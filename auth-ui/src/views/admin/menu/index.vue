@@ -50,7 +50,7 @@
 
           <template #empty>
             <div class="text-center">
-              <FaIcon name="ant-design:plus-outlined" size="64px"/>
+              <FaIcon name="ant-design:plus-outlined" size="64px"  @click="addMenu"/>
               <p class="text-gray-500">新增菜单</p>
             </div>
           </template>
