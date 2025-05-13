@@ -60,7 +60,7 @@
         <template #header>
           <span>菜单详情</span>
         </template>
-        <edit :menu="currentMenu" @edit-success="refresh" class="w-160" />
+        <edit :menu="currentMenu" @edit-success="refresh" class="w-100" />
       </el-card>
     </div>
 
