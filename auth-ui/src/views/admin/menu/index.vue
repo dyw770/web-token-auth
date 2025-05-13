@@ -16,6 +16,7 @@
           node-key="id"
           draggable
           :allow-drop="allowDrop"
+          @node-drop="handleDrop"
           :expand-on-click-node="false"
           highlight-current
           :props="defaultProps"
@@ -71,12 +72,13 @@
 <script setup lang="ts">
 import adminApi from '@/api/modules/admin'
 import type Node from "element-plus/es/components/tree/src/model/node";
-import type {AllowDropType} from "element-plus/es/components/tree/src/tree.type";
+import type {AllowDropType, NodeDropType} from "element-plus/es/components/tree/src/tree.type";
 import {ref} from "vue";
 import type {Menu} from "#/api";
 import Add from "@/views/admin/menu/add.vue";
 import {ElMessageBox} from "element-plus";
 import Edit from "@/views/admin/menu/edit.vue";
+import type {DragEvents} from "element-plus/es/components/tree/src/model/useDragNode";
 
 interface MenuTree extends Menu.MenuListRs {
   showButton: boolean
@@ -113,6 +115,29 @@ const deleteMenu = async (menu: MenuTree) => {
     await adminApi.menuDelete(menu.id)
     await refresh()
   })
+}
+
+const handleDrop = async (
+  draggingNode: Node,
+  dropNode: Node,
+  dropType: NodeDropType,
+  _ev: DragEvents
+) => {
+
+  // 如果是拖拽到内部
+  if (dropType === 'inner') {
+    if (dropNode.data.parentMenuId !== draggingNode.data.id) {
+      await adminApi.menuUpdateHierarchy(draggingNode.data.id, dropNode.data.id)
+      await refresh()
+    }
+  }
+  // 如果是拖拽到某个节点的兄弟节点上
+  if (dropType === 'after' || dropType === 'before') {
+    if(draggingNode.data.parentMenuId !== dropNode.parent?.data.id) {
+      await adminApi.menuUpdateHierarchy(draggingNode.data.id, dropNode.parent?.data.id)
+      await refresh()
+    }
+  }
 }
 
 onMounted(async () => {

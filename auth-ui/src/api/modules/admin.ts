@@ -50,4 +50,12 @@ export default {
   menuDelete: (menuId: number) => api.delete(`/admin/menu/delete/${menuId}`),
 
   menuUpdate: (menuInfo: Menu.MenuUpdateRq) => api.post('/admin/menu/update/info', menuInfo),
+
+  menuUpdateHierarchy: (menuId: number, parentMenuId: number) => {
+    if (parentMenuId) {
+      return  api.get(`/admin/menu/update/hierarchy?menuId=${menuId}&parentMenuId=${parentMenuId}`)
+    } else {
+      return  api.get(`/admin/menu/update/hierarchy?menuId=${menuId}`)
+    }
+  },
 }
