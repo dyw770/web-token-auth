@@ -46,26 +46,27 @@ const useMenuStore = defineStore(
         ? getDeepestPath(sidebarMenus.value[0])
         : settingsStore.settings.home.fullPath
     })
+
     function getDeepestPath(menu: Menu.recordRaw, rootPath = '') {
       let retnPath = ''
       if (menu.children) {
         const item = menu.children.find(item => item.meta?.menu !== false)
         if (item) {
           retnPath = getDeepestPath(item, resolveRoutePath(rootPath, menu.path))
-        }
-        else {
+        } else {
           retnPath = getDeepestPath(menu.children[0], resolveRoutePath(rootPath, menu.path))
         }
-      }
-      else {
+      } else {
         retnPath = resolveRoutePath(rootPath, menu.path)
       }
       return retnPath
     }
+
     // 次导航是否有且只有一个可访问的菜单
     const sidebarMenusHasOnlyMenu = computed(() => {
       return isSidebarMenusHasOnlyMenu(sidebarMenus.value)
     })
+
     function isSidebarMenusHasOnlyMenu(menus: Menu.recordRaw[]) {
       let count = 0
       let isOnly = true
@@ -79,6 +80,7 @@ const useMenuStore = defineStore(
       })
       return count <= 1 && isOnly
     }
+
     // 默认展开的导航路径
     const defaultOpenedPaths = computed(() => {
       const defaultOpenedPaths: string[] = []
@@ -89,6 +91,7 @@ const useMenuStore = defineStore(
       }
       return defaultOpenedPaths
     })
+
     function getDefaultOpenedPaths(menus: Menu.recordRaw[], rootPath = '') {
       const defaultOpenedPaths: string[] = []
       menus.forEach((item) => {
@@ -110,20 +113,18 @@ const useMenuStore = defineStore(
         isAuth = permissions.some((auth) => {
           if (typeof menu.meta?.auth === 'string') {
             return menu.meta.auth !== '' ? menu.meta.auth === auth : true
-          }
-          else if (typeof menu.meta?.auth === 'object') {
+          } else if (typeof menu.meta?.auth === 'object') {
             return menu.meta.auth.length > 0 ? menu.meta.auth.includes(auth) : true
-          }
-          else {
+          } else {
             return false
           }
         })
-      }
-      else {
+      } else {
         isAuth = true
       }
       return isAuth
     }
+
     // 根据权限过滤导航
     function filterAsyncMenus<T extends Menu.recordMainRaw[] | Menu.recordRaw[]>(menus: T, permissions: string[]): T {
       const res: any = []
@@ -133,8 +134,7 @@ const useMenuStore = defineStore(
           if (tmpMenu.children && tmpMenu.children.length > 0) {
             tmpMenu.children = filterAsyncMenus(tmpMenu.children, permissions) as Menu.recordRaw[]
             tmpMenu.children.length > 0 && res.push(tmpMenu)
-          }
-          else {
+          } else {
             delete tmpMenu.children
             res.push(tmpMenu)
           }
@@ -142,16 +142,51 @@ const useMenuStore = defineStore(
       })
       return res
     }
+
     // 生成导航（前端生成）
     async function generateMenusAtFront() {
       filesystemMenusRaw.value = menu.filter(item => item.children.length !== 0)
     }
+
     // 生成导航（后端生成）
     async function generateMenusAtBack() {
-      await apiApp.menuList().then(async (res) => {
-        filesystemMenusRaw.value = (res.data as Menu.recordMainRaw[]).filter(item => item.children.length !== 0)
-        treeMenuToList()
-      }).catch(() => {})
+      const {data} = await apiApp.menuList()
+
+      filesystemMenusRaw.value = (data as Menu.recordMainRaw[])
+        .filter(item => item.children.length !== 0)
+        .map(item => {
+          item.children = sortMenuTree(item.children)
+          return item
+        })
+        .sort(sort)
+
+      treeMenuToList()
+    }
+
+    function sortMenuTree(menus: Menu.recordRaw[]): Menu.recordRaw[] {
+      return menus
+        .map(menu => {
+          const sortedMenu = {...menu}
+          if (sortedMenu.children && sortedMenu.children.length > 0) {
+            sortedMenu.children = sortMenuTree(sortedMenu.children)
+          }
+          return sortedMenu
+        })
+        .sort((a, b) => {
+          const orderA = a.meta?.order ?? Number.MAX_SAFE_INTEGER
+          const orderB = b.meta?.order ?? Number.MAX_SAFE_INTEGER
+          return orderA - orderB
+        })
+    }
+
+    function sort(a: Menu.recordMainRaw, b: Menu.recordMainRaw): number {
+      if (a.meta?.order && b.meta?.order) {
+        return a.meta.order - b.meta.order
+      } else if (a.meta?.order) {
+        return -1
+      } else  {
+        return 1
+      }
     }
 
     // 将菜单的路径存储在数组中，用于后续校验是否允许访问
@@ -167,7 +202,7 @@ const useMenuStore = defineStore(
     }
 
     function hasAuthMenu(path: string): boolean {
-      const result = routesMatcher.value?.resolve({ path }, undefined as any)?.matched
+      const result = routesMatcher.value?.resolve({path}, undefined as any)?.matched
       return !!(result && result.length > 0);
     }
 
@@ -182,12 +217,12 @@ const useMenuStore = defineStore(
       })
       return flag
     }
+
     function setActived(indexOrPath: number | string) {
       if (typeof indexOrPath === 'number') {
         // 如果是 number 类型，则认为是主导航的索引
         actived.value = indexOrPath
-      }
-      else {
+      } else {
         // 如果是 string 类型，则认为是路由，需要查找对应的主导航索引
         const findIndex = allMenus.value.findIndex(item => isPathInMenus(item.children, indexOrPath))
         if (findIndex >= 0) {

@@ -290,6 +290,7 @@ declare namespace Menu {
       defaultOpened?: boolean
       auth?: string | string[]
       menu?: boolean
+      order?: number
       link?: string
     }
     children?: recordRaw[]
@@ -301,6 +302,7 @@ declare namespace Menu {
       title?: string | (() => string)
       icon?: string
       auth?: string | string[]
+      order?: number
     }
     children: recordRaw[]
   }
