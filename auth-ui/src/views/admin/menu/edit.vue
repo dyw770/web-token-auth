@@ -15,22 +15,22 @@
 
       <!-- 菜单ID -->
       <el-form-item label="菜单ID" prop="id">
-        <el-input v-model="editMenu.id" disabled />
+        <el-input v-model="editMenu.id" disabled/>
       </el-form-item>
 
       <!-- 菜单名 -->
       <el-form-item label="菜单名" prop="menuName">
-        <el-input v-model="editMenu.menuName" />
+        <el-input v-model="editMenu.menuName"/>
       </el-form-item>
 
       <!-- 菜单路由 -->
       <el-form-item label="菜单路由" prop="menuRouter">
-        <el-input v-model="editMenu.menuRouter" />
+        <el-input v-model="editMenu.menuRouter"/>
       </el-form-item>
 
       <!-- 菜单图标 -->
       <el-form-item label="菜单图标" prop="menuIcon">
-        <el-input v-model="editMenu.menuIcon" />
+        <el-input v-model="editMenu.menuIcon"/>
       </el-form-item>
 
       <!-- 是否显示在导航栏 -->
@@ -40,7 +40,7 @@
 
       <!-- 菜单顺序 -->
       <el-form-item label="菜单顺序" prop="menuOrder">
-        <el-input-number v-model="editMenu.menuOrder" :min="1" :max="999" />
+        <el-input-number v-model="editMenu.menuOrder" :min="1" :max="999"/>
       </el-form-item>
 
       <el-form-item label="创建时间" prop="createTime">
@@ -93,19 +93,19 @@ const editMenu = ref<Menu.MenuListRs>({
 // 表单验证规则
 const rules = {
   id: [
-    { required: true, message: '菜单ID不能为空', trigger: 'blur' },
-    { type: 'number', min: 1, message: '菜单ID必须大于等于1', trigger: 'blur' }
+    {required: true, message: '菜单ID不能为空', trigger: 'blur'},
+    {type: 'number', min: 1, message: '菜单ID必须大于等于1', trigger: 'blur'}
   ],
   menuName: [
-    { required: true, message: '菜单名不能为空', trigger: 'blur' },
-    { min: 2, max: 12, message: '长度在2到12个字符之间', trigger: 'blur' }
+    {required: true, message: '菜单名不能为空', trigger: 'blur'},
+    {min: 2, max: 12, message: '长度在2到12个字符之间', trigger: 'blur'}
   ],
   menuIcon: [
-    { required: true, message: '菜单图标不能为空', trigger: 'blur' }
+    {required: true, message: '菜单图标不能为空', trigger: 'blur'}
   ],
   menuOrder: [
-    { required: true, message: '菜单顺序不能为空', trigger: 'blur' },
-    { type: 'number', min: 1, max: 999, message: '请输入1到999之间的数字', trigger: 'blur' }
+    {required: true, message: '菜单顺序不能为空', trigger: 'blur'},
+    {type: 'number', min: 1, max: 999, message: '请输入1到999之间的数字', trigger: 'blur'}
   ]
 }
 
@@ -117,7 +117,7 @@ watch(
       editMenu.value = JSON.parse(JSON.stringify(newVal))
     }
   },
-  { immediate: true }
+  {immediate: true}
 )
 
 const updateMenu = async () => {
@@ -128,7 +128,7 @@ const updateMenu = async () => {
 }
 
 const resetForm = () => {
-  editMenu.value = { ...defaultEditMenu}
+  editMenu.value = menu ? {...menu} : {...defaultEditMenu}
   formRef.value.resetFields()
 }
 
