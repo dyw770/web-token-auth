@@ -266,6 +266,10 @@ namespace Menu {
     children: MenuListRs[];
   }
 
+  interface MenuRoleListRs extends MenuListRs {
+    roles: string[]
+  }
+
   interface MenuSaveRq {
     /**
      * 菜单名 - 必填且长度在2到12之间

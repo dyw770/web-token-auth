@@ -2,6 +2,7 @@ package cn.dyw.auth.db.mapper;
 
 import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.model.MenuDto;
+import cn.dyw.auth.db.model.MenuRoleDto;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -25,6 +26,13 @@ public interface SysMenusMapper extends BaseMapper<SysMenus> {
      * @return 全部菜单
      */
     List<MenuDto> queryMenuList();
+
+    /**
+     * 查询菜单列表以及授权的角色
+     *
+     * @return 全部菜单
+     */
+    List<MenuRoleDto> queryMenuRoleList();
 
     /**
      * 查询角色菜单列表

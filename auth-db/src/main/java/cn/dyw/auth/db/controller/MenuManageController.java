@@ -4,6 +4,7 @@ import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.message.rq.MenuSaveRq;
 import cn.dyw.auth.db.message.rq.MenuUpdateRq;
 import cn.dyw.auth.db.model.MenuDto;
+import cn.dyw.auth.db.model.MenuRoleDto;
 import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
@@ -39,6 +40,16 @@ public class MenuManageController {
     @GetMapping("list")
     public Result<List<MenuDto>> menuList() {
         return Result.createSuccess(menusService.menuList());
+    }
+
+    /**
+     * 查询菜单列表，返回树状结构数据以及授权的角色信息
+     *
+     * @return 菜单列表
+     */
+    @GetMapping("list/and/role")
+    public Result<List<MenuRoleDto>> menuRoleList() {
+        return Result.createSuccess(menusService.menuRoleList());
     }
 
     /**
@@ -153,7 +164,7 @@ public class MenuManageController {
      * @param roleCode 角色
      * @return 删除成功
      */
-    @DeleteMapping("/delete/role")
+    @PostMapping("/delete/role")
     public Result<Void> deleteMenuForRole(@RequestBody List<Integer> menuIds,
                                           @RequestParam("roleCode") @NotBlank String roleCode) {
         menusService.deleteMenuForRole(menuIds, roleCode);

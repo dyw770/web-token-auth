@@ -39,6 +39,8 @@ export default {
 
   menuList: () => api.get('/admin/menu/list'),
 
+  menuRoleList: () => api.get('/admin/menu/list/and/role'),
+
   menuAdd: (menu: Menu.MenuSaveRq, parentMenuId?: number) => {
     if (parentMenuId) {
       return api.post(`/admin/menu/save?parentMenuId=${parentMenuId}`, menu)
@@ -58,4 +60,8 @@ export default {
       return  api.get(`/admin/menu/update/hierarchy?menuId=${menuId}`)
     }
   },
+
+  menuAddRoleAuth: (menuIds: number[], roleCode: string) => api.post(`/admin/menu/add/role?roleCode=${roleCode}`, menuIds),
+
+  menuDeleteRoleAuth: (menuIds: number[], roleCode: string) => api.post(`/admin/menu/delete/role?roleCode=${roleCode}`, menuIds),
 }

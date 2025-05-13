@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.dyw.auth.db.mapper.SysMenusMapper">
     
+    <resultMap id="MenuRoleDto" type="cn.dyw.auth.db.model.MenuRoleDto" autoMapping="true">
+        <result column="roles" property="roles" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+    </resultMap>
+    
     <insert id="insertMenuForRole">
         insert ignore sys_role_menu
         select #{roleCode},
@@ -92,5 +96,25 @@
                  join sys_menus m2 on m1.menu_id = m2.id
                  left join sys_menu_hierarchy smh
                            on m1.menu_id = smh.descendant_menu_id and smh.depth = 1
+    </select>
+    <select id="queryMenuRoleList" resultMap="MenuRoleDto">
+        select t1.id,
+               menu_name,
+               menu_router,
+               menu_icon,
+               menu_order,
+               create_time,
+               update_time,
+               t1.nav_show,
+               t2.ancestor_menu_id as parent_menu_id,
+               t3.roles
+        from sys_menus t1
+                 left join sys_menu_hierarchy t2
+                           on t1.id = t2.descendant_menu_id
+                               and t2.depth = 1
+                 left join (select menu_id, json_arrayagg(role_code) roles
+                            from sys_role_menu
+                            group by menu_id) t3 on t3.menu_id = t1.id
+        order by t1.menu_order
     </select>
 </mapper>

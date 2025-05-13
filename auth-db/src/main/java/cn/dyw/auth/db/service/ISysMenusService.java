@@ -2,6 +2,7 @@ package cn.dyw.auth.db.service;
 
 import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.model.MenuDto;
+import cn.dyw.auth.db.model.MenuRoleDto;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -52,6 +53,13 @@ public interface ISysMenusService extends IService<SysMenus> {
      * @return 菜单列表
      */
     List<MenuDto> menuList();
+
+    /**
+     * 获取菜单列表以及授权的角色，返回的树状结构数据
+     *
+     * @return 菜单列表
+     */
+    List<MenuRoleDto> menuRoleList();
 
     /**
      * 查询角色的菜单列表
