@@ -34,12 +34,33 @@ const routes: RouteRecordRaw = {
     },
     {
       path: '/admin/menu',
-      component: () => import('@/views/admin/menu/index.vue'),
+      component: Layout,
+      redirect: '/admin/menu/edit',
       name: 'adminMenu',
       meta: {
         title: '菜单管理',
         icon: 'ant-design:menu-outlined',
       },
+      children: [
+        {
+          path: '/admin/menu/edit',
+          component: () => import('@/views/admin/menu/index.vue'),
+          name: 'adminMenuEdit',
+          meta: {
+            title: '菜单编辑',
+            icon: 'ant-design:menu-outlined',
+          },
+        },
+        {
+          path: '/admin/menu/auth',
+          component: () => import('@/views/admin/auth/index.vue'),
+          name: 'adminMenuAuth',
+          meta: {
+            title: '菜单授权',
+            icon: 'ant-design:menu-outlined',
+          },
+        }
+      ]
     }
   ]
 }
