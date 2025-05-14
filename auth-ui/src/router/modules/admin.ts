@@ -61,7 +61,16 @@ const routes: RouteRecordRaw = {
           },
         }
       ]
-    }
+    },
+    {
+      path: '/admin/resource',
+      component: () => import('@/views/admin/resource/index.vue'),
+      name: 'adminResource',
+      meta: {
+        title: 'API资源管理',
+        icon: 'ant-design:api-outlined',
+      },
+    },
   ]
 }
 

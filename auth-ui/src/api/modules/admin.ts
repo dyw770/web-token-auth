@@ -1,5 +1,5 @@
 import api from '../index'
-import type {Menu, Role, User} from "#/api";
+import type {Menu, Resource, Role, User} from "#/api";
 
 export default {
   // 获取用户列表
@@ -64,4 +64,8 @@ export default {
   menuAddRoleAuth: (menuIds: number[], roleCode: string) => api.post(`/admin/menu/add/role?roleCode=${roleCode}`, menuIds),
 
   menuDeleteRoleAuth: (menuIds: number[], roleCode: string) => api.post(`/admin/menu/delete/role?roleCode=${roleCode}`, menuIds),
+
+  resourceList: (searchRq: Resource.ResourceSearchRq) => api.post('/admin/resource/list', searchRq),
+
+  resourceEnable: (enable: boolean, resourceId: number) => api.get(`/admin/resource/enable/${resourceId}/${enable}`)
 }

@@ -46,6 +46,11 @@ public class SysApiResource {
     private String description;
 
     /**
+     * 是否启用
+     */
+    private Boolean enable;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;

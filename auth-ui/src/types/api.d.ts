@@ -1,3 +1,5 @@
+import {ApiMethod, MatchType} from './enums.ts'
+
 interface OrderRq {
   /**
    * 排序的字段名
@@ -329,5 +331,56 @@ namespace Menu {
     navShow: boolean;
   }
 }
+namespace Resource {
 
-export {PageRq, User, Role, Menu}
+  interface ResourceSearchRq extends PageRq {
+    apiPath?: string
+    apiMethod?: ApiMethod
+    description?: string
+    matchType?: MatchType
+  }
+
+  interface ResourceListRs {
+    /**
+     * 主键ID
+     */
+    id: number;
+
+    /**
+     * api路径
+     */
+    apiPath: string;
+
+    /**
+     * 匹配类型
+     */
+    matchType: MatchType;
+
+    /**
+     * api方法
+     */
+    apiMethod: string;
+
+    /**
+     * 描述
+     */
+    description: string;
+
+    /**
+     * 是否启用
+     */
+    enable: boolean;
+
+    /**
+     * 创建时间
+     */
+    createTime: string;
+
+    /**
+     * 更新时间
+     */
+    updateTime: string;
+  }
+}
+
+export { PageRq, User, Role, Menu, Resource}

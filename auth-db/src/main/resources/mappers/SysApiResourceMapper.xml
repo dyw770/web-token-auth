@@ -14,6 +14,7 @@
                sar.match_type,
                sar.api_method,
                sar.description,
+               sar.enable,
                sar.create_time,
                sar.update_time,
                srar.auth_type,
@@ -21,5 +22,6 @@
         from sys_api_resource sar
                  left join sys_api_resource_auth srar
                            on sar.id = srar.api_resource_id
+        where sar.enable = true
     </select>
 </mapper>
