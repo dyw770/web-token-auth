@@ -6,6 +6,7 @@
         <div>
           菜单
         </div>
+        <el-divider direction="horizontal"/>
         <el-tree
           v-loading="!treeMenuData && !treeRoleData"
           ref="treeMenuRef"
@@ -43,6 +44,7 @@
         <div>
           角色授权
         </div>
+        <el-divider direction="horizontal"/>
         <el-tree
           ref="treeRoleRef"
           :data="currentMenu ? treeRoleData : []"
