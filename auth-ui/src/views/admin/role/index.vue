@@ -164,4 +164,8 @@ const roleDelete = async (role: Role.RoleListRs) => {
   opacity: 0.9;
   transition: opacity 0.2s ease;
 }
+
+.el-tree {
+  --el-tree-node-content-height: 48px
+}
 </style>
