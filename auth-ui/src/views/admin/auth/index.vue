@@ -7,6 +7,7 @@
           菜单
         </div>
         <el-tree
+          v-loading="!treeMenuData && !treeRoleData"
           ref="treeMenuRef"
           :data="treeMenuData"
           default-expand-all
@@ -28,7 +29,7 @@
 
           <template #empty>
             <div class="text-center">
-              <FaIcon name="ant-design:plus-outlined" size="64px"/>
+              <FaIcon name="ant-design:file-outlined" size="64px"/>
               <p class="text-gray-500">暂无数据</p>
             </div>
           </template>
@@ -44,7 +45,7 @@
         </div>
         <el-tree
           ref="treeRoleRef"
-          v-show="currentMenu"
+          v-loading="!treeMenuData && !treeRoleData"
           :data="treeRoleData"
           default-expand-all
           node-key="roleCode"
@@ -57,19 +58,15 @@
               class="tree-node"
               @mouseenter="data.showButton = true"
               @mouseleave="data.showButton = false"
-              :class="{ 'authorized': checked(data) }"
             >
               <span>
-                <FaIcon
-                  :name="checked(data) ? 'ant-design:check-circle-filled' : 'ant-design:plus-outlined'"
-                  :class="{ 'text-green-500': checked(data), 'text-gray-400': !checked(data) }"
-                  size="4"
-                />
+                <el-checkbox :checked="true" v-if="checked(data)" disabled/>
+                <el-checkbox :checked="false" disabled v-else/>
                 {{ node.label }}
               </span>
               <span v-show="data.showButton" class="tree-node-buttons">
                 <el-button-group>
-                  <el-button size="small" type="text" @click="menuAuth(data)">
+                  <el-button size="small" :type="checked(data)? 'danger' : ''" link @click="menuAuth(data)">
                     {{ checked(data) ? '取消授权' : '授权' }}
                   </el-button>
                 </el-button-group>
@@ -78,12 +75,15 @@
           </template>
           <template #empty>
             <div class="text-center">
-              <FaIcon name="ant-design:plus-outlined" size="64px"/>
+              <FaIcon name="ant-design:file-outlined" size="64px"/>
               <p class="text-gray-500">暂无数据</p>
             </div>
           </template>
         </el-tree>
       </div>
+
+      <el-divider direction="vertical" class="h-auto"/>
+
     </div>
   </FaPageMain>
 </template>
@@ -124,23 +124,56 @@ const menuAuth = async (role: TreeRole) => {
   }
   if (checked(role)) {
     await adminApi.menuDeleteRoleAuth([currentMenu.value.id], role.roleCode)
-    currentMenu.value.roles = currentMenu.value.roles.filter(code => code !== role.roleCode)
+    await refresh()
+    if (treeMenuData.value) {
+      updateCurrentMenu(treeMenuData.value, currentMenu.value.id)
+    }
     toast.info('取消授权成功')
   } else {
     await adminApi.menuAddRoleAuth([currentMenu.value.id], role.roleCode)
+    await refresh()
     currentMenu.value.roles.push(role.roleCode)
     toast.info('授权成功')
   }
-  await refresh()
+}
+
+const updateCurrentMenu = (menus: Menu.MenuListRs[], menuId: number) => {
+  const menuTmp = [...menus]
+  while (menuTmp.length > 0) {
+    const menu = menuTmp.shift()
+    if (menu && menu.id === menuId) {
+      debugger
+      currentMenu.value = menu as Menu.MenuRoleListRs
+    } else if (menu && menu.children && menu.children.length > 0) {
+      menuTmp.push(...menu.children)
+    }
+  }
 }
 
 const checked = (role: TreeRole) => {
-  return !!(currentMenu.value && currentMenu.value.roles && currentMenu.value.roles.includes(role.roleCode));
+  if (!(currentMenu.value && currentMenu.value.roles)) {
+    return false
+  }
+  return roleChecked(role, currentMenu.value.roles)
+}
+
+const roleChecked = (role: TreeRole, roles: string[]): boolean => {
+  if (roles.includes(role.roleCode)) {
+    return true
+  }
+  if (!(role.children && role.children.length > 0)) {
+    return false
+  }
+
+  return role.children.some(child => roleChecked(child, roles))
 }
 
 const roleProps = {
   children: 'children',
-  label: 'roleName'
+  label: 'roleName',
+  disabled: () => {
+    return true
+  }
 }
 
 const menuProps = {
@@ -175,15 +208,5 @@ const menuProps = {
 
 ::v-deep(.el-tree-node__expand-icon) {
   display: none !important;
-}
-
-.tree-node.authorized {
-  background-color: #f0fff0; /* 浅绿色背景 */
-  font-weight: bold;
-  color: #1a73e8; /* 深蓝色文字 */
-}
-
-.tree-node.authorized .tree-node-buttons .el-button {
-  color: #d93025; /* 取消授权按钮红色 */
 }
 </style>
