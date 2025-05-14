@@ -45,8 +45,7 @@
         </div>
         <el-tree
           ref="treeRoleRef"
-          v-loading="!treeMenuData && !treeRoleData"
-          :data="treeRoleData"
+          :data="currentMenu ? treeRoleData : []"
           default-expand-all
           node-key="roleCode"
           :expand-on-click-node="false"
@@ -60,8 +59,7 @@
               @mouseleave="data.showButton = false"
             >
               <span>
-                <el-checkbox :checked="true" v-if="checked(data)" disabled/>
-                <el-checkbox :checked="false" disabled v-else/>
+                <el-checkbox :model-value="checked(data)" disabled/>
                 {{ node.label }}
               </span>
               <span v-show="data.showButton" class="tree-node-buttons">
@@ -76,7 +74,7 @@
           <template #empty>
             <div class="text-center">
               <FaIcon name="ant-design:file-outlined" size="64px"/>
-              <p class="text-gray-500">暂无数据</p>
+              <p class="text-gray-500">请先选择需要授权的菜单</p>
             </div>
           </template>
         </el-tree>

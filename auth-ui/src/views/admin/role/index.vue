@@ -104,7 +104,7 @@ const handleDrop = async (
   }
   // 如果是拖拽到某个节点的兄弟节点上
   if (dropType === 'after' || dropType === 'before') {
-    if(draggingNode.data.parentRoleCode !== dropNode.parent?.data.roleCode) {
+    if (draggingNode.data.parentRoleCode !== dropNode.parent?.data.roleCode) {
       await adminApi.roleUpdateHierarchy(draggingNode.data.roleCode, dropNode.parent?.data.roleCode)
       await refresh()
     }
