@@ -86,7 +86,7 @@ interface MenuTree extends Menu.MenuListRs {
 
 const currentMenu = ref<MenuTree>()
 
-const treeData = ref<MenuTree[]>()
+const treeData = ref<MenuTree[]>([])
 
 const showAddMenu = ref(false)
 const parentMenuId = ref<number>()
