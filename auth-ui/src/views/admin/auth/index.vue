@@ -142,7 +142,6 @@ const updateCurrentMenu = (menus: Menu.MenuListRs[], menuId: number) => {
   while (menuTmp.length > 0) {
     const menu = menuTmp.shift()
     if (menu && menu.id === menuId) {
-      debugger
       currentMenu.value = menu as Menu.MenuRoleListRs
     } else if (menu && menu.children && menu.children.length > 0) {
       menuTmp.push(...menu.children)

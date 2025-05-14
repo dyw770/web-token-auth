@@ -3,6 +3,7 @@ package cn.dyw.auth.db.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,5 +14,5 @@ public class MenuRoleDto extends MenuDto {
 
     @Getter
     @Setter
-    private List<String> roles;
+    private List<String> roles = new ArrayList<>();
 }
