@@ -70,14 +70,14 @@
       <el-table-column label="操作" align="center" width="320px">
         <template #default="{ row }">
           <el-button-group>
-            <el-button type="primary" size="small" @click="showEditUserDialog(row)">编辑</el-button>
             <el-button size="small" @click="showAuthDialog(row)">授权</el-button>
-            <el-button type="danger" size="small" @click="enableUser(row)">{{
-                row.enabled ? '禁用' : '启用'
-              }}
-            </el-button>
+            <el-button type="primary" size="small" @click="showEditUserDialog(row)">编辑</el-button>
             <el-button type="warning" size="small" @click="lockUser(row)">{{
                 row.accountNonLocked ? '锁定' : '解锁'
+              }}
+            </el-button>
+            <el-button type="danger" size="small" @click="enableUser(row)">{{
+                row.enabled ? '禁用' : '启用'
               }}
             </el-button>
           </el-button-group>

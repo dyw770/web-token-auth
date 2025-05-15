@@ -61,9 +61,11 @@
       <el-table-column prop="updateTime" label="更新时间" align="center"/>
       <el-table-column label="操作" align="center">
         <template #default="{ row }">
-          <el-button size="small">授权</el-button>
-          <el-button size="small" type="primary" @click="showEdit(row)">编辑</el-button>
-          <el-button size="small" type="danger" @click="deleteResource(row)">删除</el-button>
+          <el-button-group>
+            <el-button size="small">授权</el-button>
+            <el-button size="small" type="primary" @click="showEdit(row)">编辑</el-button>
+            <el-button size="small" type="danger" @click="deleteResource(row)">删除</el-button>
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
