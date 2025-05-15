@@ -12,16 +12,29 @@
         ancestor_menu_id,
         now(),
         now()
-        from (select distinct ancestor_menu_id
-        from sys_menu_hierarchy
-        <where>
-            <if test="menuIds != null and menuIds.size() > 0">
-                descendant_menu_id in
-                <foreach collection="menuIds" item="menuId" open="(" separator="," close=")">
-                    #{menuId}
-                </foreach>
-            </if>
-        </where>
+        from (
+            select distinct ancestor_menu_id
+            from sys_menu_hierarchy
+            <where>
+                <if test="menuIds != null and menuIds.size() > 0">
+                    descendant_menu_id in
+                    <foreach collection="menuIds" item="menuId" open="(" separator="," close=")">
+                        #{menuId}
+                    </foreach>
+                </if>
+            </where>
+            union
+            select distinct descendant_menu_id
+            from sys_menu_hierarchy
+            <where>
+                and depth > 0
+                <if test="menuIds != null and menuIds.size() > 0">
+                    and  ancestor_menu_id in
+                    <foreach collection="menuIds" item="menuId" open="(" separator="," close=")">
+                        #{menuId}
+                    </foreach>
+                </if>
+            </where>
         ) t1
     </insert>
 

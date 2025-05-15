@@ -118,7 +118,7 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
 
     @Override
     public void addMenuForRole(List<Integer> menuIds, String roleCode) {
-        // 增加角色菜单授权的同时会把该菜单的父级菜单都授权给该角色
+        // 增加角色菜单授权的同时会把该菜单的父级菜单和子菜单都授权给该角色
         getBaseMapper().insertMenuForRole(menuIds, roleCode);
     }
 
