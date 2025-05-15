@@ -381,6 +381,56 @@ namespace Resource {
      */
     updateTime: string;
   }
+
+  interface ResourceSaveRq {
+    /**
+     * API路径（必填，长度限制：1~128个字符）
+     */
+    apiPath: string;
+
+    /**
+     * 匹配类型
+     */
+    matchType: MatchType
+
+    /**
+     * API方法（必填，长度限制：1~20个字符）
+     */
+    apiMethod: ApiMethod;
+
+    /**
+     * 描述（必填，长度限制：1~128个字符）
+     */
+    description: string;
+  }
+
+  interface ResourceUpdateRq {
+
+    /**
+     * 主键ID
+     */
+    id: number;
+
+    /**
+     * API路径（必填，长度限制：1~128个字符）
+     */
+    apiPath: string;
+
+    /**
+     * 匹配类型
+     */
+    matchType: MatchType
+
+    /**
+     * API方法（必填，长度限制：1~20个字符）
+     */
+    apiMethod: ApiMethod;
+
+    /**
+     * 描述（必填，长度限制：1~128个字符）
+     */
+    description: string;
+  }
 }
 
 export { PageRq, User, Role, Menu, Resource}

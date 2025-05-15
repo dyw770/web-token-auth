@@ -1,4 +1,5 @@
 export enum ApiMethod {
+  ALL = 'ALL',
   GET = 'GET',
   POST = 'POST',
   PUT = 'PUT',
@@ -7,17 +8,17 @@ export enum ApiMethod {
   OPTIONS = 'OPTIONS',
   HEAD = 'HEAD',
   TRACE = 'TRACE',
-  ALL  = 'ALL'
 }
 
 export enum MatchType {
-  /**
-   * 正则
-   */
-  REGEX = 'REGEX',
 
   /**
    * ant
    */
-  ANT = 'ANT'
+  ANT = 'ANT',
+
+  /**
+   * 正则
+   */
+  REGEX = 'REGEX',
 }

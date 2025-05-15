@@ -36,7 +36,8 @@
   </el-dialog>
 </template>
 
-<script setup lang="ts">import {ref} from 'vue'
+<script setup lang="ts">
+import {ref} from 'vue'
 import type {Menu} from '#/api'
 import adminApi from '@/api/modules/admin'
 import {toast} from "vue-sonner";
@@ -93,11 +94,11 @@ const submitAddMenu = async () => {
     await formRef.value.validate()
     // 发起请求
     await adminApi.menuAdd(addMenu.value, parentMenuId)
+    toast.success('新增菜单成功')
     // 成功后关闭弹窗并刷新列表等操作
     hideDialog()
     emit('success')
   } catch (error) {
-    console.log(error)
     toast.error('创建菜单失败，请检查输入')
   }
 }

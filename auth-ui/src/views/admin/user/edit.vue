@@ -31,7 +31,6 @@
 </template>
 
 <script setup lang="ts">
-// 表单验证规则
 import type {User} from "#/api";
 import adminApi from "@/api/modules/admin.ts";
 import {toast} from "vue-sonner";

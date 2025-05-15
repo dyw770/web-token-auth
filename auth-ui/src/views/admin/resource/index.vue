@@ -4,11 +4,11 @@
     <!-- 搜索区域 -->
     <div class="p-4">
       <el-form :model="searchRq" label-width="80px" inline @submit.prevent="refresh">
-        <el-form-item label="API路径">
-          <el-input v-model="searchRq.apiPath" placeholder="请输入API路径" clearable/>
+        <el-form-item label="请求路径">
+          <el-input v-model="searchRq.apiPath" placeholder="请输入请求路径" clearable/>
         </el-form-item>
 
-        <el-form-item label="API方法">
+        <el-form-item label="请求方法">
           <el-select v-model="searchRq.apiMethod" placeholder="请选择请求方法" clearable class="w-160px">
             <el-option
               v-for="method in ApiMethod"
@@ -36,16 +36,16 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary">新增资源</el-button>
+          <el-button type="primary" @click="showAddDialog = true">新增资源</el-button>
         </el-form-item>
       </el-form>
     </div>
 
     <!-- 数据展示 -->
-    <el-table :data="resourceList" border style="width: 100%">
-
-      <el-table-column prop="apiPath" label="API路径" align="center"/>
-      <el-table-column prop="apiMethod" label="API方法" align="center"/>
+    <el-table :data="resourceList" border table-layout="auto" style="width: 100%" height="600px">
+      <el-table-column prop="id" label="资源ID" align="center"/>
+      <el-table-column prop="apiPath" label="请求路径" align="center"/>
+      <el-table-column prop="apiMethod" label="请求方法" align="center"/>
       <el-table-column prop="description" label="描述" align="center"/>
       <el-table-column prop="enable" label="是否启用" align="center">
         <template #default="{ row }">
@@ -61,8 +61,9 @@
       <el-table-column prop="updateTime" label="更新时间" align="center"/>
       <el-table-column label="操作" align="center">
         <template #default="{ row }">
-          <el-button size="small" type="primary">编辑</el-button>
-          <el-button size="small" type="danger">删除</el-button>
+          <el-button size="small">授权</el-button>
+          <el-button size="small" type="primary" @click="showEdit(row)">编辑</el-button>
+          <el-button size="small" type="danger" @click="deleteResource(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,6 +73,9 @@
                    :page-sizes="[10, 50, 100]"
                    @change="refresh"
                    class="mt-5"/>
+
+    <add v-model="showAddDialog" @success="refresh"/>
+    <edit :resource="editResource" v-model="showEditDialog" @success="refresh" v-if="showEditDialog"/>
   </FaPageMain>
 </template>
 
@@ -81,11 +85,24 @@ import adminApi from '@/api/modules/admin.ts'
 import type {Resource} from '#/api'
 import {ApiMethod, MatchType} from "#/enums.ts"
 import {ElMessageBox} from "element-plus";
+import Add from "@/views/admin/resource/add.vue";
+import {toast} from "vue-sonner";
+import Edit from "@/views/admin/resource/edit.vue";
+
+const showAddDialog = ref(false)
+const showEditDialog = ref(false)
+
+const editResource = ref<Resource.ResourceListRs>()
 
 const searchRq = ref<Resource.ResourceSearchRq>({
   page: 1,
   size: 10
 })
+
+const showEdit = (resource: Resource.ResourceListRs) => {
+  editResource.value = resource
+  showEditDialog.value = true
+}
 
 const total = ref(0)
 
@@ -97,6 +114,21 @@ const resetSearch = () => {
   searchRq.value.description = undefined
   searchRq.value.matchType = undefined
   refresh()
+}
+
+const deleteResource = async (resource: Resource.ResourceListRs) => {
+  await  ElMessageBox.confirm(
+    `确认删除系统API资源?`,
+    `删除统API资源`,
+    {
+      distinguishCancelAndClose: true,
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+    }
+  )
+  await adminApi.resourceDelete(resource.id)
+  toast.success("删除系统API资源成功")
+  await refresh()
 }
 
 const enableResource = async (resource: Resource.ResourceListRs) => {
