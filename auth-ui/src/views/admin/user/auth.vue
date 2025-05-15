@@ -43,7 +43,6 @@ const treeRef = ref<TreeInstance>()
 
 const treeData = ref<Role.RoleListRs[]>()
 
-
 const getRoleList = async () => {
   const {data} = await adminApi.roleList()
   treeData.value = data

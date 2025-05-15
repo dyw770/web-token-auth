@@ -63,7 +63,7 @@
       </el-table-column>
       <el-table-column prop="roles" label="角色" align="center">
         <template #default="{ row }">
-          <el-tag v-for="role in row.roles" type="primary">{{role.roleName}}</el-tag>
+          <el-tag v-for="role in row.roles" type="primary">{{ role.roleName }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" align="center"/>
@@ -72,8 +72,14 @@
           <el-button-group>
             <el-button type="primary" size="small" @click="showEditUserDialog(row)">编辑</el-button>
             <el-button size="small" @click="showAuthDialog(row)">授权</el-button>
-            <el-button type="danger" size="small" @click="enableUser(row)">{{ row.enabled ? '禁用' : '启用' }}</el-button>
-            <el-button type="warning" size="small" @click="lockUser(row)">{{ row.accountNonLocked ? '锁定' : '解锁' }}</el-button>
+            <el-button type="danger" size="small" @click="enableUser(row)">{{
+                row.enabled ? '禁用' : '启用'
+              }}
+            </el-button>
+            <el-button type="warning" size="small" @click="lockUser(row)">{{
+                row.accountNonLocked ? '锁定' : '解锁'
+              }}
+            </el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -86,8 +92,8 @@
                    class="mt-5"/>
 
     <Add v-model="addUserDialog" @success="refresh"/>
-    <Edit v-model="editUserDialog" :user="editUser" @success="refresh" v-if="editUserDialog"/>
-    <Auth :user="authUser" v-model="authDialog" @success="refresh" v-if="authDialog" />
+    <Edit v-model="editUserDialog" :user="editUser" @success="refresh"/>
+    <Auth :user="authUser" v-model="authDialog" @success="refresh" v-if="authDialog"/>
   </FaPageMain>
 </template>
 

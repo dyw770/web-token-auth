@@ -84,6 +84,12 @@ const hideEditUserDialog = () => {
 
 const userEditRq = ref<User.UserEditRq>(defaultUserEditRq())
 
+watch(() => user, (newVal) => {
+  if (newVal) {
+    userEditRq.value = {...newVal}
+  }
+})
+
 // 提交新增用户
 const submitEditUser = async () => {
   try {

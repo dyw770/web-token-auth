@@ -3,7 +3,7 @@
     <el-form ref="formRef" label-width="100px" :model="editResource" :rules="rules">
       <!-- API路径 -->
       <el-form-item label="API路径" prop="apiPath">
-        <el-input v-model="editResource.apiPath" />
+        <el-input v-model="editResource.apiPath"/>
       </el-form-item>
 
       <!-- 匹配类型 -->
@@ -32,7 +32,7 @@
 
       <!-- 描述 -->
       <el-form-item label="描述" prop="description">
-        <el-input v-model="editResource.description" type="textarea" :rows="3" />
+        <el-input v-model="editResource.description" type="textarea" :rows="3"/>
       </el-form-item>
 
       <!-- 操作按钮 -->
@@ -52,7 +52,7 @@ import adminApi from '@/api/modules/admin'
 import {toast} from 'vue-sonner'
 
 // 接收 show 控制显示
-const show = defineModel({ required: true, type: Boolean })
+const show = defineModel({required: true, type: Boolean})
 
 const {resource} = defineProps<{ resource: Resource.ResourceListRs | undefined }>()
 
@@ -66,11 +66,11 @@ const formRef = ref()
 
 const defaultResource = (): Resource.ResourceUpdateRq => {
   return {
-    id: resource?.id?? 0,
-    apiPath: resource?.apiPath?? '',
-    matchType: resource?.matchType?? MatchType.ANT,
-    apiMethod: resource?.apiMethod as ApiMethod?? ApiMethod.ALL,
-    description: resource?.description?? ''
+    id: resource?.id ?? 0,
+    apiPath: resource?.apiPath ?? '',
+    matchType: resource?.matchType ?? MatchType.ANT,
+    apiMethod: resource?.apiMethod as ApiMethod ?? ApiMethod.ALL,
+    description: resource?.description ?? ''
   }
 }
 
@@ -81,20 +81,32 @@ const editResource = ref<Resource.ResourceUpdateRq>(defaultResource())
 // 表单验证规则
 const rules = {
   apiPath: [
-    { required: true, message: 'API路径不能为空', trigger: 'blur' },
-    { min: 1, max: 128, message: '长度应在1~128个字符之间', trigger: 'blur' }
+    {required: true, message: 'API路径不能为空', trigger: 'blur'},
+    {min: 1, max: 128, message: '长度应在1~128个字符之间', trigger: 'blur'}
   ],
   matchType: [
-    { required: true, message: '请选择匹配类型', trigger: 'change' }
+    {required: true, message: '请选择匹配类型', trigger: 'change'}
   ],
   apiMethod: [
-    { required: true, message: '请选择API方法', trigger: 'change' }
+    {required: true, message: '请选择API方法', trigger: 'change'}
   ],
   description: [
-    { required: true, message: '描述不能为空', trigger: 'blur' },
-    { min: 1, max: 128, message: '长度应在1~128个字符之间', trigger: 'blur' }
+    {required: true, message: '描述不能为空', trigger: 'blur'},
+    {min: 1, max: 128, message: '长度应在1~128个字符之间', trigger: 'blur'}
   ]
 }
+
+watch(() => resource, (newVal) => {
+  if (newVal) {
+    editResource.value = {
+      id: newVal.id,
+      apiPath: newVal.apiPath,
+      matchType: newVal.matchType,
+      apiMethod: newVal.apiMethod as ApiMethod,
+      description: newVal.description
+    }
+  }
+})
 
 // 关闭弹窗并重置表单
 const hideDialog = () => {

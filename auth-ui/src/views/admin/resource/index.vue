@@ -75,7 +75,7 @@
                    class="mt-5"/>
 
     <add v-model="showAddDialog" @success="refresh"/>
-    <edit :resource="editResource" v-model="showEditDialog" @success="refresh" v-if="showEditDialog"/>
+    <edit :resource="editResource" v-model="showEditDialog" @success="refresh"/>
   </FaPageMain>
 </template>
 
@@ -117,7 +117,7 @@ const resetSearch = () => {
 }
 
 const deleteResource = async (resource: Resource.ResourceListRs) => {
-  await  ElMessageBox.confirm(
+  await ElMessageBox.confirm(
     `确认删除系统API资源?`,
     `删除统API资源`,
     {
