@@ -17,7 +17,6 @@ const useMenuStore = defineStore(
 
     const filesystemMenusRaw = ref<Menu.recordMainRaw[]>([])
     const actived = ref(0)
-    const menuPaths = ref<string[]>([])
 
     // 路由匹配器
     const routesMatcher = ref<RouterMatcher>()
@@ -234,7 +233,6 @@ const useMenuStore = defineStore(
     return {
       actived,
       allMenus,
-      menuPaths,
       sidebarMenus,
       sidebarMenusFirstDeepestPath,
       sidebarMenusHasOnlyMenu,
