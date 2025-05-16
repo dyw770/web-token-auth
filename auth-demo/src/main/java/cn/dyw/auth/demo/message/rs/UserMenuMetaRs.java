@@ -15,5 +15,7 @@ public class UserMenuMetaRs {
     
     private String icon;
     
+    private boolean menu;
+    
     private int order;
 }

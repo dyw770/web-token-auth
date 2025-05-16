@@ -78,6 +78,7 @@
                menu_router,
                menu_icon,
                menu_order,
+               nav_show,
                create_time,
                update_time,
                smh.ancestor_menu_id as parent_menu_id
@@ -97,6 +98,7 @@
                menu_router,
                menu_icon,
                menu_order,
+               nav_show,
                create_time,
                update_time,
                smh.ancestor_menu_id as parent_menu_id

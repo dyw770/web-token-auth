@@ -25,8 +25,12 @@
 
         <el-form-item label="匹配类型">
           <el-select v-model="searchRq.matchType" placeholder="请选择匹配类型" clearable class="w-120px">
-            <el-option label="正则" :value="MatchType.REGEX"/>
-            <el-option label="ANT" :value="MatchType.ANT"/>
+            <el-option
+              v-for="type in MatchType"
+              :key="type"
+              :label="type"
+              :value="type"
+            />
           </el-select>
         </el-form-item>
 
@@ -62,7 +66,7 @@
       <el-table-column label="操作" align="center">
         <template #default="{ row }">
           <el-button-group>
-            <el-button size="small">授权</el-button>
+            <el-button size="small" @click="authResource(row)">授权</el-button>
             <el-button size="small" type="primary" @click="showEdit(row)">编辑</el-button>
             <el-button size="small" type="danger" @click="deleteResource(row)">删除</el-button>
           </el-button-group>
@@ -90,6 +94,11 @@ import {ElMessageBox} from "element-plus";
 import Add from "@/views/admin/resource/add.vue";
 import {toast} from "vue-sonner";
 import Edit from "@/views/admin/resource/edit.vue";
+import {useRouter} from 'vue-router'
+
+defineOptions({
+  name: 'AdminResourceIndex',
+})
 
 const showAddDialog = ref(false)
 const showEditDialog = ref(false)
@@ -135,6 +144,17 @@ const deleteResource = async (resource: Resource.ResourceListRs) => {
 
 const enableResource = async (resource: Resource.ResourceListRs) => {
   await adminApi.resourceEnable(resource.enable, resource.id)
+}
+
+const router = useRouter()
+
+const authResource = (resource: Resource.ResourceListRs) => {
+  router.push({
+    name: 'adminResourceAuth',
+    params: {
+      id: resource.id
+    }
+  })
 }
 
 const confirmEnableResource = (resource: Resource.ResourceListRs) => {

@@ -7,11 +7,8 @@ function Layout() {
 const routes: RouteRecordRaw = {
   path: '/admin',
   component: Layout,
-  name: 'admin',
-  redirect: '/admin/user',
   meta: {
-    title: '管理',
-    icon: 'ant-design:user-outline',
+    breadcrumb: false,
   },
   children: [
     {
@@ -64,12 +61,32 @@ const routes: RouteRecordRaw = {
     },
     {
       path: '/admin/resource',
-      component: () => import('@/views/admin/resource/index.vue'),
-      name: 'adminResource',
+      component: Layout,
       meta: {
-        title: 'API资源管理',
-        icon: 'ant-design:api-outlined',
+        breadcrumb: false,
       },
+      children: [
+        {
+          path: '',
+          component: () => import('@/views/admin/resource/index.vue'),
+          name: 'adminResource',
+          meta: {
+            title: 'API资源管理',
+            icon: 'ant-design:api-outlined',
+            cache: 'adminResourceAuth'
+          },
+        },
+        {
+          path: '/admin/resource/auth/:id(\\d+)',
+          component: () => import('@/views/admin/resource/auth.vue'),
+          name: 'adminResourceAuth',
+          meta: {
+            title: 'API资源授权',
+            icon: 'ant-design:api-outlined',
+            activeMenu: '/admin/resource',
+          }
+        }
+      ]
     },
   ]
 }

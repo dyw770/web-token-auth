@@ -100,13 +100,17 @@ public class UserController {
 
         List<UserMenuRs> menuRsList = menuList.stream()
                 .map(menuDto -> {
+                    
                     UserMenuRs menuRs = new UserMenuRs();
                     menuRs.setPath(menuDto.getMenuRouter());
                     menuRs.setMenuId(menuDto.getId());
+                    
                     UserMenuMetaRs metaRs = new UserMenuMetaRs();
                     metaRs.setTitle(menuDto.getMenuName());
                     metaRs.setIcon(menuDto.getMenuIcon());
                     metaRs.setOrder(menuDto.getMenuOrder());
+                    metaRs.setMenu(menuDto.getNavShow());
+                    
                     menuRs.setMeta(metaRs);
                     return menuRs;
                 })
