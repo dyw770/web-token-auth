@@ -1,4 +1,4 @@
-package cn.dyw.auth.demo.message.rs;
+package cn.dyw.auth.db.message.rs;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

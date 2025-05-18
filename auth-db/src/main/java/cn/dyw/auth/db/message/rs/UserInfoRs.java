@@ -1,4 +1,4 @@
-package cn.dyw.auth.demo.message.rs;
+package cn.dyw.auth.db.message.rs;
 
 import lombok.Data;
 

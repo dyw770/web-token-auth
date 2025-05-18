@@ -1,4 +1,4 @@
-package cn.dyw.auth.demo.message.rq;
+package cn.dyw.auth.db.message.rq;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
