@@ -1,14 +1,17 @@
 package cn.dyw.auth.demo.controller;
 
 import cn.dyw.auth.annotation.SystemEvent;
+import cn.dyw.auth.db.domain.SysUser;
 import cn.dyw.auth.db.model.MenuDto;
 import cn.dyw.auth.db.model.UserDto;
 import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.db.service.ISysUserService;
 import cn.dyw.auth.demo.message.rq.LoginRq;
+import cn.dyw.auth.demo.message.rq.UserUpdatePasswordRq;
 import cn.dyw.auth.demo.message.rs.UserInfoRs;
 import cn.dyw.auth.demo.message.rs.UserMenuMetaRs;
 import cn.dyw.auth.demo.message.rs.UserMenuRs;
+import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
 import cn.dyw.auth.security.LoginLogoutHandler;
 import cn.dyw.auth.security.TokenAuthenticationToken;
@@ -19,9 +22,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +46,16 @@ public class UserController {
 
     private final ISysMenusService menusService;
 
-    public UserController(LoginLogoutHandler loginLogoutHandler, ISysUserService userService, ISysMenusService menusService) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserController(LoginLogoutHandler loginLogoutHandler,
+                          ISysUserService userService,
+                          ISysMenusService menusService,
+                          PasswordEncoder passwordEncoder) {
         this.loginLogoutHandler = loginLogoutHandler;
         this.userService = userService;
         this.menusService = menusService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -88,6 +99,22 @@ public class UserController {
         return Result.createSuccess(rs);
     }
 
+    @PostMapping("/update/password")
+    public Result<Void> updatePassword(@AuthenticationPrincipal User user,
+                                       @RequestBody @Validated UserUpdatePasswordRq rq) {
+        SysUser sysUser = userService.getById(user.getUsername());
+        if (ObjectUtils.isNotEmpty(sysUser) && passwordEncoder.matches(rq.getPassword(), sysUser.getPassword())) {
+            userService.lambdaUpdate()
+                    .eq(SysUser::getUsername, user.getUsername())
+                    .set(SysUser::getUpdateTime, LocalDateTime.now())
+                    .set(SysUser::getPassword, passwordEncoder.encode(rq.getNewPassword()))
+                    .update();
+            return Result.createSuccess();
+        } else {
+            return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "旧密码错误");
+        }
+    }
+
     /**
      * 查询用户的菜单
      *
@@ -100,17 +127,17 @@ public class UserController {
 
         List<UserMenuRs> menuRsList = menuList.stream()
                 .map(menuDto -> {
-                    
+
                     UserMenuRs menuRs = new UserMenuRs();
                     menuRs.setPath(menuDto.getMenuRouter());
                     menuRs.setMenuId(menuDto.getId());
-                    
+
                     UserMenuMetaRs metaRs = new UserMenuMetaRs();
                     metaRs.setTitle(menuDto.getMenuName());
                     metaRs.setIcon(menuDto.getMenuIcon());
                     metaRs.setOrder(menuDto.getMenuOrder());
                     metaRs.setMenu(menuDto.getNavShow());
-                    
+
                     menuRs.setMeta(metaRs);
                     return menuRs;
                 })

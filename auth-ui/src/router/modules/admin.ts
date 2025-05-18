@@ -88,6 +88,15 @@ const routes: RouteRecordRaw = {
         }
       ]
     },
+    {
+      path: '/admin/test',
+      component: () => import('@/views/simple/index.vue'),
+      name: 'adminTest',
+      meta: {
+        title: '资源授权测试',
+        icon: 'ant-design:user-outline',
+      },
+    },
   ]
 }
 

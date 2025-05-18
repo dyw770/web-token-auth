@@ -67,6 +67,8 @@ export default {
 
   resourceList: (searchRq: Resource.ResourceSearchRq) => api.post('/admin/resource/list', searchRq),
 
+  resourceGet: (resourceId: number) => api.get(`/admin/resource/${resourceId}`),
+
   resourceEnable: (enable: boolean, resourceId: number) => api.get(`/admin/resource/enable/${resourceId}/${enable}`),
 
   resourceSava: (saveRq: Resource.ResourceSaveRq) => api.post('/admin/resource/save', saveRq),
@@ -74,4 +76,18 @@ export default {
   resourceDelete: (resourceId: number) => api.delete(`/admin/resource/delete/${resourceId}`),
 
   resourceUpdate: (updateRq: Resource.ResourceUpdateRq) => api.post('/admin/resource/update', updateRq),
+
+  resourceAuthList: (resourceId: number) => api.get(`/admin/resource/auth/${resourceId}`),
+
+  resourceAddAuth: (authRq: Resource.ResourceAuthAddRq) => api.post(`/admin/resource/auth/add`, authRq),
+
+  resourceUpdateAuth: (authRq: Resource.ResourceAuthUpdateRq) => api.post(`/admin/resource/auth/update`, authRq),
+
+  resourceDeleteAuth: (authId: number) => api.delete(`/admin/resource/auth/delete/${authId}`),
+
+  resourceAuthRefresh: () => api.get('/admin/resource/auth/refresh'),
+
+  testPublicApi: () => api.get('/test/static'),
+
+  testPrivateApi: () => api.get('/test/info'),
 }

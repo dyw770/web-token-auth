@@ -60,13 +60,13 @@
               @mouseenter="data.showButton = true"
               @mouseleave="data.showButton = false"
             >
-              <span>
-                <el-checkbox :model-value="checked(data)" disabled/>
+              <span class="justify-center">
+                <FaIcon :name="checked(data)? 'ant-design:check-circle-filled' : 'ant-design:close-circle-filled'" size="4"/>
                 {{ node.label }}
               </span>
               <span v-show="data.showButton" class="tree-node-buttons">
                 <el-button-group>
-                  <el-button size="small" :type="checked(data)? 'danger' : ''" link @click="menuAuth(data)">
+                  <el-button size="small" :type="checked(data)? 'danger' : 'success'" @click="menuAuth(data)">
                     {{ checked(data) ? '取消授权' : '授权' }}
                   </el-button>
                 </el-button-group>

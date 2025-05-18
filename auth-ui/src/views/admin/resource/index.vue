@@ -41,12 +41,13 @@
 
         <el-form-item>
           <el-button type="primary" @click="showAddDialog = true">新增资源</el-button>
+          <el-button type="warning" @click="refreshAuth">刷新资源授权</el-button>
         </el-form-item>
       </el-form>
     </div>
 
     <!-- 数据展示 -->
-    <el-table :data="resourceList" border table-layout="auto" style="width: 100%" height="600px">
+    <el-table :data="resourceList" border table-layout="auto" style="width: 100%">
       <el-table-column prop="id" label="资源ID" align="center"/>
       <el-table-column prop="apiPath" label="请求路径" align="center"/>
       <el-table-column prop="apiMethod" label="请求方法" align="center"/>
@@ -155,6 +156,25 @@ const authResource = (resource: Resource.ResourceListRs) => {
       id: resource.id
     }
   })
+}
+
+const refreshAuth = async () => {
+  try {
+    await ElMessageBox.confirm(
+      `确认刷新资源授权?`,
+      `刷新资源授权`,
+      {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+      }
+    )
+
+    await adminApi.resourceAuthRefresh()
+    toast.success("系统资源授权刷新成功")
+  } catch (err) {
+    toast.error("系统资源授权刷新失败")
+  }
 }
 
 const confirmEnableResource = (resource: Resource.ResourceListRs) => {

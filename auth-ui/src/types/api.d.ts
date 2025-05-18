@@ -1,4 +1,4 @@
-import {ApiMethod, MatchType} from './enums.ts'
+import {ApiMethod, AuthType, MatchType} from './enums.ts'
 
 interface OrderRq {
   /**
@@ -391,7 +391,7 @@ namespace Resource {
     /**
      * 匹配类型
      */
-    matchType: MatchType
+    matchType: MatchType;
 
     /**
      * API方法（必填，长度限制：1~20个字符）
@@ -419,7 +419,7 @@ namespace Resource {
     /**
      * 匹配类型
      */
-    matchType: MatchType
+    matchType: MatchType;
 
     /**
      * API方法（必填，长度限制：1~20个字符）
@@ -431,6 +431,74 @@ namespace Resource {
      */
     description: string;
   }
+
+  interface ResourceAuthRs {
+
+    /**
+     * 授权ID，对应数据库中的 id 字段。
+     */
+    authId: number
+
+    /**
+     * API资源ID，对应数据库中的 apiResourceId 字段。
+     * 可为 null。
+     */
+    apiResourceId: number;
+
+    /**
+     * 授权类型，参考 AuthType 枚举。
+     */
+    authType: AuthType;
+
+    /**
+     * 授权对象，例如角色名、IP地址等。
+     * 可为 null。
+     */
+    authObject: string;
+
+    /**
+     * 授权时间，ISO 8601 格式字符串。
+     * 示例：2025-04-24T10:00:00
+     * 可为 null。
+     */
+    authTime: string;
+
+    /**
+     * 授权过期时间，ISO 8601 格式字符串。
+     * 示例：2025-04-24T18:00:00
+     * 可为 null。
+     */
+    expiredTime: string;
+  }
+
+  interface ResourceAuth {
+
+    /**
+     * 授权类型
+     */
+    authType: AuthType;
+
+    /**
+     * 授权对象
+     */
+    authObject: string;
+
+  }
+
+  interface ResourceAuthAddRq extends ResourceAuth{
+
+    /**
+     * API资源ID，对应数据库中的 apiResourceId 字段。
+     */
+    apiResourceId: number;
+  }
+
+  interface ResourceAuthUpdateRq extends ResourceAuthAddRq {
+    /**
+     * 授权ID，对应数据库中的 id 字段。
+     */
+    authId: number
+  }
 }
 
-export { PageRq, User, Role, Menu, Resource}
+export {PageRq, User, Role, Menu, Resource}

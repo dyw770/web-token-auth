@@ -1,5 +1,5 @@
-import type { Tabbar } from '#/global'
-import type { RouteLocationNormalized } from 'vue-router'
+import type {Tabbar} from '#/global'
+import type {RouteLocationNormalized, RouteMeta} from 'vue-router'
 import useKeepAliveStore from './keepAlive'
 
 const useTabbarStore = defineStore(
@@ -11,7 +11,23 @@ const useTabbarStore = defineStore(
     const list = ref<Tabbar.recordRaw[]>([])
     const leaveIndex = ref(-1)
 
-    // 添加标签页
+    function addItem(tabId: string, route: RouteLocationNormalized, meta: RouteMeta | undefined, names: string[]) {
+      const listItem = {
+        tabId,
+        fullPath: route.fullPath,
+        title: typeof meta?.title === 'function' ? meta.title() : meta?.title,
+        icon: meta?.icon ?? route.matched?.findLast(item => item.meta?.icon)?.meta?.icon,
+        name: names,
+      }
+      if (leaveIndex.value >= 0) {
+        list.value.splice(leaveIndex.value + 1, 0, listItem)
+        leaveIndex.value = -1
+      } else {
+        list.value.push(listItem)
+      }
+    }
+
+// 添加标签页
     async function add(route: RouteLocationNormalized) {
       const names: string[] = []
       route.matched.forEach((v, i) => {
@@ -28,23 +44,50 @@ const useTabbarStore = defineStore(
         })
         // 新增标签页
         if (!findTab) {
-          const listItem = {
-            tabId,
-            fullPath: route.fullPath,
-            title: typeof meta?.title === 'function' ? meta.title() : meta?.title,
-            icon: meta?.icon ?? route.matched?.findLast(item => item.meta?.icon)?.meta?.icon,
-            name: names,
-          }
-          if (leaveIndex.value >= 0) {
-            list.value.splice(leaveIndex.value + 1, 0, listItem)
-            leaveIndex.value = -1
-          }
-          else {
-            list.value.push(listItem)
+          // 如果配置了activeMenu就先按照activeMenu进行查找
+          if (meta?.activeMenu) {
+            const activeMenu = list.value.find((item) => {
+              return item.tabId === meta?.activeMenu
+            })
+            if (activeMenu) {
+              replace(activeMenu.tabId, {
+                tabId,
+                fullPath: route.fullPath,
+                title: typeof meta?.title === 'function' ? meta.title() : meta?.title,
+                icon: meta?.icon ?? route.matched?.findLast(item => item.meta?.icon)?.meta?.icon,
+                name: names,
+                originalId: activeMenu.tabId,
+              })
+            } else {
+              addItem(tabId, route, meta, names);
+            }
+          } else {
+            const originalTab = list.value.find((item) => {
+              return item.originalId === tabId
+            })
+            if (originalTab) {
+              replace(originalTab.tabId, {
+                tabId,
+                fullPath: route.fullPath,
+                title: typeof meta?.title === 'function' ? meta.title() : meta?.title,
+                icon: meta?.icon ?? route.matched?.findLast(item => item.meta?.icon)?.meta?.icon,
+                name: names
+              })
+            } else {
+              addItem(tabId, route, meta, names);
+            }
           }
         }
       }
     }
+
+    function replace(tabId: Tabbar.recordRaw['tabId'], target: Tabbar.recordRaw) {
+      const index = list.value.findIndex(item => item.tabId === tabId)
+      if (index !== -1) {
+        list.value.splice(index, 1, target)
+      }
+    }
+
     // 删除指定标签页
     function remove(tabId: Tabbar.recordRaw['tabId']) {
       const keepName: string[] = []
@@ -52,8 +95,7 @@ const useTabbarStore = defineStore(
       list.value.forEach((v) => {
         if (v.tabId === tabId) {
           removeName.push(...v.name)
-        }
-        else {
+        } else {
           keepName.push(...v.name)
         }
       })
@@ -69,6 +111,7 @@ const useTabbarStore = defineStore(
         return item.tabId !== tabId
       })
     }
+
     // 删除两侧标签页
     function removeOtherSide(tabId: Tabbar.recordRaw['tabId']) {
       const keepName: string[] = []
@@ -76,8 +119,7 @@ const useTabbarStore = defineStore(
       list.value.forEach((v) => {
         if (v.tabId !== tabId) {
           removeName.push(...v.name)
-        }
-        else {
+        } else {
           keepName.push(...v.name)
         }
       })
@@ -92,6 +134,7 @@ const useTabbarStore = defineStore(
         return item.tabId === tabId
       })
     }
+
     // 删除左侧标签页
     function removeLeftSide(tabId: Tabbar.recordRaw['tabId']) {
       // 查找指定路由对应在标签页列表里的下标
@@ -101,8 +144,7 @@ const useTabbarStore = defineStore(
       list.value.forEach((v, i) => {
         if (i < index) {
           removeName.push(...v.name)
-        }
-        else {
+        } else {
           keepName.push(...v.name)
         }
       })
@@ -117,6 +159,7 @@ const useTabbarStore = defineStore(
         return i >= index
       })
     }
+
     // 删除右侧标签页
     function removeRightSide(tabId: Tabbar.recordRaw['tabId']) {
       // 查找指定路由对应在标签页列表里的下标
@@ -126,8 +169,7 @@ const useTabbarStore = defineStore(
       list.value.forEach((v, i) => {
         if (i > index) {
           removeName.push(...v.name)
-        }
-        else {
+        } else {
           keepName.push(...v.name)
         }
       })
@@ -142,6 +184,7 @@ const useTabbarStore = defineStore(
         return i <= index
       })
     }
+
     // 清空所有标签页，登出的时候需要清空
     function clean() {
       list.value = []

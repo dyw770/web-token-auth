@@ -1,5 +1,7 @@
 package cn.dyw.auth.db.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,12 @@ import java.time.LocalDateTime;
 @TableName("sys_api_resource_auth")
 public class SysApiResourceAuth {
 
+    /**
+     * 授权ID
+     */
+    @TableId(type = IdType.AUTO)
+    private Integer authId;
+    
     /**
      * api资源id
      */

@@ -96,13 +96,13 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
     private AuthorizationDecision doCheck(Supplier<Authentication> authentication, RequestAuthorizationContext requestContext) {
         for (ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> mapping : this.mappings) {
 
-            RequestMatcher matcher = mapping.getRequestMatcher();
+            RequestMatcher matcher = mapping.requestMatcher();
             RequestMatcher.MatchResult matchResult = matcher.matcher(requestContext.getRequest());
             if (matchResult.isMatch()) {
                 if (log.isDebugEnabled()) {
-                    log.debug("请求 {} 成功匹配, id: {}, path: {}, method: {}, type: {}", RequestUtils.requestLine(requestContext.getRequest()), mapping.getDto().getId(), mapping.getDto().getApiPath(), mapping.getDto().getApiMethod(), mapping.getDto().getMatchType());
+                    log.debug("请求 {} 成功匹配, id: {}, path: {}, method: {}, type: {}", RequestUtils.requestLine(requestContext.getRequest()), mapping.dto().getId(), mapping.dto().getApiPath(), mapping.dto().getApiMethod(), mapping.dto().getMatchType());
                 }
-                AuthorizationManager<RequestAuthorizationContext> manager = mapping.getEntry();
+                AuthorizationManager<RequestAuthorizationContext> manager = mapping.entry();
 
                 AuthorizationDecision check = manager.check(authentication, requestContext);
                 if (log.isDebugEnabled()) {

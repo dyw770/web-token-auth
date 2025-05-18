@@ -18,7 +18,7 @@ const form = useForm({
   validationSchema: toTypedSchema(
     z.object({
       password: z.string().min(1, '请输入原密码'),
-      newPassword: z.string().min(1, '请输入新密码').min(6, '密码长度为6到18位').max(18, '密码长度为6到18位'),
+      newPassword: z.string().min(1, '请输入新密码').min(6, '密码长度为6到16位').max(16, '密码长度为6到16位'),
       checkPassword: z.string().min(1, '请确认新密码'),
     }).refine(data => data.newPassword === data.checkPassword, {
       message: '两次输入的密码不一致',
@@ -34,7 +34,7 @@ const form = useForm({
 const onSubmit = form.handleSubmit((values) => {
   loading.value = true
   userStore.editPassword(values).then(async () => {
-    toast.success('模拟修改成功，请重新登录')
+    toast.success('密码修改成功，请重新登录')
     userStore.logout()
   }).finally(() => {
     loading.value = false

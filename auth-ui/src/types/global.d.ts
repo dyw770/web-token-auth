@@ -314,6 +314,7 @@ declare namespace Tabbar {
     fullPath: string
     title?: string | (() => string)
     icon?: string
+    originalId?: string
     name: string[]
   }
 }

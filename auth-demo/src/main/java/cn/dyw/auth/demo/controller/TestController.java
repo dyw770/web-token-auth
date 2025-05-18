@@ -27,10 +27,17 @@ public class TestController {
      * @param user 登陆信息
      * @return 结果
      */
-    @GetMapping("/login")
-    public Result<UserDetails> login(@AuthenticationPrincipal UserDetails user) {
+    @GetMapping("/info")
+    public Result<UserDetails> info(@AuthenticationPrincipal UserDetails user) {
         return Result.createSuccess("当前登陆", user);
     }
-    
 
+    /**
+     * 测试
+     * @return 结果
+     */
+    @GetMapping("/static")
+    public Result<String> publicApi() {
+        return Result.createSuccess("访问成功");
+    }
 }
