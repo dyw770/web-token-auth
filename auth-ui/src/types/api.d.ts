@@ -29,12 +29,18 @@ interface PageRq {
   orders?: Array<OrderRq>
 }
 
+interface TokenAuthenticationToken {
+  token: string;
+  createTime: LocalDateTime;
+  loginUserAgent: string;
+}
+
 declare namespace User {
 
   interface UserSearchRq extends PageRq {
-    username?: string | undefined
-    nickname?: string | undefined,
-    enabled?: boolean | undefined
+    username?: string | undefined;
+    nickname?: string | undefined;
+    enabled?: boolean | undefined;
   }
 
   interface UserRs {
@@ -120,6 +126,11 @@ declare namespace User {
      * 是否启用，必填
      */
     enabled: boolean;
+  }
+
+  interface TokenWrapperRs {
+    token: TokenAuthenticationToken;
+    expireTime: string;
   }
 }
 
@@ -485,7 +496,7 @@ namespace Resource {
 
   }
 
-  interface ResourceAuthAddRq extends ResourceAuth{
+  interface ResourceAuthAddRq extends ResourceAuth {
 
     /**
      * API资源ID，对应数据库中的 apiResourceId 字段。

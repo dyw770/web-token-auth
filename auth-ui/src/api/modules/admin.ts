@@ -87,6 +87,10 @@ export default {
 
   resourceAuthRefresh: () => api.get('/admin/resource/auth/refresh'),
 
+  userLoginInfo: (username: string) => api.get(`/admin/user/tokens?username=${username}`),
+
+  userOffline: (token: string) => api.get(`/admin/user/offline?token=${token}`),
+
   testPublicApi: () => api.get('/test/static'),
 
   testPrivateApi: () => api.get('/test/info'),

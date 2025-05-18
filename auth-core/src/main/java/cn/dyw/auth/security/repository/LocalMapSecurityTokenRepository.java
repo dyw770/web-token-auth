@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,6 +68,7 @@ public class LocalMapSecurityTokenRepository implements SecurityTokenRepository 
                                 userDetails,
                                 token.getCredentials(),
                                 token.getToken(),
+                                token.getLoginUserAgent(),
                                 userDetails.getAuthorities());
                 
                 map.put(entry.getKey(), new TokenWrapper(authenticationToken, wrapper.getExpireTime()));
@@ -141,6 +143,12 @@ public class LocalMapSecurityTokenRepository implements SecurityTokenRepository 
     public int userTokens(String username) {
         // TODO 待实现
         return 0;
+    }
+
+    @Override
+    public List<TokenWrapper> listUserTokens(String username) {
+        // TODO 待实现
+        return List.of();
     }
 
 }

@@ -30,7 +30,7 @@
       </el-form>
     </div>
 
-    <el-table :data="userList" border style="width: 100%">
+    <el-table :data="userList" border style="width: 100%" table-layout="auto">
       <el-table-column prop="username" label="用户名" align="center"/>
       <el-table-column prop="nickname" label="昵称" align="center"/>
       <el-table-column prop="avatar" label="头像" align="center">
@@ -70,6 +70,7 @@
       <el-table-column label="操作" align="center" width="320px">
         <template #default="{ row }">
           <el-button-group>
+            <el-button size="small" @click="openLoginInfo(row)">登录信息</el-button>
             <el-button size="small" @click="showAuthDialog(row)">授权</el-button>
             <el-button type="primary" size="small" @click="showEditUserDialog(row)">编辑</el-button>
             <el-button type="warning" size="small" @click="lockUser(row)">{{
@@ -94,6 +95,7 @@
     <Add v-model="addUserDialog" @success="refresh"/>
     <Edit v-model="editUserDialog" :user="editUser" @success="refresh"/>
     <Auth :user="authUser" v-model="authDialog" @success="refresh" v-if="authDialog"/>
+    <LoginInfo v-model="showLoginInfo" :username="loginInfoUser?.username"/>
   </FaPageMain>
 </template>
 
@@ -105,10 +107,18 @@ import Add from "@/views/admin/user/add.vue";
 import Edit from "@/views/admin/user/edit.vue";
 import {toast} from "vue-sonner";
 import Auth from "@/views/admin/user/auth.vue";
+import LoginInfo from "@/views/admin/user/LoginInfo.vue";
 
 const addUserDialog = ref(false)
 const editUserDialog = ref(false)
 const authDialog = ref(false)
+const showLoginInfo = ref(false)
+
+const loginInfoUser = ref<User.UserRs>()
+const openLoginInfo = (user: User.UserRs) => {
+  loginInfoUser.value = user
+  showLoginInfo.value = true
+}
 
 const showAddUserDialog = () => {
   addUserDialog.value = true

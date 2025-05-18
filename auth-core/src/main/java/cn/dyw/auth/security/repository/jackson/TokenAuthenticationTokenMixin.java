@@ -60,10 +60,11 @@ class TokenAuthenticationTokenDeserializer extends JsonDeserializer<TokenAuthent
         List<GrantedAuthority> authorities = mapper.readValue(readJsonNode(jsonNode, "authorities").traverse(mapper),
                 GRANTED_AUTHORITY_LIST);
         String tokenStr = readJsonNode(jsonNode, "token").asText();
+        String loginUserAgent = readJsonNode(jsonNode, "loginUserAgent").asText();
 
         TokenAuthenticationToken token = (!authenticated)
-                ? new TokenAuthenticationToken(principal, credentials, tokenStr)
-                : new TokenAuthenticationToken(principal, credentials, tokenStr, authorities);
+                ? new TokenAuthenticationToken(principal, credentials, tokenStr, loginUserAgent)
+                : new TokenAuthenticationToken(principal, credentials, tokenStr, loginUserAgent, authorities);
         JsonNode detailsNode = readJsonNode(jsonNode, "details");
         if (detailsNode.isNull() || detailsNode.isMissingNode()) {
             token.setDetails(null);

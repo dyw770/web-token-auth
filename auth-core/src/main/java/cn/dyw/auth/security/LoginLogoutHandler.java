@@ -4,6 +4,7 @@ import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,12 +41,14 @@ public class LoginLogoutHandler {
      * @param password 密码
      * @return 认证结果
      */
-    public TokenAuthenticationToken login(String username, String password) {
+    public TokenAuthenticationToken login(String username, String password, HttpServletRequest request) {
 
         Authentication authenticationRequest =
                 UsernamePasswordAuthenticationToken.unauthenticated(username, password);
         Authentication authenticationResponse =
                 this.authenticationManager.authenticate(authenticationRequest);
+
+        String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
 
         String token = tokenResolve.createToken(authenticationResponse);
         TokenAuthenticationToken authenticationToken = 
@@ -53,6 +56,7 @@ public class LoginLogoutHandler {
                         authenticationResponse.getPrincipal(),
                         authenticationResponse.getCredentials(), 
                         token,
+                        userAgent,
                         authenticationResponse.getAuthorities());
         authenticationToken.setDetails(authenticationResponse.getDetails());
         

@@ -7,8 +7,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +36,7 @@ public class RedisMapSecurityTokenRepository implements SecurityTokenRepository 
     private final String keyPrefix;
 
     private final TokenResolve tokenResolve;
-    
+
     private final UserDetailsService userDetailsService;
 
     /**
@@ -46,7 +48,7 @@ public class RedisMapSecurityTokenRepository implements SecurityTokenRepository 
                                            TokenResolve tokenResolve,
                                            long expireTime,
                                            long removeTime,
-                                           String keyPrefix, 
+                                           String keyPrefix,
                                            UserDetailsService userDetailsService) {
         this.expireTime = expireTime;
         this.removeTime = removeTime;
@@ -83,6 +85,7 @@ public class RedisMapSecurityTokenRepository implements SecurityTokenRepository 
                     userDetails,
                     wrapper.getToken().getCredentials(),
                     wrapper.getToken().getToken(),
+                    wrapper.getToken().getLoginUserAgent(),
                     userDetails.getAuthorities());
 
             operations.set(key, new TokenWrapper(authenticationToken, wrapper.getExpireTime()), expireTime + removeTime, TimeUnit.SECONDS);
@@ -167,7 +170,26 @@ public class RedisMapSecurityTokenRepository implements SecurityTokenRepository 
             Set<String> keys = redisTemplate.keys(keyPrefix + username + ":*");
             return keys.size();
         } else {
-            return 0;   
+            return 0;
+        }
+    }
+
+    @Override
+    public List<TokenWrapper> listUserTokens(String username) {
+        if (StringUtils.hasText(username)) {
+            Set<String> keys = redisTemplate.keys(keyPrefix + username + ":*");
+            if (CollectionUtils.isEmpty(keys)) {
+                return List.of();
+            }
+            List<TokenWrapper> list = redisTemplate.opsForValue().multiGet(keys);
+            if (CollectionUtils.isEmpty(list)) {
+                return List.of();
+            }
+            return list.stream()
+                    .filter(item -> ObjectUtils.isNotEmpty(item) && !item.isExpired())
+                    .toList();
+        } else {
+            return List.of();
         }
     }
 

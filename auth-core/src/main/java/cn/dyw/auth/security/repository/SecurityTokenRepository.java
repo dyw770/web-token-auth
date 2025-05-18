@@ -1,9 +1,12 @@
 package cn.dyw.auth.security.repository;
 
 import cn.dyw.auth.security.TokenAuthenticationToken;
+import cn.dyw.auth.security.repository.jackson.TokenWrapper;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * token 存储
@@ -22,7 +25,7 @@ public interface SecurityTokenRepository {
 
     /**
      * 刷新用户信息
-     * @param username
+     * @param username username
      */
     void refreshUser(String username);
 
@@ -109,4 +112,11 @@ public interface SecurityTokenRepository {
      * @return 数量
      */
     int userTokens(String username);
+
+    /**
+     * 用户token数量
+     *
+     * @return 数量
+     */
+    List<TokenWrapper> listUserTokens(String username);
 }

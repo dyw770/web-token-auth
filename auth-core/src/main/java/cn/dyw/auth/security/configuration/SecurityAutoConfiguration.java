@@ -5,6 +5,7 @@ import cn.dyw.auth.core.HttpSecurityCustomizer;
 import cn.dyw.auth.security.AuthProperties;
 import cn.dyw.auth.security.LoginLogoutHandler;
 import cn.dyw.auth.security.SecurityExceptionResolverHandler;
+import cn.dyw.auth.security.controller.UserManageSupportController;
 import cn.dyw.auth.security.event.UserChangedApplicationListener;
 import cn.dyw.auth.security.filter.SecurityTokenContextConfigurer;
 import cn.dyw.auth.security.repository.LocalMapSecurityTokenRepository;
@@ -58,7 +59,7 @@ public class SecurityAutoConfiguration {
                                            SecurityTokenRepository securityTokenRepository,
                                            TokenResolve tokenResolve,
                                            SecurityExceptionResolverHandler exceptionResolverHandler,
-                                           AuthorizeHttpRequestsCustomizer customizer,
+                                           @Autowired(required = false) AuthorizeHttpRequestsCustomizer customizer,
                                            List<HttpSecurityCustomizer> httpSecurityCustomizers,
                                            @Autowired(required = false) AuthorizationManager<RequestAuthorizationContext> authorizationManager) throws Exception {
         http
@@ -84,7 +85,9 @@ public class SecurityAutoConfiguration {
                 )
                 .authenticationManager(authenticationManager)
                 .authorizeHttpRequests(authorize -> {
-                            customizer.consume(authorize);
+                            if (!ObjectUtils.isEmpty(customizer)) {
+                                customizer.consume(authorize);
+                            }
                             if (ObjectUtils.isEmpty(authorizationManager)) {
                                 authorize.anyRequest().authenticated();
                             } else {
@@ -146,6 +149,11 @@ public class SecurityAutoConfiguration {
     @Bean
     public SecurityExceptionResolverHandler securityExceptionResolverHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         return new SecurityExceptionResolverHandler(resolver);
+    }
+    
+    @Bean
+    public UserManageSupportController userManageSupportController(SecurityTokenRepository tokenRepository) {
+        return new UserManageSupportController(tokenRepository);
     }
     
     @Bean

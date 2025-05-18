@@ -18,15 +18,26 @@ public class TokenAuthenticationToken extends UsernamePasswordAuthenticationToke
 
     private final LocalDateTime createTime;
 
-    public TokenAuthenticationToken(Object principal, Object credentials, String token) {
+    private final String loginUserAgent;
+
+    public TokenAuthenticationToken(Object principal, 
+                                    Object credentials,
+                                    String token, 
+                                    String loginUserAgent) {
         super(principal, credentials);
         this.token = token;
+        this.loginUserAgent = loginUserAgent;
         this.createTime = LocalDateTime.now();
     }
 
-    public TokenAuthenticationToken(Object principal, Object credentials, String token, Collection<? extends GrantedAuthority> authorities) {
+    public TokenAuthenticationToken(Object principal,
+                                    Object credentials,
+                                    String token,
+                                    String loginUserAgent,
+                                    Collection<? extends GrantedAuthority> authorities) {
         super(principal, credentials, authorities);
         this.token = token;
+        this.loginUserAgent = loginUserAgent;
         this.createTime = LocalDateTime.now();
     }
 }
