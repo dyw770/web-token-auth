@@ -75,8 +75,8 @@
       </el-table-column>
     </el-table>
     <el-pagination :total="total"
-                   :default-current-page="searchRq.page"
-                   :page-size="searchRq.size"
+                   v-model:current-page="searchRq.page"
+                   v-model:page-size="searchRq.size"
                    :page-sizes="[10, 50, 100]"
                    @change="refresh"
                    class="mt-5"/>

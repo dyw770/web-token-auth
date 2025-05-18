@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * @author dyw770
  * @since 2025-04-27
  */
-public record SystemAccessModel(String username, String apiPath, String method, LocalDateTime accessTime,
-                                long durationTime, String accessIp, String accessUa, String accessResultType,
-                                int accessResultCode, int accessResponseCode) {
+public record SystemAccessModel(String username, String apiPath, String apiMethod, LocalDateTime apiAccessTime,
+                                int apiAccessDuration, String apiAccessIp, String apiAccessUa, String apiAccessResultType,
+                                int apiAccessResultCode, int apiAccessResponseCode) {
 }

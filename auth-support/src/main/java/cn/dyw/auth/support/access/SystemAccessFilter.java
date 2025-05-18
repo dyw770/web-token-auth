@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 public class SystemAccessFilter extends OncePerRequestFilter {
-    
+
     private static final String ANONYMOUS_USER = "anonymousUser";
 
     @Getter
@@ -52,7 +52,7 @@ public class SystemAccessFilter extends OncePerRequestFilter {
             accessLog(request, response, startTime, endTime, username);
         }
     }
-    
+
     private void accessLog(HttpServletRequest request,
                            HttpServletResponse response,
                            LocalDateTime startTime,
@@ -61,7 +61,7 @@ public class SystemAccessFilter extends OncePerRequestFilter {
         try {
             String url = request.getRequestURL().toString();
             String method = request.getMethod();
-            long duration = Duration.between(startTime, endTime).getSeconds();
+            Long duration = Duration.between(startTime, endTime).getSeconds();
             String accessIp = RequestUtils.getClientIp(request);
             String accessUa = request.getHeader(HttpHeaders.USER_AGENT);
             String accessResultType = response.getContentType();
@@ -81,7 +81,7 @@ public class SystemAccessFilter extends OncePerRequestFilter {
                     url,
                     method,
                     startTime,
-                    duration,
+                    duration.intValue(),
                     accessIp,
                     accessUa,
                     accessResultType,
@@ -93,7 +93,7 @@ public class SystemAccessFilter extends OncePerRequestFilter {
             log.error("记录访问日志时发生异常，日志将放弃记录", e);
         }
     }
-    
+
     private String getUsername() {
         SecurityContext context = SecurityContextHolder.getDeferredContext().get();
         if (ObjectUtils.isNotEmpty(context) && ObjectUtils.isNotEmpty(context.getAuthentication())) {

@@ -1,6 +1,6 @@
 import {ApiMethod, AuthType, MatchType} from './enums.ts'
 
-interface OrderRq {
+export interface OrderRq {
   /**
    * 排序的字段名
    */
@@ -12,7 +12,7 @@ interface OrderRq {
   asc: boolean,
 }
 
-interface PageRq {
+export interface PageRq {
   /**
    * 页码
    */
@@ -512,4 +512,36 @@ namespace Resource {
   }
 }
 
-export {PageRq, User, Role, Menu, Resource}
+/**
+ * API访问日志类型
+ */
+export interface SysApiAccessLogRs {
+  id: number;
+  username: string;
+  apiPath: string;
+  apiMethod: string;
+  apiAccessTime: string;
+  apiAccessDuration: number;
+  apiAccessIp: string;
+  apiAccessUa: string;
+  apiAccessResultType: string;
+  apiAccessResultCode: number;
+  apiAccessResponseCode: number;
+}
+
+/**
+ * 系统操作日志类型
+ */
+export interface SysSystemOperationLogRs {
+  id: number;
+  username: string;
+  operationTime: LocalDateTime;
+  operationIp: string;
+  operationUa: string;
+  operationResultType: string;
+  operationResultCode: number;
+  operationContent: string;
+  operationEvent: string;
+}
+
+export {User, Role, Menu, Resource}

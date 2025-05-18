@@ -97,6 +97,36 @@ const routes: RouteRecordRaw = {
         icon: 'ant-design:user-outline',
       },
     },
+    {
+      path: '/admin/logs',
+      component: Layout,
+      name: 'adminLogs',
+      meta: {
+        title: '系统日志',
+        breadcrumb: false,
+        icon: 'ant-design:user-outline',
+      },
+      children: [
+        {
+          path: '/admin/logs/access',
+          component: () => import('@/views/admin/AccessLog/index.vue'),
+          name: 'adminAccessLogs',
+          meta: {
+            title: '访问日志',
+            icon: 'ant-design:user-outline',
+          },
+        },
+        {
+          path: '/admin/logs/event',
+          component: () => import('@/views/admin/SystemEvent/index.vue'),
+          name: 'adminEventLogs',
+          meta: {
+            title: '事件日志',
+            icon: 'ant-design:user-outline',
+          },
+        },
+      ]
+    },
   ]
 }
 

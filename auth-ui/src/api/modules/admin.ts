@@ -1,5 +1,5 @@
 import api from '../index'
-import type {Menu, Resource, Role, User} from "#/api";
+import type {Menu, PageRq, Resource, Role, User} from "#/api";
 
 export default {
   // 获取用户列表
@@ -90,6 +90,10 @@ export default {
   userLoginInfo: (username: string) => api.get(`/admin/user/tokens?username=${username}`),
 
   userOffline: (token: string) => api.get(`/admin/user/offline?token=${token}`),
+
+  apiAccessLogList: (pageRq: PageRq) => api.post('/admin/logs/access', pageRq),
+
+  systemEventLogList: (pageRq: PageRq) => api.post('/admin/logs/event', pageRq),
 
   testPublicApi: () => api.get('/test/static'),
 
