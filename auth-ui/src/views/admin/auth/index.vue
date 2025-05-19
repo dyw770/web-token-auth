@@ -60,7 +60,7 @@
               @mouseenter="data.showButton = true"
               @mouseleave="data.showButton = false"
             >
-              <span class="justify-center">
+              <span class="justify-center inline-flex items-center gap-2">
                 <FaIcon :name="checked(data)? 'ant-design:check-circle-filled' : 'ant-design:close-circle-filled'" size="4"/>
                 {{ node.label }}
               </span>
