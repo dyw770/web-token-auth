@@ -57,7 +57,7 @@
         </el-tree>
       </el-card>
 
-      <el-card class="w-3/12">
+      <el-card class="w-1/4">
         <template #header>
           <span>菜单详情</span>
         </template>
@@ -68,7 +68,11 @@
         <template #header>
           <span>权限池配置</span>
         </template>
-        <permission :menu-id="currentMenu?.id" />
+        <permission :menu-id="currentMenu?.id" v-if="currentMenu?.id" />
+        <div class="text-center" v-else>
+          <FaIcon name="ant-design:file-outlined" size="64px"/>
+          <p class="text-gray-500">暂无数据</p>
+        </div>
       </el-card>
     </div>
 

@@ -97,6 +97,12 @@ export default {
 
   menuPermissionList: (menuId: number) => api.get(`/admin/menu/permission/list/${menuId}`),
 
+  updateMenuPermission: (Permission: Menu.MenuPermissionSaveRq) => api.post('/admin/menu/permission/update', Permission),
+
+  saveMenuPermission: (Permission: Menu.MenuPermissionSaveRq) => api.post('/admin/menu/permission/save', Permission),
+
+  deleteMenuPermission: (menuId: number, permissionId: string) => api.delete(`/admin/menu/permission/delete/${menuId}/${permissionId}`),
+
   testPublicApi: () => api.get('/test/static'),
 
   testPrivateApi: () => api.get('/test/info'),

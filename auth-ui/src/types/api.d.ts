@@ -397,6 +397,12 @@ namespace Menu {
      */
     updateTime?: string;
   }
+
+  interface MenuPermissionSaveRq {
+    menuId: number;
+    permissionId: string;
+    permissionDesc: string;
+  }
 }
 namespace Resource {
 
