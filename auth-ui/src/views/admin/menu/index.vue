@@ -2,7 +2,7 @@
   <FaPageMain>
     <div class="container">
       <!-- 左侧角色树 -->
-      <el-card class="w-100 h-full">
+      <el-card class="w-1/3 h-full">
         <template #header>
           <span>菜单列表</span>
         </template>
@@ -57,11 +57,18 @@
         </el-tree>
       </el-card>
 
-      <el-card>
+      <el-card class="w-3/12">
         <template #header>
           <span>菜单详情</span>
         </template>
-        <edit :menu="currentMenu" @edit-success="refresh" class="w-100" />
+        <edit :menu="currentMenu" @edit-success="refresh" />
+      </el-card>
+
+      <el-card class="w-5/12">
+        <template #header>
+          <span>权限池配置</span>
+        </template>
+        <permission :menu-id="currentMenu?.id" />
       </el-card>
     </div>
 
@@ -79,6 +86,7 @@ import Add from "@/views/admin/menu/add.vue";
 import {ElMessageBox} from "element-plus";
 import Edit from "@/views/admin/menu/edit.vue";
 import type {DragEvents} from "element-plus/es/components/tree/src/model/useDragNode";
+import Permission from "@/views/admin/menu/permission.vue";
 
 interface MenuTree extends Menu.MenuListRs {
   showButton: boolean

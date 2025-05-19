@@ -341,6 +341,62 @@ namespace Menu {
      */
     navShow: boolean;
   }
+
+  /**
+   * 新增菜单权限池请求参数
+   *
+   * @author dyw770
+   * @since 2025-05-19
+   */
+  interface MenuPermissionSaveRq {
+    /**
+     * 菜单ID，必须为大于等于1的整数
+     */
+    menuId: number;
+
+    /**
+     * 权限ID，长度2~32的非空字符串
+     */
+    permissionId: string;
+
+    /**
+     * 权限说明，长度2~128的字符串（可为空）
+     */
+    permissionDesc?: string;
+  }
+
+  /**
+   * 菜单权限池配置
+   *
+   * @author dyw770
+   * @since 2025-05-19
+   */
+  interface SysMenuPermissionRs {
+    /**
+     * 菜单ID
+     */
+    menuId: number;
+
+    /**
+     * 权限ID
+     */
+    permissionId: string;
+
+    /**
+     * 权限说明
+     */
+    permissionDesc: string;
+
+    /**
+     * 创建时间（ISO 格式字符串）
+     */
+    createTime?: string;
+
+    /**
+     * 更新时间（ISO 格式字符串）
+     */
+    updateTime?: string;
+  }
 }
 namespace Resource {
 

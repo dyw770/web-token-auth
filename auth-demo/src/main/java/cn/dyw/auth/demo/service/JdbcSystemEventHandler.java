@@ -57,8 +57,8 @@ public class JdbcSystemEventHandler implements SystemEventHandler {
         SysSystemOperationLog log = new SysSystemOperationLog();
         log.setUsername(getUsername());
         log.setOperationTime(LocalDateTime.now());
-        log.setOperationIp(RequestUtils.getClientIp(getRequest()));
-        log.setOperationUa(getRequest().getHeader(HttpHeaders.USER_AGENT));
+        log.setOperationIp(getRequestClientIp());
+        log.setOperationUa(getRequestUserAgent());
         return log;
     }
 
@@ -69,10 +69,30 @@ public class JdbcSystemEventHandler implements SystemEventHandler {
         }
         return "anonymousUser";
     }
-
-    public HttpServletRequest getRequest() {
+    
+    private String getRequestClientIp() {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        return attributes.getRequest();
+        HttpServletRequest request = null;
+        if (attributes != null) {
+            request = attributes.getRequest();
+        }
+        if (ObjectUtils.isEmpty(request)) {
+            return "";
+        }
+        return RequestUtils.getClientIp(request);
+    }
+
+    private String getRequestUserAgent() {
+        ServletRequestAttributes attributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = null;
+        if (attributes != null) {
+            request = attributes.getRequest();
+        }
+        if (ObjectUtils.isEmpty(request)) {
+            return "";
+        } 
+        return request.getHeader(HttpHeaders.USER_AGENT);
     }
 }

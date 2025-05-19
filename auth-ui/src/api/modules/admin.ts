@@ -95,6 +95,8 @@ export default {
 
   systemEventLogList: (pageRq: PageRq) => api.post('/admin/logs/event', pageRq),
 
+  menuPermissionList: (menuId: number) => api.get(`/admin/menu/permission/list/${menuId}`),
+
   testPublicApi: () => api.get('/test/static'),
 
   testPrivateApi: () => api.get('/test/info'),
