@@ -544,4 +544,19 @@ export interface SysSystemOperationLogRs {
   operationEvent: string;
 }
 
+export interface ApiAccessLogSearchRq extends PageRq {
+  username?: string;
+  apiPath?: string;
+  startTime?: string;
+  endTime?: string;
+  apiAccessIp?: string;
+}
+
+export interface SystemOperationSearchRq extends PageRq {
+  username?: string;
+  startTime?: string;
+  endTime?: string;
+  operationEvent?: string;
+}
+
 export {User, Role, Menu, Resource}
