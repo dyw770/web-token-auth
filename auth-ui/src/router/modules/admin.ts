@@ -4,7 +4,7 @@ function Layout() {
   return import('@/layouts/index.vue')
 }
 
-const routes: RouteRecordRaw = {
+export const adminRoutes: RouteRecordRaw = {
   path: '/admin',
   component: Layout,
   meta: {
@@ -89,15 +89,6 @@ const routes: RouteRecordRaw = {
       ]
     },
     {
-      path: '/admin/test',
-      component: () => import('@/views/simple/index.vue'),
-      name: 'adminTest',
-      meta: {
-        title: '资源授权测试',
-        icon: 'ant-design:user-outline',
-      },
-    },
-    {
       path: '/admin/logs',
       component: Layout,
       name: 'adminLogs',
@@ -130,4 +121,21 @@ const routes: RouteRecordRaw = {
   ]
 }
 
-export default routes
+export const simpleRoutes: RouteRecordRaw = {
+  path: '/simple',
+  component: Layout,
+  meta: {
+    breadcrumb: false,
+  },
+  children: [
+    {
+      path: '/simple/test',
+      component: () => import('@/views/simple/index.vue'),
+      name: 'adminTest',
+      meta: {
+        title: '资源授权测试',
+        icon: 'ant-design:user-outline',
+      },
+    }
+  ]
+}
