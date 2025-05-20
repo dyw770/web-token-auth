@@ -1,4 +1,4 @@
-package cn.dyw.auth.demo.service;
+package cn.dyw.auth.db.support;
 
 import cn.dyw.auth.db.domain.SysApiAccessLog;
 import cn.dyw.auth.db.service.ISysApiAccessLogService;
