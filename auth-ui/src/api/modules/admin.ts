@@ -99,9 +99,15 @@ export default {
 
   updateMenuPermission: (Permission: Menu.MenuPermissionSaveRq) => api.post('/admin/menu/permission/update', Permission),
 
-  saveMenuPermission: (Permission: Menu.MenuPermissionSaveRq) => api.post('/admin/menu/permission/save', Permission),
+  saveMenuPermission: (permission: Menu.MenuPermissionSaveRq) => api.post('/admin/menu/permission/save', permission),
 
   deleteMenuPermission: (menuId: number, permissionId: string) => api.delete(`/admin/menu/permission/delete/${menuId}/${permissionId}`),
+
+  getRoleMenuPermissions: (roleCode: string, menuId: number) => api.get(`/admin/menu/permission/role?roleCode=${roleCode}&menuId=${menuId}`),
+
+  addRoleMenuPermissions: (saveRq: Menu.RoleMenuPermissionSaveRq) => api.post(`/admin/menu/permission/role/save`, saveRq),
+
+  deleteRoleMenuPermissions: (authId: number) => api.delete(`/admin/menu/permission/role/delete?authId=${authId}`),
 
   testPublicApi: () => api.get('/test/static'),
 

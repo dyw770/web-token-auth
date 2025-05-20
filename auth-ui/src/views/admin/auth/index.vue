@@ -2,7 +2,7 @@
   <FaPageMain>
     <div class="flex space-x-4 h-full">
       <!-- 菜单 -->
-      <div class="w-1/4">
+      <div class="w-1/3">
         <div>
           菜单
         </div>
@@ -57,17 +57,20 @@
         >
           <template #default="{ node, data }">
             <div
-              @click="currentRole = data"
               class="tree-node"
               @mouseenter="data.showButton = true"
               @mouseleave="data.showButton = false"
             >
               <span class="justify-center inline-flex items-center gap-2">
-                <FaIcon :name="checked(data)? 'ant-design:check-circle-filled' : 'ant-design:close-circle-filled'" size="4"/>
+                <FaIcon :name="checked(data)? 'ant-design:check-circle-filled' : 'ant-design:close-circle-filled'"
+                        size="4"/>
                 {{ node.label }}
               </span>
               <span v-show="data.showButton" class="tree-node-buttons">
                 <el-button-group>
+                  <el-button size="small" v-show="checked(data)" @click="editRoleMenuPermission(data.roleCode)">
+                    编辑
+                  </el-button>
                   <el-button size="small" :type="checked(data)? 'danger' : 'success'" @click="menuAuth(data)">
                     {{ checked(data) ? '取消授权' : '授权' }}
                   </el-button>
@@ -86,6 +89,26 @@
 
       <el-divider direction="vertical" class="h-auto"/>
 
+      <!-- 菜单权限 -->
+      <div class="w-5/12">
+        <div>
+          菜单权限
+        </div>
+        <el-divider direction="horizontal"/>
+        <role-menu-permission-edit
+          class="min-h-60vh max-h-[60vh] overflow-y-auto max-h-[calc(100vh-25vh-20px)] scrollbar-hide"
+          :menu-id="currentEditRole.menuId"
+          :role-code="currentEditRole.roleCode"
+          v-if="currentEditRole"/>
+        <div class="text-center" v-else>
+          <div class="text-center">
+            <FaIcon name="ant-design:file-outlined" size="64px"/>
+            <p class="text-gray-500">
+              请先选择需要授权的角色和菜单
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </FaPageMain>
 </template>
@@ -96,6 +119,7 @@ import {ref} from "vue";
 import type {Menu, Role} from "#/api";
 import type {TreeInstance} from "element-plus";
 import {toast} from "vue-sonner";
+import RoleMenuPermissionEdit from "@/views/admin/auth/RoleMenuPermissionEdit.vue";
 
 interface TreeRole extends Role.RoleListRs {
   showButton?: boolean
@@ -105,7 +129,19 @@ const currentMenu = ref<Menu.MenuRoleListRs>()
 const treeMenuData = ref<Menu.MenuRoleListRs[]>()
 
 const treeRoleData = ref<TreeRole[]>()
-const currentRole = ref<TreeRole>()
+const currentEditRole = ref<{
+  menuId: number,
+  roleCode: string
+}>()
+
+const editRoleMenuPermission = (roleCode: string) => {
+  if (currentMenu.value) {
+    currentEditRole.value = {
+      menuId: currentMenu.value.id,
+      roleCode: roleCode
+    }
+  }
+}
 
 const treeRoleRef = ref<TreeInstance>()
 

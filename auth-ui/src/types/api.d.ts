@@ -403,6 +403,65 @@ namespace Menu {
     permissionId: string;
     permissionDesc: string;
   }
+
+  /**
+   * @author dyw770
+   * @since 2025-05-19
+   */
+  interface SysRoleMenuPermissionRs {
+    /**
+     * 授权ID
+     */
+    authId: number;
+
+    /**
+     * 角色ID
+     */
+    roleCode: string;
+
+    /**
+     * 菜单ID
+     */
+    menuId: number;
+
+    /**
+     * 权限ID
+     */
+    permissionId: string;
+
+    /**
+     * 授权时间（ISO 格式字符串）
+     */
+    authTime: string;
+  }
+
+  interface RoleMenuPermissionRs {
+    menuPermissions: SysMenuPermissionRs[]
+    rolePermissions: SysRoleMenuPermissionRs[]
+  }
+
+  /**
+   * 角色菜单授权请求参数
+   *
+   * @author dyw770
+   * @since 2025-05-20
+   */
+  interface RoleMenuPermissionSaveRq {
+    /**
+     * 角色ID，长度 2~32 的非空字符串
+     */
+    roleCode: string;
+
+    /**
+     * 菜单ID，必须为非空且大于等于 1 的整数
+     */
+    menuId: number;
+
+    /**
+     * 权限ID，长度 2~128 的非空字符串
+     */
+    permissionId: string;
+  }
 }
 namespace Resource {
 
