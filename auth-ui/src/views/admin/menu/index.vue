@@ -10,6 +10,7 @@
           <el-button v-show="treeData?.length !== 0" class="w-full" @click="addMenu(undefined)">新增根菜单</el-button>
         </div>
         <el-tree
+          class="min-h-60vh max-h-[60vh] overflow-y-auto scrollbar-hide"
           ref="treeRef"
           :data="treeData"
           default-expand-all
@@ -50,7 +51,7 @@
 
           <template #empty>
             <div class="text-center">
-              <FaIcon name="ant-design:plus-outlined" size="64px"  @click="addMenu"/>
+              <FaIcon name="ant-design:plus-outlined" size="64px" @click="addMenu"/>
               <p class="text-gray-500">新增菜单</p>
             </div>
           </template>
@@ -61,14 +62,20 @@
         <template #header>
           <span>菜单详情</span>
         </template>
-        <edit :menu="currentMenu" @edit-success="refresh" />
+        <edit
+          class="min-h-60vh max-h-[60vh] overflow-y-auto scrollbar-hide"
+          :menu="currentMenu"
+          @edit-success="refresh"/>
       </el-card>
 
       <el-card class="w-5/12">
         <template #header>
           <span>权限池配置</span>
         </template>
-        <permission :menu-id="currentMenu?.id" v-if="currentMenu?.id" />
+        <permission
+          class="min-h-60vh max-h-[60vh] overflow-y-auto scrollbar-hide"
+          :menu-id="currentMenu?.id"
+          v-if="currentMenu?.id"/>
         <div class="text-center" v-else>
           <FaIcon name="ant-design:file-outlined" size="64px"/>
           <p class="text-gray-500">暂无数据</p>
@@ -76,7 +83,7 @@
       </el-card>
     </div>
 
-    <add v-model="showAddMenu" :parent-menu-id="parentMenuId" @success="refresh" />
+    <add v-model="showAddMenu" :parent-menu-id="parentMenuId" @success="refresh"/>
   </FaPageMain>
 </template>
 
@@ -145,7 +152,7 @@ const handleDrop = async (
   }
   // 如果是拖拽到某个节点的兄弟节点上
   if (dropType === 'after' || dropType === 'before') {
-    if(draggingNode.data.parentMenuId !== dropNode.parent?.data.id) {
+    if (draggingNode.data.parentMenuId !== dropNode.parent?.data.id) {
       await adminApi.menuUpdateHierarchy(draggingNode.data.id, dropNode.parent?.data.id)
       await refresh()
     }
@@ -193,5 +200,15 @@ const allowDrop = (_draggingNode: Node, _dropNode: Node, type: AllowDropType) =>
   display: inline-block;
   opacity: 0.9;
   transition: opacity 0.2s ease;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE 和 Edge 隐藏滚动条 */
+  scrollbar-width: none; /* Firefox 隐藏滚动条 */
+}
+
+/* 可选：Chrome、Edge 等浏览器 */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 </style>

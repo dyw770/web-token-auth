@@ -8,6 +8,7 @@
         </div>
         <el-divider direction="horizontal"/>
         <el-tree
+          class="min-h-60vh max-h-[60vh] overflow-y-auto max-h-[calc(100vh-25vh-20px)] scrollbar-hide"
           v-loading="!treeMenuData && !treeRoleData"
           ref="treeMenuRef"
           :data="treeMenuData"
@@ -46,6 +47,7 @@
         </div>
         <el-divider direction="horizontal"/>
         <el-tree
+          class="min-h-60vh max-h-[60vh] overflow-y-auto max-h-[calc(100vh-25vh-20px)] scrollbar-hide"
           ref="treeRoleRef"
           :data="currentMenu ? treeRoleData : []"
           default-expand-all
@@ -207,5 +209,15 @@ const menuProps = {
 
 ::v-deep(.el-tree-node__expand-icon) {
   display: none !important;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE 和 Edge 隐藏滚动条 */
+  scrollbar-width: none; /* Firefox 隐藏滚动条 */
+}
+
+/* 可选：Chrome、Edge 等浏览器 */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 </style>
