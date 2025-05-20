@@ -45,7 +45,7 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminMenuEdit',
           meta: {
             title: '菜单编辑',
-            icon: 'ant-design:menu-outlined',
+            icon: 'ri:menu-add-line',
           },
         },
         {
@@ -54,7 +54,7 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminMenuAuth',
           meta: {
             title: '菜单授权',
-            icon: 'ant-design:menu-outlined',
+            icon: 'ri:menu-unfold-line',
           },
         }
       ]
@@ -72,7 +72,7 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminResource',
           meta: {
             title: 'API资源管理',
-            icon: 'ant-design:api-outlined',
+            icon: 'icon-park:api-app',
             cache: 'adminResourceAuth'
           },
         },
@@ -82,7 +82,6 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminResourceAuth',
           meta: {
             title: 'API资源授权',
-            icon: 'ant-design:api-outlined',
             activeMenu: '/admin/resource',
           }
         }
@@ -95,7 +94,7 @@ export const adminRoutes: RouteRecordRaw = {
       meta: {
         title: '系统日志',
         breadcrumb: false,
-        icon: 'ant-design:user-outline',
+        icon: 'icon-park:log',
       },
       children: [
         {
@@ -104,7 +103,7 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminAccessLogs',
           meta: {
             title: '访问日志',
-            icon: 'ant-design:user-outline',
+            icon: 'icon-park:upload-logs',
           },
         },
         {
@@ -113,7 +112,7 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminEventLogs',
           meta: {
             title: '事件日志',
-            icon: 'ant-design:user-outline',
+            icon: 'icon-park:upload-logs',
           },
         },
       ]
@@ -134,7 +133,7 @@ export const simpleRoutes: RouteRecordRaw = {
       name: 'adminTest',
       meta: {
         title: '资源授权测试',
-        icon: 'ant-design:user-outline',
+        icon: 'ri:test-tube-line',
       },
     }
   ]
