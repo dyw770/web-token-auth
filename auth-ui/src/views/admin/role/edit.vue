@@ -1,6 +1,6 @@
 <template>
   <!-- 右侧表单 -->
-  <el-card>
+  <el-card class="min-w-100">
     <template #header>
       <span>角色详情</span>
     </template>
