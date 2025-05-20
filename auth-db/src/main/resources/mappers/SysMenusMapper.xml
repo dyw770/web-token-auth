@@ -6,6 +6,10 @@
         <result column="roles" property="roles" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
     </resultMap>
     
+    <resultMap id="MenuPermissionDto" type="cn.dyw.auth.db.model.MenuPermissionDto" autoMapping="true">
+        <result column="permissions" property="permissions" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+    </resultMap>
+    
     <insert id="insertMenuForRole">
         insert ignore sys_role_menu
         select #{roleCode},
@@ -92,7 +96,7 @@
                  left join sys_menu_hierarchy smh
                            on m1.menu_id = smh.descendant_menu_id and smh.depth = 1
     </select>
-    <select id="queryUserMenuList" resultType="cn.dyw.auth.db.model.MenuDto">
+    <select id="queryUserMenuList" resultMap="MenuPermissionDto">
         select m2.id,
                menu_name,
                menu_router,
@@ -101,15 +105,20 @@
                nav_show,
                create_time,
                update_time,
-               smh.ancestor_menu_id as parent_menu_id
-        from (select distinct t2.menu_id
+               smh.ancestor_menu_id as parent_menu_id,
+               permissions
+        from (select t2.menu_id, 
+                     if(count(srmp.permission_id) = 0, json_array(), json_arrayagg(srmp.permission_id)) as permissions
               from (select distinct srh.descendant_role_code
                     from sys_user_role sur
                              join sys_role_hierarchy srh
                                   on sur.role_code = srh.ancestor_role_code
                     where sur.username = #{username}) t1
                        join sys_role_menu t2
-                            on t1.descendant_role_code = t2.role_code) m1
+                            on t1.descendant_role_code = t2.role_code
+                       left join sys_role_menu_permission srmp
+                                 on t2.menu_id = srmp.menu_id and t2.role_code = srmp.role_code
+                          group by t2.menu_id) m1
                  join sys_menus m2 on m1.menu_id = m2.id
                  left join sys_menu_hierarchy smh
                            on m1.menu_id = smh.descendant_menu_id and smh.depth = 1

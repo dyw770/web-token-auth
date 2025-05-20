@@ -4,6 +4,7 @@ import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.message.rq.MenuSaveRq;
 import cn.dyw.auth.db.message.rq.MenuUpdateRq;
 import cn.dyw.auth.db.model.MenuDto;
+import cn.dyw.auth.db.model.MenuPermissionDto;
 import cn.dyw.auth.db.model.MenuRoleDto;
 import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.message.MessageCode;
@@ -138,7 +139,7 @@ public class MenuManageController {
      * @return 菜单列表
      */
     @GetMapping("/list/user/{username}")
-    public Result<List<MenuDto>> userMenuList(@PathVariable("username") @NotBlank String username) {
+    public Result<List<MenuPermissionDto>> userMenuList(@PathVariable("username") @NotBlank String username) {
         return Result.createSuccess(menusService.userMenuTreeList(username));
     }
 

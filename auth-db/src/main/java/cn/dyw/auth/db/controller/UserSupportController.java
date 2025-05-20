@@ -6,6 +6,7 @@ import cn.dyw.auth.db.message.rs.UserInfoRs;
 import cn.dyw.auth.db.message.rs.UserMenuMetaRs;
 import cn.dyw.auth.db.message.rs.UserMenuRs;
 import cn.dyw.auth.db.model.MenuDto;
+import cn.dyw.auth.db.model.MenuPermissionDto;
 import cn.dyw.auth.db.model.UserDto;
 import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.db.service.ISysUserService;
@@ -86,7 +87,7 @@ public class UserSupportController {
      */
     @GetMapping("/menu")
     public Result<List<UserMenuRs>> menu(@AuthenticationPrincipal User user) {
-        List<MenuDto> menuList = menusService.userMenuList(user.getUsername());
+        List<MenuPermissionDto> menuList = menusService.userMenuList(user.getUsername());
 
         List<UserMenuRs> menuRsList = menuList.stream()
                 .map(menuDto -> {
@@ -100,6 +101,7 @@ public class UserSupportController {
                     metaRs.setIcon(menuDto.getMenuIcon());
                     metaRs.setOrder(menuDto.getMenuOrder());
                     metaRs.setMenu(menuDto.getNavShow());
+                    metaRs.setPermissions(menuDto.getPermissions());
 
                     menuRs.setMeta(metaRs);
                     return menuRs;

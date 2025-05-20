@@ -4,6 +4,7 @@ import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.domain.SysRoleMenu;
 import cn.dyw.auth.db.mapper.SysMenusMapper;
 import cn.dyw.auth.db.model.MenuDto;
+import cn.dyw.auth.db.model.MenuPermissionDto;
 import cn.dyw.auth.db.model.MenuRoleDto;
 import cn.dyw.auth.db.service.ISysMenuHierarchyService;
 import cn.dyw.auth.db.service.ISysMenusService;
@@ -100,13 +101,13 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     }
 
     @Override
-    public List<MenuDto> userMenuTreeList(String username) {
-        List<MenuDto> menuDtoList = getBaseMapper().queryUserMenuList(username);
+    public List<MenuPermissionDto> userMenuTreeList(String username) {
+        List<MenuPermissionDto> menuDtoList = getBaseMapper().queryUserMenuList(username);
         return treeMenu(menuDtoList);
     }
 
     @Override
-    public List<MenuDto> userMenuList(String username) {
+    public List<MenuPermissionDto> userMenuList(String username) {
         return getBaseMapper().queryUserMenuList(username);
     }
 
