@@ -72,7 +72,7 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminResource',
           meta: {
             title: 'API资源管理',
-            icon: 'icon-park:api-app',
+            icon: 'ri:database-2-line',
             cache: 'adminResourceAuth'
           },
         },
@@ -94,7 +94,7 @@ export const adminRoutes: RouteRecordRaw = {
       meta: {
         title: '系统日志',
         breadcrumb: false,
-        icon: 'icon-park:log',
+        icon: 'ri:file-list-line',
       },
       children: [
         {
@@ -103,7 +103,7 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminAccessLogs',
           meta: {
             title: '访问日志',
-            icon: 'icon-park:upload-logs',
+            icon: 'ri:file-list-line',
           },
         },
         {
@@ -112,7 +112,7 @@ export const adminRoutes: RouteRecordRaw = {
           name: 'adminEventLogs',
           meta: {
             title: '事件日志',
-            icon: 'icon-park:upload-logs',
+            icon: 'ri:file-list-line',
           },
         },
       ]
