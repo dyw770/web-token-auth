@@ -5,7 +5,6 @@ import cn.dyw.auth.security.repository.jackson.TokenWrapper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -66,30 +65,6 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
         String key = buildRedisKey(token.getToken());
 
         ops.set(key, wrapper, expireTime + removeTime, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void refreshUser(String username) {
-        Set<String> keys = redisTemplate.keys(keyPrefix + username + ":*");
-        if (keys.isEmpty()) {
-            return;
-        }
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        for (String key : keys) {
-            ValueOperations<String, TokenWrapper> operations = redisTemplate.opsForValue();
-            TokenWrapper wrapper = operations.get(key);
-            if (ObjectUtils.isEmpty(wrapper) || wrapper.isExpired()) {
-                continue;
-            }
-            TokenAuthenticationToken authenticationToken = new TokenAuthenticationToken(
-                    userDetails,
-                    wrapper.getToken().getCredentials(),
-                    wrapper.getToken().getToken(),
-                    wrapper.getToken().getLoginUserAgent(),
-                    userDetails.getAuthorities());
-
-            operations.set(key, new TokenWrapper(authenticationToken, wrapper.getExpireTime()), expireTime + removeTime, TimeUnit.SECONDS);
-        }
     }
 
     @Override

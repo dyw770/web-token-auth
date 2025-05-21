@@ -7,7 +7,6 @@ import cn.dyw.auth.security.LoginLogoutHandler;
 import cn.dyw.auth.security.SecurityExceptionResolverHandler;
 import cn.dyw.auth.security.TokenAuthenticationProxyFactory;
 import cn.dyw.auth.security.controller.UserManageSupportController;
-import cn.dyw.auth.security.event.UserChangedApplicationListener;
 import cn.dyw.auth.security.filter.SecurityTokenContextConfigurer;
 import cn.dyw.auth.security.repository.LocalMapSecurityTokenRepository;
 import cn.dyw.auth.security.repository.RequestTokenResolve;
@@ -155,11 +154,6 @@ public class SecurityAutoConfiguration {
     @Bean
     public UserManageSupportController userManageSupportController(SecurityTokenRepository tokenRepository) {
         return new UserManageSupportController(tokenRepository);
-    }
-    
-    @Bean
-    public UserChangedApplicationListener userChangedApplicationListener(SecurityTokenRepository tokenRepository) {
-        return new UserChangedApplicationListener(tokenRepository);
     }
 
     @Bean

@@ -2,9 +2,6 @@ package cn.dyw.auth.security.repository;
 
 import cn.dyw.auth.security.TokenAuthenticationToken;
 import cn.dyw.auth.security.repository.jackson.TokenWrapper;
-import io.micrometer.common.util.StringUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -46,34 +43,6 @@ public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     public void savaToken(TokenAuthenticationToken token) {
         TokenWrapper wrapper = new TokenWrapper(token, expireTime);
         map.put(token.getToken(), wrapper);
-    }
-
-    @Override
-    public void refreshUser(String username) {
-        if (StringUtils.isEmpty(username)) {
-            return;
-        }
-
-        for (Map.Entry<String, TokenWrapper> entry : map.entrySet()) {
-            TokenWrapper wrapper = entry.getValue();
-            if (ObjectUtils.isEmpty(wrapper) || wrapper.isExpired()) {
-                continue;
-            }
-            if (wrapper.getToken().getName().equals(username)) {
-      
-                TokenAuthenticationToken token = wrapper.getToken();
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                TokenAuthenticationToken authenticationToken =
-                        new TokenAuthenticationToken(
-                                userDetails,
-                                token.getCredentials(),
-                                token.getToken(),
-                                token.getLoginUserAgent(),
-                                userDetails.getAuthorities());
-                
-                map.put(entry.getKey(), new TokenWrapper(authenticationToken, wrapper.getExpireTime()));
-            }
-        }
     }
     
     @Override
