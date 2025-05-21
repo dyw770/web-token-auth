@@ -135,6 +135,15 @@ export const simpleRoutes: RouteRecordRaw = {
         title: '资源授权测试',
         icon: 'ri:test-tube-line',
       },
+    },
+    {
+      path: '/simple/permission',
+      component: () => import('@/views/simple/SimplePermission.vue'),
+      name: 'adminPermissionTest',
+      meta: {
+        title: '按钮权限测试',
+        icon: 'ri:test-tube-line',
+      },
     }
   ]
 }
