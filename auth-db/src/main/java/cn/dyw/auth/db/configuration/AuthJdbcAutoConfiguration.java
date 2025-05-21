@@ -21,10 +21,10 @@ import org.springframework.security.config.core.GrantedAuthorityDefaults;
 @MapperScan(basePackages = "cn.dyw.auth.db.mapper")
 @ComponentScan(basePackages = "cn.dyw.auth.db")
 @EnableConfigurationProperties(JdbcAuthProperties.class)
+@ConditionalOnProperty(prefix = "app.auth.jdbc", name = "enable-jdbc-api-auth", havingValue = "true")
 public class AuthJdbcAutoConfiguration {
 
     @Bean
-    @ConditionalOnProperty(prefix = "app.auth.jdbc", name = "enable-jdbc-api-auth", havingValue = "true")
     public JdbcAuthorizationManager jdbcAuthorizationManager(ISysApiResourceService apiResourceService,
                                                              ApplicationContext context,
                                                              GrantedAuthorityDefaults grantedAuthorityDefaults,
@@ -33,13 +33,12 @@ public class AuthJdbcAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "app.auth.jdbc", name = "enable-jdbc-api-auth", havingValue = "true")
     public AuthChangedApplicationListener authChangedApplicationListener(JdbcAuthorizationManager authorizationManager) {
         return new AuthChangedApplicationListener(authorizationManager);
     }
 
     @Bean
-    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
-        return new GrantedAuthorityDefaults("ROLE_");
+    public GrantedAuthorityDefaults grantedAuthorityDefaults(JdbcAuthProperties jdbcAuthProperties) {
+        return new GrantedAuthorityDefaults(jdbcAuthProperties.getRolePrefix());
     }
 }
