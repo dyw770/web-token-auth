@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("${app.auth.jdbc.api-context-path:/admin}/logs")
 public class SystemLogsController {
-    
+
     private final ISysSystemOperationLogService systemOperationLogService;
-    
+
     private final ISysApiAccessLogService apiAccessLogService;
 
     public SystemLogsController(ISysSystemOperationLogService systemOperationLogService, ISysApiAccessLogService apiAccessLogService) {
@@ -33,21 +33,31 @@ public class SystemLogsController {
 
     /**
      * 查询系统操作日志
+     *
      * @param rq 请求
      * @return 结果
      */
     @PostMapping("/event")
     public Result<Page<SysSystemOperationLog>> systemEventLog(@RequestBody @Validated PageRq rq) {
-        return Result.createSuccess(systemOperationLogService.page(rq.toPage()));
+
+        return Result.createSuccess(
+                systemOperationLogService.lambdaQuery()
+                        .orderByDesc(SysSystemOperationLog::getOperationTime)
+                        .page(rq.toPage()));
     }
 
     /**
      * 查询api访问日志
+     *
      * @param rq 请求参数
      * @return 结果
      */
     @PostMapping("/access")
     public Result<Page<SysApiAccessLog>> apiAccessLog(@RequestBody @Validated PageRq rq) {
-        return Result.createSuccess(apiAccessLogService.page(rq.toPage()));
+        return Result.createSuccess(
+                apiAccessLogService
+                        .lambdaQuery()
+                        .orderByDesc(SysApiAccessLog::getApiAccessTime)
+                        .page(rq.toPage()));
     }
 }
