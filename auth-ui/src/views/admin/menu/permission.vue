@@ -47,6 +47,7 @@
 <script setup lang="ts">
 import type {Menu} from "#/api"
 import adminApi from "@/api/modules/admin";
+import {toast} from "vue-sonner";
 
 const {menuId} = defineProps<{ menuId: number }>()
 
@@ -101,16 +102,19 @@ const savePermission = async () => {
   if (edit.value) {
     // 调用修改权限的 API
     await adminApi.updateMenuPermission(currentPermission.value)
+    toast.success('删除菜单子权限成功')
   } else {
     // 调用新增权限的 API
     await adminApi.saveMenuPermission(currentPermission.value)
+    toast.success('添加菜单子权限成功')
   }
   showDrawer.value = false
-  await refresh() // 刷新表格数据
+  await refresh()
 }
 
 const deletePermission = async (row: Menu.MenuPermissionSaveRq) => {
   await adminApi.deleteMenuPermission(row.menuId, row.permissionId)
+  toast.success('删除菜单子权限成功')
   await refresh()
 }
 

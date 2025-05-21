@@ -15,11 +15,24 @@
       <span>/test/info</span>
       <el-button @click="getPrivateApiData">请求测试私有接口</el-button>
     </div>
+    <div>
+      修改按钮权限后需要刷新才能生效
+    </div>
+    <div v-auth="permissions.simple.read">
+      读权限
+    </div>
+    <div v-auth="permissions.simple.write">
+      写权限
+    </div>
+    <div v-auth="permissions.simple.delete">
+      删除权限
+    </div>
   </FaPageMain>
 </template>
 
 <script setup lang="ts">
 import adminApi from '@/api/modules/admin'
+import permissions from '@/permission/permissions.ts'
 
 const publicApiData = ref<string>()
 
