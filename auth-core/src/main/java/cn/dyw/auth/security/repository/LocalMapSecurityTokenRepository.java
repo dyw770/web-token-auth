@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author dyw770
  * @since 2025-02-13
  */
-public class LocalMapSecurityTokenRepository implements SecurityTokenRepository {
+public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenRepository {
 
     private final Map<String, TokenWrapper> map;
     
@@ -75,9 +75,9 @@ public class LocalMapSecurityTokenRepository implements SecurityTokenRepository 
             }
         }
     }
-
+    
     @Override
-    public TokenAuthenticationToken loadToken(String token) {
+    protected TokenAuthenticationToken internalLoadToken(String token) {
         TokenWrapper authToken = map.get(token);
         if (authToken == null) {
             return null;

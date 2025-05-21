@@ -5,6 +5,7 @@ import cn.dyw.auth.core.HttpSecurityCustomizer;
 import cn.dyw.auth.security.AuthProperties;
 import cn.dyw.auth.security.LoginLogoutHandler;
 import cn.dyw.auth.security.SecurityExceptionResolverHandler;
+import cn.dyw.auth.security.TokenAuthenticationProxyFactory;
 import cn.dyw.auth.security.controller.UserManageSupportController;
 import cn.dyw.auth.security.event.UserChangedApplicationListener;
 import cn.dyw.auth.security.filter.SecurityTokenContextConfigurer;
@@ -169,9 +170,14 @@ public class SecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SecurityTokenRepository.class)
     @ConditionalOnProperty(prefix = "app.auth", name = "token-repository", havingValue = "local", matchIfMissing = true)
-    public SecurityTokenRepository localSecurityTokenRepository(AuthProperties authProperties, UserDetailsService userDetailsService) {
+    public SecurityTokenRepository localSecurityTokenRepository(AuthProperties authProperties,
+                                                                UserDetailsService userDetailsService,
+                                                                @Autowired(required = false) TokenAuthenticationProxyFactory proxyFactory) {
         log.info("默认使用本地内存存储token");
-        return new LocalMapSecurityTokenRepository(userDetailsService, authProperties.getExpireTime(), authProperties.getRemoveTime());
+        LocalMapSecurityTokenRepository repository =
+                new LocalMapSecurityTokenRepository(userDetailsService, authProperties.getExpireTime(), authProperties.getRemoveTime());
+        repository.setProxyFactory(proxyFactory);
+        return repository;
     }
 
     @Slf4j

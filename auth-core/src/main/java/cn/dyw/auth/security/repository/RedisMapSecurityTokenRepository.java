@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @author dyw770
  * @since 2025-02-21
  */
-public class RedisMapSecurityTokenRepository implements SecurityTokenRepository {
+public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenRepository {
 
     /**
      * 过期时间 秒
@@ -93,7 +93,7 @@ public class RedisMapSecurityTokenRepository implements SecurityTokenRepository 
     }
 
     @Override
-    public TokenAuthenticationToken loadToken(String token) {
+    protected TokenAuthenticationToken internalLoadToken(String token) {
         String key = buildRedisKey(token);
         TokenWrapper authToken = redisTemplate.opsForValue().get(key);
         if (authToken == null) {

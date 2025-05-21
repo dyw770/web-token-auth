@@ -1,6 +1,7 @@
 package cn.dyw.auth.security.configuration;
 
 import cn.dyw.auth.security.AuthProperties;
+import cn.dyw.auth.security.TokenAuthenticationProxyFactory;
 import cn.dyw.auth.security.TokenAuthenticationToken;
 import cn.dyw.auth.security.repository.RedisMapSecurityTokenRepository;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
@@ -11,6 +12,7 @@ import cn.dyw.auth.security.repository.jackson.TokenWrapperMixin;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +28,7 @@ import java.util.List;
 
 /**
  * redis token存储配置
- * 
+ *
  * @author dyw770
  * @since 2025-02-14
  */
@@ -59,14 +61,17 @@ public class SecurityRedisAutoConfiguration {
     public SecurityTokenRepository redisSecurityTokenRepository(AuthProperties authProperties,
                                                                 TokenResolve tokenResolve,
                                                                 RedisTemplate<String, TokenWrapper> redisTemplate,
-                                                                UserDetailsService userDetailsService) {
-        return new RedisMapSecurityTokenRepository(
+                                                                UserDetailsService userDetailsService,
+                                                                @Autowired(required = false) TokenAuthenticationProxyFactory proxyFactory) {
+        RedisMapSecurityTokenRepository repository = new RedisMapSecurityTokenRepository(
                 redisTemplate,
                 tokenResolve,
                 authProperties.getExpireTime(),
                 authProperties.getRemoveTime(),
                 authProperties.getRedisKeyPrefix(),
                 userDetailsService);
+        repository.setProxyFactory(proxyFactory);
+        return repository;
     }
 
 }

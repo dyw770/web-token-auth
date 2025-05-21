@@ -6,7 +6,9 @@ import cn.dyw.auth.db.message.rs.UserRs;
 import cn.dyw.auth.db.model.UserDto;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -58,4 +60,12 @@ public interface ISysUserService extends IService<SysUser> {
      * @return 用户列表
      */
     Page<UserRs> userList(UserSearchRq rq);
+
+    /**
+     * 返回用户权限
+     *
+     * @param username 用户名
+     * @return 权限列表
+     */
+    Collection<GrantedAuthority> userAuthority(String username);
 }
