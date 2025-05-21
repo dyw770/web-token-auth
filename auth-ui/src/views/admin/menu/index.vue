@@ -38,9 +38,6 @@
                   <el-button size="small" @click="addMenu(data.id)">
                     <FaIcon name="ant-design:plus-outlined"/>
                   </el-button>
-                     <el-button size="small">
-                    <FaIcon name="ant-design:edit-outlined"/>
-                  </el-button>
                   <el-button type="danger" size="small" @click="deleteMenu(data)">
                     <FaIcon name="ant-design:delete-outlined"/>
                   </el-button>

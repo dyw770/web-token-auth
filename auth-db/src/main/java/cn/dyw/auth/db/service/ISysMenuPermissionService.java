@@ -9,4 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ISysMenuPermissionService extends IService<SysMenuPermission> {
 
+    void removeMenuPermission(Integer menuId, String permissionId);
 }

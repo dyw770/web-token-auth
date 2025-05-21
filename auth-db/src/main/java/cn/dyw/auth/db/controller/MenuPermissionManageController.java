@@ -78,10 +78,7 @@ public class MenuPermissionManageController {
      */
     @DeleteMapping("delete/{menuId}/{permissionId}")
     public Result<Void> delete(@PathVariable("menuId") Integer menuId, @PathVariable("permissionId") String permissionId) {
-        menuPermissionService.lambdaUpdate()
-                .eq(SysMenuPermission::getMenuId, menuId)
-                .eq(SysMenuPermission::getPermissionId, permissionId)
-                .remove();
+        menuPermissionService.removeMenuPermission(menuId, permissionId);
         return Result.createSuccess();
     }
 
