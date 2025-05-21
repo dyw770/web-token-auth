@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -17,7 +16,6 @@ import java.util.List;
  * @author dyw770
  * @since 2025-04-17
  */
-@Service
 public class JdbcUserDetailsService implements UserDetailsService {
 
     private final ISysUserService sysUserService;
