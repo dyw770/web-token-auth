@@ -1,14 +1,14 @@
 package cn.dyw.auth.db.service.impl;
 
+import cn.dyw.auth.db.domain.SysMenuPermission;
 import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.domain.SysRoleMenu;
+import cn.dyw.auth.db.domain.SysRoleMenuPermission;
 import cn.dyw.auth.db.mapper.SysMenusMapper;
 import cn.dyw.auth.db.model.MenuDto;
 import cn.dyw.auth.db.model.MenuPermissionDto;
 import cn.dyw.auth.db.model.MenuRoleDto;
-import cn.dyw.auth.db.service.ISysMenuHierarchyService;
-import cn.dyw.auth.db.service.ISysMenusService;
-import cn.dyw.auth.db.service.ISysRoleMenuService;
+import cn.dyw.auth.db.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -36,9 +36,18 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
 
     private final ISysRoleMenuService roleMenuService;
 
-    public SysMenusServiceImpl(ISysMenuHierarchyService menuHierarchyService, ISysRoleMenuService roleMenuService) {
+    private final ISysMenuPermissionService menuPermissionService;
+
+    private final ISysRoleMenuPermissionService roleMenuPermissionService;
+
+    public SysMenusServiceImpl(ISysMenuHierarchyService menuHierarchyService,
+                               ISysRoleMenuService roleMenuService,
+                               ISysMenuPermissionService menuPermissionService,
+                               ISysRoleMenuPermissionService roleMenuPermissionService) {
         this.menuHierarchyService = menuHierarchyService;
         this.roleMenuService = roleMenuService;
+        this.menuPermissionService = menuPermissionService;
+        this.roleMenuPermissionService = roleMenuPermissionService;
     }
 
 
@@ -79,6 +88,13 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
         roleMenuService.lambdaUpdate()
                 .eq(SysRoleMenu::getMenuId, menuId)
                 .remove();
+        // 删除菜单的权限池和已经授权的权限
+        menuPermissionService.lambdaUpdate()
+                .eq(SysMenuPermission::getMenuId, menuId)
+                .remove();
+        roleMenuPermissionService.lambdaUpdate()
+                .eq(SysRoleMenuPermission::getMenuId, menuId)
+                .remove();
     }
 
     @Override
@@ -115,6 +131,11 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     public void deleteMenuForRole(List<Integer> menuIds, String roleCode) {
         // 删除角色的菜单授权时同时要删除其子角色的授权
         getBaseMapper().deleteMenuForRole(menuIds, roleCode);
+        // 删除角色菜单子权限授权
+        roleMenuPermissionService.lambdaUpdate()
+                .eq(SysRoleMenuPermission::getRoleCode, roleCode)
+                .in(SysRoleMenuPermission::getMenuId, menuIds)
+                .remove();
     }
 
     @Override
