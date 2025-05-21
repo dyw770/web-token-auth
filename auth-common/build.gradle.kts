@@ -13,8 +13,10 @@ dependencies {
     
     compileOnly("org.projectlombok:lombok")
     compileOnly("com.github.therapi:therapi-runtime-javadoc")
+    compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("com.github.therapi:therapi-runtime-javadoc-scribe")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     
     compileOnly("com.baomidou:mybatis-plus-core")
     compileOnly("com.baomidou:mybatis-plus-extension")

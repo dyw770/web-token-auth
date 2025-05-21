@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Validated
 @RestController
-@RequestMapping("${app.auth.jdbc.api-context-path:/admin}/logs")
+@RequestMapping("${app.auth.api-context-path:/admin}/logs")
 public class SystemLogsController {
 
     private final ISysSystemOperationLogService systemOperationLogService;

@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Validated
 @RestController
-@RequestMapping("${app.auth.jdbc.api-context-path:/admin}/menu/permission")
+@RequestMapping("${app.auth.api-context-path:/admin}/menu/permission")
 public class MenuPermissionManageController {
 
     private final ISysMenuPermissionService menuPermissionService;

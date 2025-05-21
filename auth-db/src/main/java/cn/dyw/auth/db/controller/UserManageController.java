@@ -31,7 +31,7 @@ import java.util.List;
  */
 @Validated
 @RestController
-@RequestMapping("${app.auth.jdbc.api-context-path:/admin}/user")
+@RequestMapping("${app.auth.api-context-path:/admin}/user")
 public class UserManageController {
 
     private final ISysUserService userService;

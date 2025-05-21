@@ -32,6 +32,11 @@ public class AuthProperties {
     private String redisKeyPrefix = "auth:token:";
 
     /**
+     * url前缀
+     */
+    private String apiContextPath = "/admin";
+
+    /**
      * token 存储方式
      */
     private TokenRepositoryType tokenRepository = TokenRepositoryType.local;

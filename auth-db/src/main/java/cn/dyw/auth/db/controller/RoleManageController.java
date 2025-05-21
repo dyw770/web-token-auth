@@ -21,7 +21,7 @@ import java.util.List;
  * @since 2025-04-17
  */
 @RestController
-@RequestMapping("${app.auth.jdbc.api-context-path:/admin}/role")
+@RequestMapping("${app.auth.api-context-path:/admin}/role")
 public class RoleManageController {
 
     private final ISysRoleService sysRoleService;

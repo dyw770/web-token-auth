@@ -15,7 +15,7 @@ import java.util.List;
  * @since 2025-05-18
  */
 @RestController
-@RequestMapping("/admin/user")
+@RequestMapping("${app.auth.api-context-path:/admin}/user")
 public class UserManageSupportController {
 
     private final SecurityTokenRepository tokenRepository;

@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Validated
 @RestController
-@RequestMapping("${app.auth.jdbc.api-context-path:/admin}/resource")
+@RequestMapping("${app.auth.api-context-path:/admin}/resource")
 public class ResourceManageController {
 
     private final ISysApiResourceService apiResourceService;
