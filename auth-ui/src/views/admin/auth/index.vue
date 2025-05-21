@@ -69,7 +69,7 @@
               <span v-show="data.showButton" class="tree-node-buttons">
                 <el-button-group>
                   <el-button size="small" v-show="checked(data)" @click="editRoleMenuPermission(data.roleCode)">
-                    编辑
+                    编辑子权限
                   </el-button>
                   <el-button size="small" :type="checked(data)? 'danger' : 'success'" @click="menuAuth(data)">
                     {{ checked(data) ? '取消授权' : '授权' }}
