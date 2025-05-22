@@ -23,6 +23,10 @@ public final class RequestUtils {
                 }
             }
         }
+        ip = request.getHeader("X-Real-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
 
         ip = request.getHeader("Proxy-Client-IP");
         if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
