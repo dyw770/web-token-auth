@@ -2,12 +2,10 @@ package cn.dyw.auth.db.configuration;
 
 import cn.dyw.auth.db.event.AuthChangedApplicationListener;
 import cn.dyw.auth.db.security.JdbcAuthorizationManager;
-import cn.dyw.auth.db.security.JdbcTokenAuthenticationProxyFactory;
 import cn.dyw.auth.db.security.JdbcUserDetailsService;
 import cn.dyw.auth.db.service.ISysApiResourceService;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
-import cn.dyw.auth.security.TokenAuthenticationProxyFactory;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,10 +48,5 @@ public class AuthJdbcAutoConfiguration {
     @Bean
     public UserDetailsService userDetailsService(ISysUserService userService, GrantedAuthorityDefaults grantedAuthorityDefaults) {
         return new JdbcUserDetailsService(userService, grantedAuthorityDefaults);
-    }
-    
-    @Bean
-    public TokenAuthenticationProxyFactory jdbcTokenAuthenticationProxyFactory(ISysUserService userService) {
-        return new JdbcTokenAuthenticationProxyFactory(userService);
     }
 }

@@ -5,7 +5,6 @@ import cn.dyw.auth.core.HttpSecurityCustomizer;
 import cn.dyw.auth.security.AuthProperties;
 import cn.dyw.auth.security.LoginLogoutHandler;
 import cn.dyw.auth.security.SecurityExceptionResolverHandler;
-import cn.dyw.auth.security.TokenAuthenticationProxyFactory;
 import cn.dyw.auth.security.controller.UserManageSupportController;
 import cn.dyw.auth.security.filter.SecurityTokenContextConfigurer;
 import cn.dyw.auth.security.repository.LocalMapSecurityTokenRepository;
@@ -96,7 +95,7 @@ public class SecurityAutoConfiguration {
 
                         }
                 );
-        
+
         for (HttpSecurityCustomizer httpSecurityCustomizer : httpSecurityCustomizers) {
             httpSecurityCustomizer.customize(http);
         }
@@ -150,7 +149,7 @@ public class SecurityAutoConfiguration {
     public SecurityExceptionResolverHandler securityExceptionResolverHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         return new SecurityExceptionResolverHandler(resolver);
     }
-    
+
     @Bean
     public UserManageSupportController userManageSupportController(SecurityTokenRepository tokenRepository) {
         return new UserManageSupportController(tokenRepository);
@@ -165,13 +164,9 @@ public class SecurityAutoConfiguration {
     @ConditionalOnMissingBean(SecurityTokenRepository.class)
     @ConditionalOnProperty(prefix = "app.auth", name = "token-repository", havingValue = "local", matchIfMissing = true)
     public SecurityTokenRepository localSecurityTokenRepository(AuthProperties authProperties,
-                                                                UserDetailsService userDetailsService,
-                                                                @Autowired(required = false) TokenAuthenticationProxyFactory proxyFactory) {
+                                                                UserDetailsService userDetailsService) {
         log.info("默认使用本地内存存储token");
-        LocalMapSecurityTokenRepository repository =
-                new LocalMapSecurityTokenRepository(userDetailsService, authProperties.getExpireTime(), authProperties.getRemoveTime());
-        repository.setProxyFactory(proxyFactory);
-        return repository;
+        return new LocalMapSecurityTokenRepository(userDetailsService, authProperties.getExpireTime(), authProperties.getRemoveTime());
     }
 
     @Slf4j

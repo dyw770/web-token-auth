@@ -1,7 +1,7 @@
 package cn.dyw.auth.security.repository;
 
 import cn.dyw.auth.security.TokenAuthenticationToken;
-import cn.dyw.auth.security.repository.jackson.TokenWrapper;
+import cn.dyw.auth.security.serializable.UserLoginDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -17,8 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenRepository {
 
     private final Map<String, TokenWrapper> map;
-    
-    private final UserDetailsService userDetailsService;
 
     /**
      * 过期时间 秒
@@ -31,9 +29,9 @@ public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     private final long removeTime;
 
     public LocalMapSecurityTokenRepository(UserDetailsService userDetailsService,
-                                           long expireTime, 
+                                           long expireTime,
                                            long removeTime) {
-        this.userDetailsService = userDetailsService;
+        super(userDetailsService);
         this.map = new ConcurrentHashMap<>(32);
         this.expireTime = expireTime;
         this.removeTime = removeTime;
@@ -41,12 +39,13 @@ public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenReposi
 
     @Override
     public void savaToken(TokenAuthenticationToken token) {
-        TokenWrapper wrapper = new TokenWrapper(token, expireTime);
+        UserLoginDetails details = token.getDetails();
+        TokenWrapper wrapper = new TokenWrapper(details, expireTime);
         map.put(token.getToken(), wrapper);
     }
     
     @Override
-    protected TokenAuthenticationToken internalLoadToken(String token) {
+    protected UserLoginDetails internalLoadToken(String token) {
         TokenWrapper authToken = map.get(token);
         if (authToken == null) {
             return null;

@@ -2,7 +2,7 @@ package cn.dyw.auth.security.controller;
 
 import cn.dyw.auth.message.Result;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
-import cn.dyw.auth.security.repository.jackson.TokenWrapper;
+import cn.dyw.auth.security.repository.TokenWrapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

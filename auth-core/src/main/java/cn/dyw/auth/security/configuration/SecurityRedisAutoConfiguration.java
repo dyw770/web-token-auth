@@ -1,18 +1,13 @@
 package cn.dyw.auth.security.configuration;
 
 import cn.dyw.auth.security.AuthProperties;
-import cn.dyw.auth.security.TokenAuthenticationProxyFactory;
-import cn.dyw.auth.security.TokenAuthenticationToken;
 import cn.dyw.auth.security.repository.RedisMapSecurityTokenRepository;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
-import cn.dyw.auth.security.repository.jackson.TokenAuthenticationTokenMixin;
-import cn.dyw.auth.security.repository.jackson.TokenWrapper;
-import cn.dyw.auth.security.repository.jackson.TokenWrapperMixin;
-import com.fasterxml.jackson.databind.Module;
+import cn.dyw.auth.security.repository.TokenWrapper;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -21,10 +16,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.jackson2.SecurityJackson2Modules;
-
-import java.util.List;
 
 /**
  * redis token存储配置
@@ -40,14 +33,19 @@ public class SecurityRedisAutoConfiguration {
     @Bean
     @ConditionalOnProperty(prefix = "app.auth", name = "token-repository", havingValue = "redis")
     public RedisTemplate<String, TokenWrapper> tokenRedisTemplate(RedisConnectionFactory factory) {
-        ObjectMapper mapper = new ObjectMapper();
+        // 创建 ObjectMapper
+        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder
+                .json()
+                .build();
+        // 启用自动包含类型信息，用于反序列化时重建对象的实际类型
+        objectMapper.activateDefaultTyping(
+                objectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY);
 
-        List<Module> modules = SecurityJackson2Modules.getModules(getClass().getClassLoader());
-        mapper.registerModules(modules);
-        mapper.addMixIn(TokenWrapper.class, TokenWrapperMixin.class);
-        mapper.addMixIn(TokenAuthenticationToken.class, TokenAuthenticationTokenMixin.class);
+
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer =
-                new Jackson2JsonRedisSerializer<>(mapper, Object.class);
+                new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
 
         RedisTemplate<String, TokenWrapper> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
@@ -61,17 +59,14 @@ public class SecurityRedisAutoConfiguration {
     public SecurityTokenRepository redisSecurityTokenRepository(AuthProperties authProperties,
                                                                 TokenResolve tokenResolve,
                                                                 RedisTemplate<String, TokenWrapper> redisTemplate,
-                                                                UserDetailsService userDetailsService,
-                                                                @Autowired(required = false) TokenAuthenticationProxyFactory proxyFactory) {
-        RedisMapSecurityTokenRepository repository = new RedisMapSecurityTokenRepository(
+                                                                UserDetailsService userDetailsService) {
+        return new RedisMapSecurityTokenRepository(
                 redisTemplate,
                 tokenResolve,
                 authProperties.getExpireTime(),
                 authProperties.getRemoveTime(),
                 authProperties.getRedisKeyPrefix(),
                 userDetailsService);
-        repository.setProxyFactory(proxyFactory);
-        return repository;
     }
 
 }

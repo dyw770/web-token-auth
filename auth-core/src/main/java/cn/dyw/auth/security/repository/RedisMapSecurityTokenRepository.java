@@ -1,7 +1,7 @@
 package cn.dyw.auth.security.repository;
 
 import cn.dyw.auth.security.TokenAuthenticationToken;
-import cn.dyw.auth.security.repository.jackson.TokenWrapper;
+import cn.dyw.auth.security.serializable.UserLoginDetails;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -36,7 +36,6 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
 
     private final TokenResolve tokenResolve;
 
-    private final UserDetailsService userDetailsService;
 
     /**
      * redis
@@ -49,17 +48,18 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
                                            long removeTime,
                                            String keyPrefix,
                                            UserDetailsService userDetailsService) {
+        super(userDetailsService);
         this.expireTime = expireTime;
         this.removeTime = removeTime;
         this.redisTemplate = redisTemplate;
         this.keyPrefix = keyPrefix;
         this.tokenResolve = tokenResolve;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override
     public void savaToken(TokenAuthenticationToken token) {
-        TokenWrapper wrapper = new TokenWrapper(token, expireTime);
+        UserLoginDetails details = token.getDetails();
+        TokenWrapper wrapper = new TokenWrapper(details, expireTime);
         ValueOperations<String, TokenWrapper> ops = redisTemplate.opsForValue();
 
         String key = buildRedisKey(token.getToken());
@@ -68,7 +68,7 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     }
 
     @Override
-    protected TokenAuthenticationToken internalLoadToken(String token) {
+    protected UserLoginDetails internalLoadToken(String token) {
         String key = buildRedisKey(token);
         TokenWrapper authToken = redisTemplate.opsForValue().get(key);
         if (authToken == null) {

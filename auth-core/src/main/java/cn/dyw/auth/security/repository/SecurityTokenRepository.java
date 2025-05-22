@@ -1,7 +1,6 @@
 package cn.dyw.auth.security.repository;
 
 import cn.dyw.auth.security.TokenAuthenticationToken;
-import cn.dyw.auth.security.repository.jackson.TokenWrapper;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;

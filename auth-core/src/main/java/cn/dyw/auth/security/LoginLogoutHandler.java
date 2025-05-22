@@ -2,6 +2,8 @@ package cn.dyw.auth.security;
 
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
+import cn.dyw.auth.security.serializable.UserLoginDetails;
+import cn.dyw.auth.utils.RequestUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +14,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+
+import java.time.LocalDateTime;
 
 /**
  * @author dyw770
@@ -49,16 +53,16 @@ public class LoginLogoutHandler {
                 this.authenticationManager.authenticate(authenticationRequest);
 
         String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
-
+        String loginIp = RequestUtils.getClientIp(request);
         String token = tokenResolve.createToken(authenticationResponse);
+        UserLoginDetails details = new UserLoginDetails(token, username, LocalDateTime.now(), userAgent, loginIp);
+        
         TokenAuthenticationToken authenticationToken = 
                 new TokenAuthenticationToken(
                         authenticationResponse.getPrincipal(),
-                        authenticationResponse.getCredentials(), 
-                        token,
-                        userAgent,
+                        authenticationResponse.getCredentials(),
+                        details,
                         authenticationResponse.getAuthorities());
-        authenticationToken.setDetails(authenticationResponse.getDetails());
         
         tokenRepository.savaToken(authenticationToken);
 

@@ -1,10 +1,11 @@
 package cn.dyw.auth.security.repository;
 
-import cn.dyw.auth.security.TokenAuthenticationProxyFactory;
 import cn.dyw.auth.security.TokenAuthenticationToken;
+import cn.dyw.auth.security.serializable.UserLoginDetails;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * token 存储
@@ -15,17 +16,26 @@ import org.apache.commons.lang3.ObjectUtils;
 public abstract class AbstractSecurityTokenRepository implements SecurityTokenRepository {
     
     @Getter
-    @Setter
-    private TokenAuthenticationProxyFactory proxyFactory;
-    
+    private final UserDetailsService userDetailsService;
+
+    public AbstractSecurityTokenRepository(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
 
     @Override
     public TokenAuthenticationToken loadToken(String token) {
-        if (ObjectUtils.isEmpty(proxyFactory)) {
-            return internalLoadToken(token);
+        UserLoginDetails details = internalLoadToken(token);
+        if (ObjectUtils.isEmpty(details)) {
+            return null;
         }
-        return proxyFactory.proxy(internalLoadToken(token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(details.username());
+        return new TokenAuthenticationToken(
+                userDetails,
+                userDetails.getPassword(),
+                details,
+                userDetails.getAuthorities());
     }
     
-    protected abstract TokenAuthenticationToken internalLoadToken(String token);
+    protected abstract UserLoginDetails internalLoadToken(String token);
 }

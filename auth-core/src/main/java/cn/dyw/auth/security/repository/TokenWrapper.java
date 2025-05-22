@@ -1,6 +1,8 @@
-package cn.dyw.auth.security.repository.jackson;
+package cn.dyw.auth.security.repository;
 
-import cn.dyw.auth.security.TokenAuthenticationToken;
+import cn.dyw.auth.security.serializable.UserLoginDetails;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -12,17 +14,19 @@ import java.time.LocalDateTime;
 @Getter
 public class TokenWrapper implements Serializable {
 
-    private final TokenAuthenticationToken token;
+    private final UserLoginDetails token;
 
     private LocalDateTime expireTime;
 
-    public TokenWrapper(TokenAuthenticationToken token, long expireTime) {
+
+    public TokenWrapper(UserLoginDetails token, long expireTime) {
         this.token = token;
-        LocalDateTime createTime = this.token.getCreateTime();
+        LocalDateTime createTime = this.token.createTime();
         this.expireTime = createTime.plusSeconds(expireTime);
     }
 
-    public TokenWrapper(TokenAuthenticationToken token, LocalDateTime expireTime) {
+    @JsonCreator
+    public TokenWrapper(@JsonProperty("token") UserLoginDetails token, @JsonProperty("expireTime") LocalDateTime expireTime) {
         this.token = token;
         this.expireTime = expireTime;
     }
