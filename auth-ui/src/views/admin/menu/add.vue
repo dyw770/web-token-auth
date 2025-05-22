@@ -41,6 +41,7 @@ import {ref} from 'vue'
 import type {Menu} from '#/api'
 import adminApi from '@/api/modules/admin'
 import {toast} from "vue-sonner";
+import type {FormItemRule} from 'element-plus'
 
 const show = defineModel({required: true, type: Boolean})
 const {parentMenuId} = defineProps<{ parentMenuId?: number }>()
@@ -52,7 +53,7 @@ const emit = defineEmits({
 })
 
 // 表单引用用于校验
-const formRef = ref()
+const formRef = useTemplateRef('formRef')
 
 // 默认值
 const defaultAddMenu: Menu.MenuSaveRq = {
@@ -66,7 +67,7 @@ const defaultAddMenu: Menu.MenuSaveRq = {
 const addMenu = ref<Menu.MenuSaveRq>({...defaultAddMenu})
 
 // 表单验证规则
-const rules = {
+const rules: Record<string, FormItemRule[]> = {
   menuName: [
     {required: true, message: '菜单名不能为空', trigger: 'blur'},
     {min: 2, max: 12, message: '长度在2到12个字符之间', trigger: 'blur'}
@@ -91,7 +92,7 @@ const hideDialog = () => {
 // 提交方法
 const submitAddMenu = async () => {
   try {
-    await formRef.value.validate()
+    await formRef.value?.validate()
     // 发起请求
     await adminApi.menuAdd(addMenu.value, parentMenuId)
     toast.success('新增菜单成功')
@@ -106,6 +107,6 @@ const submitAddMenu = async () => {
 // 重置表单
 const resetForm = () => {
   addMenu.value = {...defaultAddMenu}
-  formRef.value.resetFields()
+  formRef.value?.resetFields()
 }
 </script>

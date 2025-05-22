@@ -63,6 +63,7 @@
 import adminApi from '@/api/modules/admin'
 import type {Menu} from "#/api";
 import {toast} from "vue-sonner";
+import type {FormItemRule} from 'element-plus'
 
 const emit = defineEmits({
   editSuccess: () => {
@@ -71,7 +72,7 @@ const emit = defineEmits({
 })
 
 // 表单引用用于校验
-const formRef = ref()
+const formRef = useTemplateRef('formRef')
 
 const {menu} = defineProps<{ menu: Menu.MenuListRs | undefined }>()
 
@@ -91,7 +92,7 @@ const editMenu = ref<Menu.MenuListRs>({
 })
 
 // 表单验证规则
-const rules = {
+const rules: Record<string, FormItemRule[]> = {
   id: [
     {required: true, message: '菜单ID不能为空', trigger: 'blur'},
     {type: 'number', min: 1, message: '菜单ID必须大于等于1', trigger: 'blur'}
@@ -121,7 +122,7 @@ watch(
 )
 
 const updateMenu = async () => {
-  await formRef.value.validate()
+  await formRef.value?.validate()
   await adminApi.menuUpdate({...editMenu.value})
   toast.success("修改菜单成功")
   emit('editSuccess')
@@ -129,7 +130,7 @@ const updateMenu = async () => {
 
 const resetForm = () => {
   editMenu.value = menu ? {...menu} : {...defaultEditMenu}
-  formRef.value.resetFields()
+  formRef.value?.resetFields()
 }
 
 </script>
