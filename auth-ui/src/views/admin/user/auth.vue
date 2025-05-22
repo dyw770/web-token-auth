@@ -55,12 +55,7 @@ const getRoleList = async () => {
   }
 }
 
-const getCheckedKeys = () => {
-  console.log(treeRef.value!.getCheckedKeys(false))
-}
-
 const closeAuthDialog = () => {
-  getCheckedKeys()
   show.value = false
   treeRef.value!.setCheckedNodes([])
 }
