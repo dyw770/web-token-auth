@@ -53,7 +53,7 @@ const rules = {
   ],
   nickname: [
     {required: true, message: '昵称不能为空', trigger: 'blur'},
-    {max: 12, message: '最长为12个字符', trigger: 'blur'}
+    {max: 12, min: 2, message: '最长为12个字符', trigger: 'blur'}
   ],
   password: [
     {min: 6, max: 16, message: '长度在6到16个字符之间', trigger: 'blur'}

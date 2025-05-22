@@ -25,7 +25,7 @@ public class UserCreateRq {
      * 昵称
      */
     @NotBlank
-    @Length(min = 3, max = 12)
+    @Length(min = 2, max = 12)
     private String nickname;
 
     /**
