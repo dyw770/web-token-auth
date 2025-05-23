@@ -166,7 +166,7 @@ public class SecurityAutoConfiguration {
     public SecurityTokenRepository localSecurityTokenRepository(AuthProperties authProperties,
                                                                 UserDetailsService userDetailsService) {
         log.info("默认使用本地内存存储token");
-        return new LocalMapSecurityTokenRepository(userDetailsService, authProperties.getExpireTime(), authProperties.getRemoveTime());
+        return new LocalMapSecurityTokenRepository(userDetailsService, authProperties.getExpireTime());
     }
 
     @Slf4j

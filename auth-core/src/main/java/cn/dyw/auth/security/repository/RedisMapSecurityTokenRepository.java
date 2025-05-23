@@ -25,11 +25,6 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     private final long expireTime;
 
     /**
-     * 移出时间
-     */
-    private final long removeTime;
-
-    /**
      * key prefix
      */
     private final String keyPrefix;
@@ -40,17 +35,15 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     /**
      * redis
      */
-    private final RedisTemplate<String, TokenWrapper> redisTemplate;
+    private final RedisTemplate<String, UserLoginDetails> redisTemplate;
 
-    public RedisMapSecurityTokenRepository(RedisTemplate<String, TokenWrapper> redisTemplate,
+    public RedisMapSecurityTokenRepository(RedisTemplate<String, UserLoginDetails> redisTemplate,
                                            TokenResolve tokenResolve,
                                            long expireTime,
-                                           long removeTime,
                                            String keyPrefix,
                                            UserDetailsService userDetailsService) {
         super(userDetailsService);
         this.expireTime = expireTime;
-        this.removeTime = removeTime;
         this.redisTemplate = redisTemplate;
         this.keyPrefix = keyPrefix;
         this.tokenResolve = tokenResolve;
@@ -59,25 +52,17 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     @Override
     public void savaToken(TokenAuthenticationToken token) {
         UserLoginDetails details = token.getDetails();
-        TokenWrapper wrapper = new TokenWrapper(details, expireTime);
-        ValueOperations<String, TokenWrapper> ops = redisTemplate.opsForValue();
+        ValueOperations<String, UserLoginDetails> ops = redisTemplate.opsForValue();
 
         String key = buildRedisKey(token.getToken());
 
-        ops.set(key, wrapper, expireTime + removeTime, TimeUnit.SECONDS);
+        ops.set(key, details, expireTime, TimeUnit.SECONDS);
     }
 
     @Override
     protected UserLoginDetails internalLoadToken(String token) {
         String key = buildRedisKey(token);
-        TokenWrapper authToken = redisTemplate.opsForValue().get(key);
-        if (authToken == null) {
-            return null;
-        }
-        if (authToken.isExpired()) {
-            return null;
-        }
-        return authToken.getToken();
+        return redisTemplate.opsForValue().getAndExpire(key, expireTime, TimeUnit.SECONDS);
     }
 
     @Override
@@ -97,25 +82,14 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     @Override
     public boolean isExpired(String token) {
         String key = buildRedisKey(token);
-
-        TokenWrapper tokenWrapper = redisTemplate.opsForValue().get(key);
-        if (tokenWrapper != null) {
-            return tokenWrapper.isExpired();
-        }
-
-        return true;
+        UserLoginDetails details = redisTemplate.opsForValue().get(key);
+        return ObjectUtils.isEmpty(details);
     }
 
     @Override
     public void updateExpireTime(String token, long expireTime) {
         String key = buildRedisKey(token);
-
-        TokenWrapper tokenWrapper = redisTemplate.opsForValue().get(key);
-
-        if (tokenWrapper != null && !tokenWrapper.isExpired()) {
-            tokenWrapper.updateExpireTime(expireTime);
-            redisTemplate.opsForValue().set(key, tokenWrapper, expireTime + removeTime, TimeUnit.SECONDS);
-        }
+        redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
     }
 
     @Override
@@ -126,12 +100,7 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     @Override
     public void expireToken(String token) {
         String key = buildRedisKey(token);
-
-        TokenWrapper tokenWrapper = redisTemplate.opsForValue().get(key);
-        if (tokenWrapper != null && !tokenWrapper.isExpired()) {
-            tokenWrapper.updateExpireTime(0);
-            redisTemplate.opsForValue().set(key, tokenWrapper, removeTime, TimeUnit.SECONDS);
-        }
+        redisTemplate.expire(key, 0, TimeUnit.SECONDS);
     }
 
     @Override
@@ -150,19 +119,17 @@ public class RedisMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     }
 
     @Override
-    public List<TokenWrapper> listUserTokens(String username) {
+    public List<UserLoginDetails> listUserTokens(String username) {
         if (StringUtils.hasText(username)) {
             Set<String> keys = redisTemplate.keys(keyPrefix + username + ":*");
             if (CollectionUtils.isEmpty(keys)) {
                 return List.of();
             }
-            List<TokenWrapper> list = redisTemplate.opsForValue().multiGet(keys);
+            List<UserLoginDetails> list = redisTemplate.opsForValue().multiGet(keys);
             if (CollectionUtils.isEmpty(list)) {
                 return List.of();
             }
-            return list.stream()
-                    .filter(item -> ObjectUtils.isNotEmpty(item) && !item.isExpired())
-                    .toList();
+            return list;
         } else {
             return List.of();
         }

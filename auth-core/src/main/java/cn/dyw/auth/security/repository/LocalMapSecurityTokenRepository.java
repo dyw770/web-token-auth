@@ -3,6 +3,7 @@ package cn.dyw.auth.security.repository;
 import cn.dyw.auth.security.TokenAuthenticationToken;
 import cn.dyw.auth.security.serializable.UserLoginDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,11 @@ public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     private final long removeTime;
 
     public LocalMapSecurityTokenRepository(UserDetailsService userDetailsService,
-                                           long expireTime,
-                                           long removeTime) {
+                                           long expireTime) {
         super(userDetailsService);
         this.map = new ConcurrentHashMap<>(32);
         this.expireTime = expireTime;
-        this.removeTime = removeTime;
+        this.removeTime = 60 * 5;
     }
 
     @Override
@@ -54,6 +54,7 @@ public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenReposi
             removeToken(token);
             return null;
         }
+        authToken.updateExpireTime(expireTime);
         return authToken.getToken();
     }
 
@@ -64,7 +65,7 @@ public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenReposi
 
     @Override
     public boolean containsToken(String token) {
-        return map.containsKey(token);
+        return isExpired(token);
     }
 
     @Override
@@ -109,13 +110,24 @@ public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenReposi
 
     @Override
     public int userTokens(String username) {
-        // TODO 待实现
+        if (StringUtils.hasText(username)) {
+            return (int) map.entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue().getToken().username().equals(username))
+                    .count();
+        }
         return 0;
     }
 
     @Override
-    public List<TokenWrapper> listUserTokens(String username) {
-        // TODO 待实现
+    public List<UserLoginDetails> listUserTokens(String username) {
+        if (StringUtils.hasText(username)) {
+            return map.values()
+                    .stream()
+                    .map(TokenWrapper::getToken)
+                    .filter(token -> token.username().equals(username))
+                    .toList();
+        }
         return List.of();
     }
 

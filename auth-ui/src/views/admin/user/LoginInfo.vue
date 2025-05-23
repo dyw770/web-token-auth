@@ -1,18 +1,14 @@
 <template>
   <el-drawer v-model="showDrawer" title="用户登录信息" direction="rtl" size="60%">
     <el-table :data="loginInfos" style="width: 100%" table-layout="auto" border>
-      <el-table-column prop="token.token" label="Token" show-overflow-tooltip />
-      <el-table-column prop="token.createTime" label="创建时间" width="160">
+      <el-table-column prop="token" label="Token" show-overflow-tooltip />
+      <el-table-column prop="createTime" label="创建时间" width="160">
         <template #default="{ row }">
-          {{ row.token.createTime }}
+          {{ row.createTime }}
         </template>
       </el-table-column>
-      <el-table-column prop="token.loginUserAgent" label="登录设备" show-overflow-tooltip />
-      <el-table-column prop="expireTime" label="过期时间" width="160">
-        <template #default="{ row }">
-          {{ row.expireTime }}
-        </template>
-      </el-table-column>
+      <el-table-column prop="loginUserAgent" label="登录设备" show-overflow-tooltip />
+      <el-table-column prop="loginIp" label="登陆ip"/>
       <el-table-column label="操作" align="center" width="320px">
         <template #default="{ row }">
           <el-button-group>
@@ -35,7 +31,7 @@ const showDrawer = defineModel({required: true, type: Boolean})
 
 const {username} = defineProps<{ username: string | undefined }>()
 
-const loginInfos = ref<User.TokenWrapperRs[]>([])
+const loginInfos = ref<User.UserLoginDetails[]>([])
 
 const userOffline = async (token: string) => {
   await adminApi.userOffline(token)

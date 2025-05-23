@@ -1,6 +1,7 @@
 package cn.dyw.auth.security.repository;
 
 import cn.dyw.auth.security.TokenAuthenticationToken;
+import cn.dyw.auth.security.serializable.UserLoginDetails;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -111,5 +112,5 @@ public interface SecurityTokenRepository {
      *
      * @return 数量
      */
-    List<TokenWrapper> listUserTokens(String username);
+    List<UserLoginDetails> listUserTokens(String username);
 }

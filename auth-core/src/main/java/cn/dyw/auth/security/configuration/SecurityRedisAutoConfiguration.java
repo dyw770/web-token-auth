@@ -4,7 +4,7 @@ import cn.dyw.auth.security.AuthProperties;
 import cn.dyw.auth.security.repository.RedisMapSecurityTokenRepository;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
-import cn.dyw.auth.security.repository.TokenWrapper;
+import cn.dyw.auth.security.serializable.UserLoginDetails;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class SecurityRedisAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "app.auth", name = "token-repository", havingValue = "redis")
-    public RedisTemplate<String, TokenWrapper> tokenRedisTemplate(RedisConnectionFactory factory) {
+    public RedisTemplate<String, UserLoginDetails> tokenRedisTemplate(RedisConnectionFactory factory) {
         // 创建 ObjectMapper
         ObjectMapper objectMapper = Jackson2ObjectMapperBuilder
                 .json()
@@ -44,10 +44,10 @@ public class SecurityRedisAutoConfiguration {
                 JsonTypeInfo.As.PROPERTY);
 
 
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer =
-                new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
+        Jackson2JsonRedisSerializer<UserLoginDetails> jackson2JsonRedisSerializer =
+                new Jackson2JsonRedisSerializer<>(objectMapper, UserLoginDetails.class);
 
-        RedisTemplate<String, TokenWrapper> redisTemplate = new RedisTemplate<>();
+        RedisTemplate<String, UserLoginDetails> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setDefaultSerializer(jackson2JsonRedisSerializer);
@@ -58,13 +58,12 @@ public class SecurityRedisAutoConfiguration {
     @ConditionalOnProperty(prefix = "app.auth", name = "token-repository", havingValue = "redis")
     public SecurityTokenRepository redisSecurityTokenRepository(AuthProperties authProperties,
                                                                 TokenResolve tokenResolve,
-                                                                RedisTemplate<String, TokenWrapper> redisTemplate,
+                                                                RedisTemplate<String, UserLoginDetails> redisTemplate,
                                                                 UserDetailsService userDetailsService) {
         return new RedisMapSecurityTokenRepository(
                 redisTemplate,
                 tokenResolve,
                 authProperties.getExpireTime(),
-                authProperties.getRemoveTime(),
                 authProperties.getRedisKeyPrefix(),
                 userDetailsService);
     }

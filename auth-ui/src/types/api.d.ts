@@ -128,9 +128,37 @@ declare namespace User {
     enabled: boolean;
   }
 
-  interface TokenWrapperRs {
-    token: TokenAuthenticationToken;
-    expireTime: string;
+  /**
+   * Token 序列化类
+   *
+   * @author dyw770
+   * @since 2025-05-22
+   */
+  interface UserLoginDetails {
+    /**
+     * Token 字符串
+     */
+    token: string;
+
+    /**
+     * 用户名
+     */
+    username: string;
+
+    /**
+     * 创建时间（ISO 格式字符串）
+     */
+    createTime: string;
+
+    /**
+     * 用户客户端 UA
+     */
+    loginUserAgent: string;
+
+    /**
+     * 登录 IP 地址
+     */
+    loginIp: string;
   }
 }
 

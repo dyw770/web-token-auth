@@ -1,0 +1,15 @@
+spring:
+  data:
+    redis:
+      host: 192.168.19.15
+      port: 6379
+      database: 1
+      password: 20152046
+app:
+  auth:
+    token-repository: redis
+logging:
+  level:
+    cn.dyw: debug
+    org.springframework.security: DEBUG
+    druid.sql: debug

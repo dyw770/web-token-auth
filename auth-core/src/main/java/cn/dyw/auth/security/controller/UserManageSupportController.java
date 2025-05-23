@@ -2,7 +2,7 @@ package cn.dyw.auth.security.controller;
 
 import cn.dyw.auth.message.Result;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
-import cn.dyw.auth.security.repository.TokenWrapper;
+import cn.dyw.auth.security.serializable.UserLoginDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +31,7 @@ public class UserManageSupportController {
      * @return tokens
      */
     @GetMapping("/tokens")
-    public Result<List<TokenWrapper>> tokens(@RequestParam("username") String username) {
+    public Result<List<UserLoginDetails>> tokens(@RequestParam("username") String username) {
         return Result.createSuccess(tokenRepository.listUserTokens(username));
     }
 

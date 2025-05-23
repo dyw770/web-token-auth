@@ -17,11 +17,6 @@ public class AuthProperties {
     private long expireTime = 60 * 30;
 
     /**
-     * token 过期后移除时间
-     */
-    private long removeTime = 60 * 5;
-
-    /**
      * token 请求头名字
      */
     private String authHeaderName = "Authorization";

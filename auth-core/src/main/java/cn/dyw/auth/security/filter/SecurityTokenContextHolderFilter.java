@@ -90,10 +90,6 @@ public class SecurityTokenContextHolderFilter extends GenericFilterBean {
         } finally {
             this.securityContextHolderStrategy.clearContext();
             request.removeAttribute(FILTER_APPLIED);
-            // 如果存在认证信息，则更新token的过期时间
-            if (checked && context.getAuthentication() != null) {
-                this.securityTokenRepository.updateExpireTime(tokenStr);
-            }
         }
     }
 
