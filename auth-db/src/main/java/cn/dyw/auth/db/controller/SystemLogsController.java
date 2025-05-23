@@ -2,11 +2,14 @@ package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysApiAccessLog;
 import cn.dyw.auth.db.domain.SysSystemOperationLog;
+import cn.dyw.auth.db.message.rq.ApiAccessLogSearchRq;
+import cn.dyw.auth.db.message.rq.SystemOperationSearchRq;
 import cn.dyw.auth.db.service.ISysApiAccessLogService;
 import cn.dyw.auth.db.service.ISysSystemOperationLogService;
-import cn.dyw.auth.message.PageRq;
 import cn.dyw.auth.message.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,12 +41,17 @@ public class SystemLogsController {
      * @return 结果
      */
     @PostMapping("/event")
-    public Result<Page<SysSystemOperationLog>> systemEventLog(@RequestBody @Validated PageRq rq) {
+    public Result<Page<SysSystemOperationLog>> systemEventLog(@RequestBody @Validated SystemOperationSearchRq rq) {
+        
+        Page<SysSystemOperationLog> page = systemOperationLogService.lambdaQuery()
+                .eq(StringUtils.isNotBlank(rq.getOperationEvent()), SysSystemOperationLog::getOperationEvent, rq.getOperationEvent())
+                .eq(StringUtils.isNotBlank(rq.getUsername()), SysSystemOperationLog::getUsername, rq.getUsername())
+                .ge(ObjectUtils.isNotEmpty(rq.getStartTime()), SysSystemOperationLog::getOperationTime, rq.getStartTime())
+                .le(ObjectUtils.isNotEmpty(rq.getEndTime()), SysSystemOperationLog::getOperationTime, rq.getEndTime())
+                .orderByDesc(SysSystemOperationLog::getOperationTime)
+                .page(rq.toPage());
 
-        return Result.createSuccess(
-                systemOperationLogService.lambdaQuery()
-                        .orderByDesc(SysSystemOperationLog::getOperationTime)
-                        .page(rq.toPage()));
+        return Result.createSuccess(page);
     }
 
     /**
@@ -53,11 +61,17 @@ public class SystemLogsController {
      * @return 结果
      */
     @PostMapping("/access")
-    public Result<Page<SysApiAccessLog>> apiAccessLog(@RequestBody @Validated PageRq rq) {
-        return Result.createSuccess(
-                apiAccessLogService
-                        .lambdaQuery()
-                        .orderByDesc(SysApiAccessLog::getApiAccessTime)
-                        .page(rq.toPage()));
+    public Result<Page<SysApiAccessLog>> apiAccessLog(@RequestBody @Validated ApiAccessLogSearchRq rq) {
+        
+        Page<SysApiAccessLog> page = apiAccessLogService
+                .lambdaQuery()
+                .likeRight(StringUtils.isNotBlank(rq.getApiPath()), SysApiAccessLog::getApiPath, rq.getApiPath())
+                .eq(StringUtils.isNotBlank(rq.getApiAccessIp()), SysApiAccessLog::getApiAccessIp, rq.getApiAccessIp())
+                .eq(StringUtils.isNotBlank(rq.getUsername()), SysApiAccessLog::getUsername, rq.getUsername())
+                .ge(ObjectUtils.isNotEmpty(rq.getStartTime()), SysApiAccessLog::getApiAccessTime, rq.getStartTime())
+                .le(ObjectUtils.isNotEmpty(rq.getEndTime()), SysApiAccessLog::getApiAccessTime, rq.getEndTime())
+                .orderByDesc(SysApiAccessLog::getApiAccessTime)
+                .page(rq.toPage());
+        return Result.createSuccess(page);
     }
 }
