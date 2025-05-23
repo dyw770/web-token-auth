@@ -61,7 +61,7 @@ public class SystemAccessFilter extends OncePerRequestFilter {
         try {
             String url = request.getRequestURL().toString();
             String method = request.getMethod();
-            Long duration = Duration.between(startTime, endTime).getSeconds();
+            Long duration = Duration.between(startTime, endTime).toMillis();
             String accessIp = RequestUtils.getClientIp(request);
             String accessUa = request.getHeader(HttpHeaders.USER_AGENT);
             String accessResultType = response.getContentType();
