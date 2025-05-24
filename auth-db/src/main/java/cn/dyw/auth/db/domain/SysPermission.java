@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+
 /**
  * <p>
  * 权限表
@@ -35,10 +36,26 @@ public class SysPermission {
     /**
      * 权限分类
      */
-    private String permissionType;
+    private PermissionType permissionType;
 
     /**
      * 创建时间
      */
     private LocalDateTime createTime;
+
+    /**
+     * 权限分类
+     */
+    public enum PermissionType {
+        /**
+         * 菜单
+         * 表示该权限绑定到菜单
+         */
+        MENU,
+
+        /**
+         * 全局
+         */
+        GLOBAL
+    }
 }

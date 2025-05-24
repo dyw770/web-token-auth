@@ -1,8 +1,11 @@
 package cn.dyw.auth.db.mapper;
 
+import cn.dyw.auth.db.domain.SysPermission;
 import cn.dyw.auth.db.domain.SysRolePermission;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,5 +18,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
 
+    List<SysPermission> queryRolePermissions(String roleCode);
 }
 

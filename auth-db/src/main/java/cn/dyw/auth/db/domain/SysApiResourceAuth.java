@@ -71,6 +71,21 @@ public class SysApiResourceAuth {
         /**
          * 静态授权
          */
-        STATIC
+        STATIC,
+
+        /**
+         * 菜单权限
+         */
+        MENU,
+
+        /**
+         * 菜单子权限
+         */
+        MENU_SUB_PERMISSION,
+
+        /**
+         * 普通权限
+         */
+        PERMISSION
     }
 }

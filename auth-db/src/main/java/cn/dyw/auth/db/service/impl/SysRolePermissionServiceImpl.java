@@ -1,10 +1,13 @@
 package cn.dyw.auth.db.service.impl;
 
+import cn.dyw.auth.db.domain.SysPermission;
 import cn.dyw.auth.db.domain.SysRolePermission;
 import cn.dyw.auth.db.mapper.SysRolePermissionMapper;
 import cn.dyw.auth.db.service.ISysRolePermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionMapper, SysRolePermission> implements ISysRolePermissionService {
 
+    @Override
+    public List<SysPermission> rolePermissions(String roleCode) {
+        return getBaseMapper().queryRolePermissions(roleCode);
+    }
 }

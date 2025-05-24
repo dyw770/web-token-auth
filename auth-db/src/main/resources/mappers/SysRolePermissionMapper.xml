@@ -2,4 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.dyw.auth.db.mapper.SysRolePermissionMapper">
 
+    <select id="queryRolePermissions" resultType="cn.dyw.auth.db.domain.SysPermission">
+        select
+            t3.permission_id,
+            t3.permission_desc,
+            t3.permission_type,
+            t3.create_time
+        from sys_role_permission t1 join (
+            select descendant_role_code from sys_role_hierarchy
+            where ancestor_role_code = #{roleCode}
+        ) t2 on t1.role_code = t2.descendant_role_code
+        join sys_permission t3
+        on t1.permission_id = t3.permission_id
+    </select>
 </mapper>

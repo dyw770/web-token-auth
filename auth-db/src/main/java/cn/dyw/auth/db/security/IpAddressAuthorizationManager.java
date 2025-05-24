@@ -1,5 +1,7 @@
 package cn.dyw.auth.db.security;
 
+import cn.dyw.auth.db.domain.SysApiResourceAuth;
+import cn.dyw.auth.db.model.AuthDto;
 import cn.dyw.auth.utils.RequestUtils;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -53,5 +55,21 @@ public class IpAddressAuthorizationManager implements AuthorizationManager<Reque
     @Override
     public String toString() {
         return "IpAddressAuthorizationManager[ip='" + this.ipAddress + "']";
+    }
+
+    public static class IpAddressAuthorizationManagerFactory implements AuthorizationManagerFactory {
+
+        @Override
+        public List<AuthorizationManager<RequestAuthorizationContext>> createAuthorizationManagers(List<AuthDto> auths) {
+            List<String> ips = auths.stream()
+                    .filter(auth -> auth.getAuthType() == SysApiResourceAuth.AuthType.IP)
+                    .map(AuthDto::getAuthObject)
+                    .toList();
+            if (ips.isEmpty()) {
+                return List.of();
+            }
+            
+            return List.of(IpAddressAuthorizationManager.hasIpAddress(ips));
+        }
     }
 }
