@@ -70,7 +70,7 @@ subprojects {
 
 tasks.register("statistic") {
     val suffix = arrayOf("java", "xml", "vue", "ts")
-    val ignore = arrayOf("node_modules", ".git", "target", "dist", "build")
+    val ignore = arrayOf("node_modules", ".git", "target", "dist", "build", ".idea")
     val statistic = project.projectDir.walk()
         .onEnter { file ->
             ignore.none { it == file.name }
