@@ -1,4 +1,3 @@
-
 tasks.register<Exec>("build") {
   group = BasePlugin.BUILD_GROUP
   description = "删除项目构建文件"
@@ -7,22 +6,26 @@ tasks.register<Exec>("build") {
   workingDir = project.projectDir
 
   val npm = findNpm()
-  if (npm.isNullOrBlank()) {
-    throw GradleException("未查找到系统中的 npm, 请先安装Nodejs或则设置环境变量")
-  }
   commandLine(npm, "run", "build")
 }
 
-fun findNpm(): String? {
+fun findNpm(): String {
   // 获取系统的 PATH 环境变量
-  val pathEnv = System.getenv("PATH") ?: return null
+  val pathEnv = System.getenv("PATH")
+
+  if (pathEnv.isNullOrEmpty()) {
+    throw GradleException("未查找到系统中的 PATH 环境变量")
+  }
 
   // 根据操作系统拆分路径分隔符（Windows 是 ";", Unix 是 ":"）
   val pathSeparator = if (System.getProperty("os.name").contains("Windows", ignoreCase = true)) ";" else ":"
   val paths = pathEnv.split(pathSeparator)
 
   // 可能的 npm 可执行文件名
-  val executableNames = if (System.getProperty("os.name").contains("Windows", ignoreCase = true)) listOf("npm.cmd", "npm") else listOf("npm")
+  val executableNames = if (System.getProperty("os.name").contains("Windows", ignoreCase = true)) listOf(
+    "npm.cmd",
+    "npm"
+  ) else listOf("npm")
 
   // 遍历所有路径，寻找 npm
   for (dir in paths) {
@@ -33,5 +36,5 @@ fun findNpm(): String? {
       }
     }
   }
-  return null
+  throw GradleException("未查找到系统中的 npm, 请先安装Nodejs或则设置环境变量")
 }
