@@ -57,11 +57,7 @@
           <el-switch v-model="row.enable" :before-change="confirmEnableResource(row)" @change="enableResource(row)"/>
         </template>
       </el-table-column>
-      <el-table-column prop="matchType" label="匹配类型" align="center">
-        <template #default="{ row }">
-          {{ row.matchType === 'REGEX' ? '正则' : 'ANT' }}
-        </template>
-      </el-table-column>
+      <el-table-column prop="matchType" label="匹配类型" align="center"/>
       <el-table-column prop="createTime" label="创建时间" align="center"/>
       <el-table-column prop="updateTime" label="更新时间" align="center"/>
       <el-table-column label="操作" align="center">
