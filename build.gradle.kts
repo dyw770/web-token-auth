@@ -73,7 +73,7 @@ tasks.register("statistic") {
     val ignore = arrayOf("node_modules", ".git", "target", "dist", "build")
     val statistic = project.projectDir.walk()
         .onEnter { file ->
-            return@onEnter ignore.none { it == file.name }
+            ignore.none { it == file.name }
         }
         .filter { file ->
             file.isFile && suffix.any { file.extension == it }
