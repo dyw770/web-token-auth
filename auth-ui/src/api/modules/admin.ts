@@ -1,5 +1,5 @@
 import api from '../index'
-import type {Menu, PageRq, Resource, Role, User} from "#/api";
+import type {Menu, PageRq, Permission, Resource, Role, User} from "#/api";
 
 export default {
   // 获取用户列表
@@ -108,6 +108,14 @@ export default {
   addRoleMenuPermissions: (saveRq: Menu.RoleMenuPermissionSaveRq) => api.post(`/admin/menu/permission/role/save`, saveRq),
 
   deleteRoleMenuPermissions: (authId: number) => api.delete(`/admin/menu/permission/role/delete?authId=${authId}`),
+
+  permissionList: (rq: Permission.PermissionSearchRq) => api.post(`/admin/permission/list`, rq),
+
+  deletePermission: (permissionId: string) => api.delete(`/admin/permission/delete/${permissionId}`),
+
+  addPermission: (saveRq: Permission.PermissionSaveRq) => api.post(`/admin/permission/save`, saveRq),
+
+  updatePermission: (saveRq: Permission.PermissionSaveRq) => api.post(`/admin/permission/update`, saveRq),
 
   testPublicApi: () => api.get('/test/static'),
 

@@ -1,6 +1,7 @@
 package cn.dyw.auth.db.service;
 
 import cn.dyw.auth.db.domain.SysPermission;
+import cn.dyw.auth.db.message.rq.PermissionSaveRq;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -12,5 +13,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2025-05-24
  */
 public interface ISysPermissionService extends IService<SysPermission> {
+
+    /**
+     * 新增权限
+     * @param rq 请求参数
+     * @param permissionType 权限类型
+     */
+    void savePermission(PermissionSaveRq rq, SysPermission.PermissionType permissionType);
 
 }

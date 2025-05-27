@@ -708,4 +708,27 @@ export interface SystemOperationSearchRq extends PageRq {
   operationEvent?: string;
 }
 
-export {User, Role, Menu, Resource}
+declare namespace Permission {
+
+  interface PermissionRs {
+    permissionId: string;
+    permissionDesc: string;
+    createTime: string;
+  }
+
+  interface PermissionSearchRq extends PageRq {
+    permissionId?: string;
+  }
+
+  interface PermissionSaveRq {
+    permissionId: string;
+    permissionDesc?: string;
+  }
+
+  interface PermissionUpdateRq {
+    permissionId: string;
+    permissionDesc: string;
+  }
+}
+
+export {User, Role, Menu, Resource, Permission}

@@ -117,6 +117,15 @@ export const adminRoutes: RouteRecordRaw = {
         },
       ]
     },
+    {
+      path: '/admin/permission',
+      component: () => import('@/views/admin/permission/index.vue'),
+      name: 'adminPermission',
+      meta: {
+        title: '权限管理',
+        icon: 'ant-design:team-outlined',
+      },
+    },
   ]
 }
 

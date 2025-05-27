@@ -61,3 +61,8 @@ export const authType = [
     label: "静态授权"
   }
 ]
+
+export enum PermissionType {
+  MENU = 'MENU',
+  GLOBAL = 'GLOBAL'
+}
