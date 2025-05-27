@@ -21,4 +21,11 @@ public interface ISysPermissionService extends IService<SysPermission> {
      */
     void savePermission(PermissionSaveRq rq, SysPermission.PermissionType permissionType);
 
+
+    /**
+     * 删除权限
+     * @param permissionId 权限ID
+     */
+    void deletePermission(String permissionId);
+
 }

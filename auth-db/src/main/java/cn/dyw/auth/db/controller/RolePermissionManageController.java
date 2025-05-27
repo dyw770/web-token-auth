@@ -38,6 +38,7 @@ public class RolePermissionManageController {
     public Result<Page<SysPermission>> list(@RequestBody PermissionSearchRq rq) {
         Page<SysPermission> page = permissionService.lambdaQuery()
                 .like(StringUtils.isNotBlank(rq.getPermissionId()), SysPermission::getPermissionId, rq.getPermissionId())
+                .eq(SysPermission::getPermissionType, SysPermission.PermissionType.GLOBAL)
                 .eq(ObjectUtils.isNotEmpty(rq.getPermissionType()), SysPermission::getPermissionType, rq.getPermissionType())
                 .page(rq.toPage());
 
@@ -48,7 +49,7 @@ public class RolePermissionManageController {
      * 新增权限
      *
      * @param rq 权限信息
-     * @return
+     * @return 结果
      */
     @PostMapping("save")
     public Result<Void> save(@RequestBody @Validated PermissionSaveRq rq) {
@@ -64,7 +65,7 @@ public class RolePermissionManageController {
      */
     @DeleteMapping("delete/{permissionId}")
     public Result<Void> delete(@PathVariable("permissionId") String permissionId) {
-        permissionService.removeById(permissionId);
+        permissionService.deletePermission(permissionId);
         return Result.createSuccess();
     }
 

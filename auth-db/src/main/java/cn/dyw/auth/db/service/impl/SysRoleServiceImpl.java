@@ -1,10 +1,12 @@
 package cn.dyw.auth.db.service.impl;
 
+import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.mapper.SysRoleMapper;
 import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.model.RoleDto;
+import cn.dyw.auth.db.service.ISysApiResourceAuthService;
 import cn.dyw.auth.db.service.ISysRoleHierarchyService;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserRoleService;
@@ -32,9 +34,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     private final ISysUserRoleService userRoleService;
 
-    public SysRoleServiceImpl(ISysRoleHierarchyService roleHierarchyService, ISysUserRoleService userRoleService) {
+    private final ISysApiResourceAuthService resourceAuthService;
+
+    public SysRoleServiceImpl(ISysRoleHierarchyService roleHierarchyService, ISysUserRoleService userRoleService, ISysApiResourceAuthService resourceAuthService) {
         this.roleHierarchyService = roleHierarchyService;
         this.userRoleService = userRoleService;
+        this.resourceAuthService = resourceAuthService;
     }
 
     @Override
@@ -78,7 +83,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
         userRoleService.lambdaUpdate()
                 .eq(SysUserRole::getRoleCode, roleCode)
                 .remove();
-
+        // 删除资源授权
+        resourceAuthService.lambdaUpdate()
+                .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.ROLE)
+                .eq(SysApiResourceAuth::getAuthObject, roleCode)
+                .remove();
     }
 
     @Override

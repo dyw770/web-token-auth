@@ -21,13 +21,15 @@
 
     <!-- 权限表格 -->
     <el-table :data="permissionData" border style="width: 100%" table-layout="auto">
-      <el-table-column prop="permissionId" label="权限ID" align="center" />
-      <el-table-column prop="permissionDesc" label="权限说明" align="center" />
-      <el-table-column prop="createTime" label="创建时间" align="center" />
+      <el-table-column prop="permissionId" label="权限ID" align="center"/>
+      <el-table-column prop="permissionDesc" label="权限说明" align="center"/>
+      <el-table-column prop="createTime" label="创建时间" align="center"/>
       <el-table-column label="操作" align="center">
         <template #default="{ row }">
-          <el-button type="primary" @click="openEditDialog(row)">编辑</el-button>
-          <el-button type="danger" @click="deletePermission(row.permissionId)">删除</el-button>
+          <el-button-group>
+            <el-button type="primary" @click="openEditDialog(row)" size="small">编辑</el-button>
+            <el-button type="danger" @click="deletePermission(row.permissionId)" size="small">删除</el-button>
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
@@ -43,10 +45,10 @@
     <el-dialog v-model="dialogVisible" :title="isEdit ? '编辑权限' : '新增权限'">
       <el-form ref="formRef" :model="form" label-width="100px" @submit.prevent="submitForm">
         <el-form-item label="权限ID" prop="permissionId" required>
-          <el-input v-model="form.permissionId" :disabled="isEdit" />
+          <el-input v-model="form.permissionId" :disabled="isEdit"/>
         </el-form-item>
         <el-form-item label="权限说明" prop="permissionDesc" required>
-          <el-input v-model="form.permissionDesc" />
+          <el-input v-model="form.permissionDesc"/>
         </el-form-item>
         <el-form-item>
           <el-button @click="dialogVisible = false">取消</el-button>
@@ -77,7 +79,6 @@ const form = ref<Permission.PermissionSaveRq>({
   permissionId: '',
   permissionDesc: ''
 })
-const formRef = useTemplateRef('formRef')
 
 // 打开新增弹窗
 const openAddDialog = () => {
