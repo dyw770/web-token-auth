@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot")
     kotlin("jvm")
     kotlin("plugin.spring")
+    kotlin("kapt")
 }
 
 dependencies {
@@ -19,7 +20,7 @@ dependencies {
     
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
     compileOnly("com.github.therapi:therapi-runtime-javadoc")
-    annotationProcessor("com.github.therapi:therapi-runtime-javadoc-scribe")
+    kapt("com.github.therapi:therapi-runtime-javadoc-scribe")
     
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -30,4 +31,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+kapt {
+    keepJavacAnnotationProcessors = true
 }
