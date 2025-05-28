@@ -2,6 +2,8 @@ description = "Spring Security Auth Demo"
 
 plugins {
     id("org.springframework.boot")
+    kotlin("jvm")
+    kotlin("plugin.spring")
 }
 
 dependencies {
@@ -22,6 +24,8 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
+
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

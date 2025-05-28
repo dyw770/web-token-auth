@@ -1,6 +1,7 @@
 plugins {
     id("io.spring.dependency-management")
     id("org.springframework.boot") apply false
+    kotlin("jvm") apply false
 }
 
 allprojects {
@@ -66,10 +67,16 @@ subprojects {
         options.compilerArgs.add("-parameters")
     }
 
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        compilerOptions {
+            freeCompilerArgs.add("-Xjsr305=strict")
+        }
+    }
+
 }
 
 tasks.register("statistic") {
-    val suffix = arrayOf("java", "xml", "vue", "ts")
+    val suffix = arrayOf("java", "xml", "vue", "ts", "kt")
     val ignore = arrayOf("node_modules", ".git", "target", "dist", "build", ".idea")
     val statistic = project.projectDir.walk()
         .onEnter { file ->
