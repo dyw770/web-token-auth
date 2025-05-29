@@ -15,4 +15,12 @@
         join sys_permission t3
         on t1.permission_id = t3.permission_id
     </select>
+    <select id="queryRoleMenuPermissions" resultType="cn.dyw.auth.db.domain.SysPermission">
+        select 
+            t1.permission_id, t1.permission_desc, t1.permission_type, t1.create_time
+            from sys_permission t1 
+            join sys_menu_permission t2 on t1.permission_id = t2.permission_id
+                 join sys_role_permission t3 on t1.permission_id = t3.permission_id
+        where t2.menu_id = #{menuId} and t3.role_code = #{roleCode}
+    </select>
 </mapper>

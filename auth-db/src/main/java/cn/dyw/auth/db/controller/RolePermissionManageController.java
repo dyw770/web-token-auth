@@ -1,14 +1,17 @@
 package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysPermission;
+import cn.dyw.auth.db.domain.SysRolePermission;
 import cn.dyw.auth.db.message.rq.PermissionSaveRq;
 import cn.dyw.auth.db.message.rq.PermissionSearchRq;
 import cn.dyw.auth.db.message.rq.PermissionUpdateRq;
 import cn.dyw.auth.db.service.ISysPermissionService;
+import cn.dyw.auth.db.service.ISysRolePermissionService;
 import cn.dyw.auth.message.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +26,12 @@ public class RolePermissionManageController {
 
     private final ISysPermissionService permissionService;
 
+    private final ISysRolePermissionService rolePermissionService;
 
-    public RolePermissionManageController(ISysPermissionService permissionService) {
+
+    public RolePermissionManageController(ISysPermissionService permissionService, ISysRolePermissionService rolePermissionService) {
         this.permissionService = permissionService;
+        this.rolePermissionService = rolePermissionService;
     }
 
 
@@ -63,9 +69,31 @@ public class RolePermissionManageController {
      * @param permissionId 权限ID
      * @return 结果
      */
+    @Transactional
     @DeleteMapping("delete/{permissionId}")
     public Result<Void> delete(@PathVariable("permissionId") String permissionId) {
+        // TODO: 优化
         permissionService.deletePermission(permissionId);
+        rolePermissionService.lambdaUpdate()
+                .eq(SysRolePermission::getPermissionId, permissionId)
+                .remove();
+        return Result.createSuccess();
+    }
+
+    /**
+     * 删除角色授权
+     *
+     * @param roleCode     角色ID
+     * @param permissionId 权限ID
+     * @return 结果
+     */
+    @DeleteMapping("delete")
+    public Result<Void> delete(@RequestParam("roleCode") String roleCode, @RequestParam("permissionId") String permissionId) {
+        rolePermissionService.lambdaUpdate()
+                .eq(SysRolePermission::getPermissionId, permissionId)
+                .eq(SysRolePermission::getRoleCode, roleCode)
+                .remove();
+
         return Result.createSuccess();
     }
 

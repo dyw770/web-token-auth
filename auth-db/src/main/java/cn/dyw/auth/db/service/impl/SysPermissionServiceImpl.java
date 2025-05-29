@@ -5,6 +5,7 @@ import cn.dyw.auth.db.domain.SysPermission;
 import cn.dyw.auth.db.domain.SysRolePermission;
 import cn.dyw.auth.db.mapper.SysPermissionMapper;
 import cn.dyw.auth.db.message.rq.PermissionSaveRq;
+import cn.dyw.auth.db.model.SysMenuPermissionDto;
 import cn.dyw.auth.db.service.ISysApiResourceAuthService;
 import cn.dyw.auth.db.service.ISysPermissionService;
 import cn.dyw.auth.db.service.ISysRolePermissionService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -55,5 +57,10 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
                 .eq(SysApiResourceAuth::getAuthObject, permissionId)
                 .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.PERMISSION)
                 .remove();
+    }
+
+    @Override
+    public List<SysMenuPermissionDto> menuPermission(Integer menuId) {
+        return getBaseMapper().queryMenuPermissionList(menuId);
     }
 }

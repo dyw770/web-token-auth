@@ -22,4 +22,12 @@ public interface ISysRolePermissionService extends IService<SysRolePermission> {
      * @return 结果
      */
     List<SysPermission> rolePermissions(String roleCode);
+
+    /**
+     * 已经授权的菜单权限
+     * @param menuId 菜单ID
+     * @param roleCode 角色ID
+     * @return 结果
+     */
+    List<SysPermission> roleMenuPermissions(Integer menuId, String roleCode);
 }

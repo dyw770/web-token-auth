@@ -1,18 +1,23 @@
 package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysMenuPermission;
-import cn.dyw.auth.db.domain.SysRoleMenuPermission;
+import cn.dyw.auth.db.domain.SysPermission;
+import cn.dyw.auth.db.domain.SysRolePermission;
 import cn.dyw.auth.db.message.rq.MenuPermissionSaveRq;
 import cn.dyw.auth.db.message.rq.RoleMenuPermissionSaveRq;
-import cn.dyw.auth.db.message.rs.RoleMenuPermission;
+import cn.dyw.auth.db.message.rs.RoleMenuPermissionRs;
+import cn.dyw.auth.db.model.SysMenuPermissionDto;
 import cn.dyw.auth.db.service.ISysMenuPermissionService;
-import cn.dyw.auth.db.service.ISysRoleMenuPermissionService;
+import cn.dyw.auth.db.service.ISysPermissionService;
+import cn.dyw.auth.db.service.ISysRolePermissionService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,12 +37,17 @@ public class MenuPermissionManageController {
 
     private final ISysMenuPermissionService menuPermissionService;
 
-    private final ISysRoleMenuPermissionService roleMenuPermissionService;
+
+    private final ISysPermissionService permissionService;
+
+    private final ISysRolePermissionService rolePermissionService;
 
     public MenuPermissionManageController(ISysMenuPermissionService menuPermissionService,
-                                          ISysRoleMenuPermissionService roleMenuPermissionService) {
+                                          ISysPermissionService permissionService,
+                                          ISysRolePermissionService rolePermissionService) {
         this.menuPermissionService = menuPermissionService;
-        this.roleMenuPermissionService = roleMenuPermissionService;
+        this.permissionService = permissionService;
+        this.rolePermissionService = rolePermissionService;
     }
 
     /**
@@ -59,8 +69,22 @@ public class MenuPermissionManageController {
      * @param rq 请求参数
      * @return 结果
      */
+    @Transactional
     @PostMapping("save")
     public Result<Void> save(@RequestBody @Validated MenuPermissionSaveRq rq) {
+        // TODO: 修改到service层
+        SysPermission id = permissionService.getById(rq.getPermissionId());
+        if (ObjectUtils.isNotEmpty(id)) {
+            return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "权限" + rq.getPermissionId() + "已存在");
+        }
+
+        SysPermission permission = new SysPermission();
+        permission.setPermissionType(SysPermission.PermissionType.MENU);
+        permission.setPermissionId(rq.getPermissionId());
+        permission.setPermissionDesc(rq.getPermissionDesc());
+        permission.setCreateTime(LocalDateTime.now());
+        permissionService.save(permission);
+
         SysMenuPermission sysMenuPermission = new SysMenuPermission();
         BeanUtils.copyProperties(rq, sysMenuPermission);
         sysMenuPermission.setUpdateTime(LocalDateTime.now());
@@ -76,6 +100,7 @@ public class MenuPermissionManageController {
      * @param permissionId 权限id
      * @return 结果
      */
+    @Transactional
     @DeleteMapping("delete/{menuId}/{permissionId}")
     public Result<Void> delete(@PathVariable("menuId") Integer menuId, @PathVariable("permissionId") String permissionId) {
         menuPermissionService.removeMenuPermission(menuId, permissionId);
@@ -90,11 +115,9 @@ public class MenuPermissionManageController {
      */
     @PostMapping("update")
     public Result<Void> update(@RequestBody @Validated MenuPermissionSaveRq rq) {
-        menuPermissionService.lambdaUpdate()
-                .eq(SysMenuPermission::getMenuId, rq.getMenuId())
-                .eq(SysMenuPermission::getPermissionId, rq.getPermissionId())
-                .set(SysMenuPermission::getPermissionDesc, rq.getPermissionDesc())
-                .set(SysMenuPermission::getUpdateTime, LocalDateTime.now())
+        permissionService.lambdaUpdate()
+                .eq(SysPermission::getPermissionId, rq.getPermissionId())
+                .set(SysPermission::getPermissionDesc, rq.getPermissionDesc())
                 .update();
         return Result.createSuccess();
     }
@@ -107,17 +130,13 @@ public class MenuPermissionManageController {
      * @return 结果
      */
     @GetMapping("role")
-    public Result<RoleMenuPermission> roleMenuPermission(@RequestParam("roleCode") @NotBlank String roleCode,
-                                                         @RequestParam("menuId") @NotNull @Min(1) Integer menuId) {
-
-        RoleMenuPermission roleMenuPermission = new RoleMenuPermission();
-        List<SysMenuPermission> menuPermissions = menuPermissionService.lambdaQuery()
-                .eq(SysMenuPermission::getMenuId, menuId)
-                .list();
-        List<SysRoleMenuPermission> roleMenuPermissions = roleMenuPermissionService.lambdaQuery()
-                .eq(SysRoleMenuPermission::getRoleCode, roleCode)
-                .eq(SysRoleMenuPermission::getMenuId, menuId)
-                .list();
+    public Result<RoleMenuPermissionRs> roleMenuPermission(@RequestParam("roleCode") @NotBlank String roleCode,
+                                                           @RequestParam("menuId") @NotNull @Min(1) Integer menuId) {
+        //TODO: 优化
+        RoleMenuPermissionRs roleMenuPermission = new RoleMenuPermissionRs();
+        List<SysMenuPermissionDto> menuPermissions = permissionService.menuPermission(menuId);
+        List<SysPermission> roleMenuPermissions =
+                rolePermissionService.roleMenuPermissions(menuId, roleCode);
 
         roleMenuPermission.setMenuPermissions(menuPermissions);
         roleMenuPermission.setRolePermissions(roleMenuPermissions);
@@ -133,41 +152,27 @@ public class MenuPermissionManageController {
     @PostMapping("role/save")
     public Result<Void> roleMenuPermissionSave(@RequestBody @Validated RoleMenuPermissionSaveRq rq) {
 
-        Long count = menuPermissionService.lambdaQuery()
-                .eq(SysMenuPermission::getMenuId, rq.getMenuId())
-                .eq(SysMenuPermission::getPermissionId, rq.getPermissionId())
+        //TODO: 优化
+        Long count = permissionService.lambdaQuery()
+                .eq(SysPermission::getPermissionId, rq.getPermissionId())
                 .count();
         if (count <= 0) {
             return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "菜单权限" + rq.getPermissionId() + "不存在");
         }
 
-        Long rolePermissionCount = roleMenuPermissionService.lambdaQuery()
-                .eq(SysRoleMenuPermission::getRoleCode, rq.getRoleCode())
-                .eq(SysRoleMenuPermission::getMenuId, rq.getMenuId())
-                .eq(SysRoleMenuPermission::getPermissionId, rq.getPermissionId())
+        Long rolePermissionCount = rolePermissionService.lambdaQuery()
+                .eq(SysRolePermission::getRoleCode, rq.getRoleCode())
+                .eq(SysRolePermission::getPermissionId, rq.getPermissionId())
                 .count();
         if (rolePermissionCount > 0) {
             return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "角色菜单权限" + rq.getPermissionId() + "已存在");
         }
 
-        SysRoleMenuPermission sysRoleMenuPermission = new SysRoleMenuPermission();
-        sysRoleMenuPermission.setRoleCode(rq.getRoleCode());
-        sysRoleMenuPermission.setMenuId(rq.getMenuId());
-        sysRoleMenuPermission.setPermissionId(rq.getPermissionId());
-        sysRoleMenuPermission.setAuthTime(LocalDateTime.now());
-        roleMenuPermissionService.save(sysRoleMenuPermission);
-        return Result.createSuccess();
-    }
-
-    /**
-     * 删除角色的菜单权限
-     *
-     * @param authId 授权ID
-     * @return 结果
-     */
-    @DeleteMapping("role/delete")
-    public Result<Void> roleMenuPermissionDelete(@RequestParam("authId") @NotNull @Min(1) Integer authId) {
-        roleMenuPermissionService.removeById(authId);
+        SysRolePermission sysRolePermission = new SysRolePermission();
+        sysRolePermission.setRoleCode(rq.getRoleCode());
+        sysRolePermission.setAuthTime(LocalDateTime.now());
+        sysRolePermission.setPermissionId(rq.getPermissionId());
+        rolePermissionService.save(sysRolePermission);
         return Result.createSuccess();
     }
 }

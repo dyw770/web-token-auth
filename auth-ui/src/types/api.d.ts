@@ -29,12 +29,6 @@ export interface PageRq {
   orders?: Array<OrderRq>
 }
 
-interface TokenAuthenticationToken {
-  token: string;
-  createTime: LocalDateTime;
-  loginUserAgent: string;
-}
-
 declare namespace User {
 
   interface UserSearchRq extends PageRq {
@@ -419,11 +413,6 @@ namespace Menu {
      * 创建时间（ISO 格式字符串）
      */
     createTime?: string;
-
-    /**
-     * 更新时间（ISO 格式字符串）
-     */
-    updateTime?: string;
   }
 
   interface MenuPermissionSaveRq {
@@ -437,30 +426,11 @@ namespace Menu {
    * @since 2025-05-19
    */
   interface SysRoleMenuPermissionRs {
-    /**
-     * 授权ID
-     */
-    authId: number;
-
-    /**
-     * 角色ID
-     */
-    roleCode: string;
-
-    /**
-     * 菜单ID
-     */
-    menuId: number;
 
     /**
      * 权限ID
      */
     permissionId: string;
-
-    /**
-     * 授权时间（ISO 格式字符串）
-     */
-    authTime: string;
   }
 
   interface RoleMenuPermissionRs {

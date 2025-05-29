@@ -2,7 +2,10 @@ package cn.dyw.auth.db.service;
 
 import cn.dyw.auth.db.domain.SysPermission;
 import cn.dyw.auth.db.message.rq.PermissionSaveRq;
+import cn.dyw.auth.db.model.SysMenuPermissionDto;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -28,4 +31,9 @@ public interface ISysPermissionService extends IService<SysPermission> {
      */
     void deletePermission(String permissionId);
 
+    /**
+     * 菜单子权限
+     * @param menuId 菜单ID
+     */
+    List<SysMenuPermissionDto> menuPermission(Integer menuId);
 }
