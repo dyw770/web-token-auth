@@ -25,17 +25,7 @@ public class SysMenuPermission {
     private String permissionId;
 
     /**
-     * 权限说明
-     */
-    private String permissionDesc;
-
-    /**
      * 创建时间
      */
     private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
 }

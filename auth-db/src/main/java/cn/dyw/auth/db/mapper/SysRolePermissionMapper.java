@@ -21,6 +21,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
 
     /**
      * 查询角色已经授权的权限
+     *
      * @param roleCode 角色ID
      * @return 结果
      */
@@ -28,11 +29,21 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
 
     /**
      * 查询已经授权的菜单子权限
-     * @param menuId 菜单ID
+     *
+     * @param menuId   菜单ID
      * @param roleCode 角色ID
      * @return 结果
      */
-    List<SysPermission> queryRoleMenuPermissions(@Param("menuId") Integer menuId, 
+    List<SysPermission> queryRoleMenuPermissions(@Param("menuId") Integer menuId,
                                                  @Param("roleCode") String roleCode);
+
+    /**
+     * 删除角色权限
+     *
+     * @param roleCode      角色ID
+     * @param permissionIds 权限ID集合
+     * @return 删除的行数
+     */
+    int deleteRolePermissions(@Param("roleCode") String roleCode, @Param("permissionIds") List<String> permissionIds);
 }
 

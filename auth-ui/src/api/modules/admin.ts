@@ -107,7 +107,7 @@ export default {
 
   addRoleMenuPermissions: (saveRq: Menu.RoleMenuPermissionSaveRq) => api.post(`/admin/menu/permission/role/save`, saveRq),
 
-  deleteRoleMenuPermissions: (authId: number) => api.delete(`/admin/menu/permission/role/delete?authId=${authId}`),
+  deleteRoleMenuPermissions: (roleCode: string, permissionId: string) => api.delete(`/admin/permission/delete?roleCode=${roleCode}&permissionId=${permissionId}`),
 
   permissionList: (rq: Permission.PermissionSearchRq) => api.post(`/admin/permission/list`, rq),
 

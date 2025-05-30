@@ -6,10 +6,7 @@ import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.mapper.SysRoleMapper;
 import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.model.RoleDto;
-import cn.dyw.auth.db.service.ISysApiResourceAuthService;
-import cn.dyw.auth.db.service.ISysRoleHierarchyService;
-import cn.dyw.auth.db.service.ISysRoleService;
-import cn.dyw.auth.db.service.ISysUserRoleService;
+import cn.dyw.auth.db.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,11 +32,18 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     private final ISysUserRoleService userRoleService;
 
     private final ISysApiResourceAuthService resourceAuthService;
+    
+    private final ISysRolePermissionService rolePermissionService;
 
-    public SysRoleServiceImpl(ISysRoleHierarchyService roleHierarchyService, ISysUserRoleService userRoleService, ISysApiResourceAuthService resourceAuthService) {
+    public SysRoleServiceImpl(ISysRoleHierarchyService roleHierarchyService,
+                              ISysUserRoleService userRoleService,
+                              ISysApiResourceAuthService resourceAuthService,
+                              ISysRolePermissionService rolePermissionService
+    ) {
         this.roleHierarchyService = roleHierarchyService;
         this.userRoleService = userRoleService;
         this.resourceAuthService = resourceAuthService;
+        this.rolePermissionService = rolePermissionService;
     }
 
     @Override
@@ -83,6 +87,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
         userRoleService.lambdaUpdate()
                 .eq(SysUserRole::getRoleCode, roleCode)
                 .remove();
+        // 删除权限
+        rolePermissionService.removeRolePermissions(roleCode, List.of());
         // 删除资源授权
         resourceAuthService.lambdaUpdate()
                 .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.ROLE)

@@ -31,8 +31,9 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     private final ISysRolePermissionService rolePermissionService;
     
     private final ISysApiResourceAuthService resourceAuthService;
-
-    public SysPermissionServiceImpl(ISysRolePermissionService rolePermissionService, ISysApiResourceAuthService resourceAuthService) {
+    
+    public SysPermissionServiceImpl(ISysRolePermissionService rolePermissionService,
+                                    ISysApiResourceAuthService resourceAuthService) {
         this.rolePermissionService = rolePermissionService;
         this.resourceAuthService = resourceAuthService;
     }
@@ -45,18 +46,22 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
         permission.setPermissionType(permissionType);
         this.save(permission);
     }
+    
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deletePermission(String permissionId) {
-        this.removeById(permissionId);
+    public void removeMenuPermission(List<String> permissions) {
+        // 删除角色授权
         rolePermissionService.lambdaUpdate()
-                .eq(SysRolePermission::getPermissionId, permissionId)
+                .in(SysRolePermission::getPermissionId, permissions)
                 .remove();
+        // 删除资源授权
         resourceAuthService.lambdaUpdate()
-                .eq(SysApiResourceAuth::getAuthObject, permissionId)
-                .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.PERMISSION)
+                .in(SysApiResourceAuth::getAuthObject, permissions)
+                .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.MENU)
                 .remove();
+        // 删除权限
+        this.removeByIds(permissions);
     }
 
     @Override

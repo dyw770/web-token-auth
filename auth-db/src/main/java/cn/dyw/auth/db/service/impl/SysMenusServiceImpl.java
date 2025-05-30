@@ -1,7 +1,6 @@
 package cn.dyw.auth.db.service.impl;
 
 import cn.dyw.auth.db.domain.SysApiResourceAuth;
-import cn.dyw.auth.db.domain.SysMenuPermission;
 import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.domain.SysRoleMenu;
 import cn.dyw.auth.db.mapper.SysMenusMapper;
@@ -90,10 +89,7 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
                 .eq(SysRoleMenu::getMenuId, menuId)
                 .remove();
         // 删除菜单的权限池和已经授权的权限
-        menuPermissionService.lambdaUpdate()
-                .eq(SysMenuPermission::getMenuId, menuId)
-                .remove();
-        // TODO: 删除菜单的子权限 
+        menuPermissionService.removeMenuPermissions(menuId);
         // 删除菜单的资源授权
         resourceAuthService.lambdaUpdate()
                 .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.MENU)
@@ -135,7 +131,7 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     public void deleteMenuForRole(List<Integer> menuIds, String roleCode) {
         // 删除角色的菜单授权时同时要删除其子角色的授权
         getBaseMapper().deleteMenuForRole(menuIds, roleCode);
-        // TODO: 删除角色菜单子权限授权
+        menuPermissionService.removeRoleMenuPermissions(menuIds, roleCode);
     }
 
     @Override

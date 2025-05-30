@@ -61,7 +61,7 @@ const deleteRoleMenuPermission = async (permissionId: string) => {
     p => p.permissionId === permissionId
   )
   if (auth) {
-    await adminApi.deleteRoleMenuPermissions(auth.authId)
+    await adminApi.deleteRoleMenuPermissions(roleCode, auth.permissionId)
     toast.success("撤销授权成功")
     await refresh()
   }

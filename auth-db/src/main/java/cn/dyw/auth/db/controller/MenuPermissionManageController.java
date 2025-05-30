@@ -16,7 +16,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -72,24 +71,12 @@ public class MenuPermissionManageController {
     @Transactional
     @PostMapping("save")
     public Result<Void> save(@RequestBody @Validated MenuPermissionSaveRq rq) {
-        // TODO: 修改到service层
         SysPermission id = permissionService.getById(rq.getPermissionId());
         if (ObjectUtils.isNotEmpty(id)) {
             return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "权限" + rq.getPermissionId() + "已存在");
         }
 
-        SysPermission permission = new SysPermission();
-        permission.setPermissionType(SysPermission.PermissionType.MENU);
-        permission.setPermissionId(rq.getPermissionId());
-        permission.setPermissionDesc(rq.getPermissionDesc());
-        permission.setCreateTime(LocalDateTime.now());
-        permissionService.save(permission);
-
-        SysMenuPermission sysMenuPermission = new SysMenuPermission();
-        BeanUtils.copyProperties(rq, sysMenuPermission);
-        sysMenuPermission.setUpdateTime(LocalDateTime.now());
-        sysMenuPermission.setCreateTime(LocalDateTime.now());
-        menuPermissionService.save(sysMenuPermission);
+        menuPermissionService.addMenuPermission(rq);
         return Result.createSuccess();
     }
 

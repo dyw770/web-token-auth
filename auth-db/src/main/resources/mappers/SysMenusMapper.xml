@@ -107,7 +107,7 @@
                update_time,
                smh.ancestor_menu_id as parent_menu_id,
                permissions
-        from (select t2.menu_id, 
+        from (select t2.menu_id,
                      if(count(srmp.permission_id) = 0, json_array(), json_arrayagg(srmp.permission_id)) as permissions
               from (select distinct srh.descendant_role_code
                     from sys_user_role sur
@@ -116,9 +116,11 @@
                     where sur.username = #{username}) t1
                        join sys_role_menu t2
                             on t1.descendant_role_code = t2.role_code
-                       left join sys_role_menu_permission srmp
+                       left join (select t1.menu_id, t1.permission_id, t2.role_code
+                                  from sys_menu_permission t1
+                                           join sys_role_permission t2 on t1.permission_id = t2.permission_id) srmp
                                  on t2.menu_id = srmp.menu_id and t2.role_code = srmp.role_code
-                          group by t2.menu_id) m1
+              group by t2.menu_id) m1
                  join sys_menus m2 on m1.menu_id = m2.id
                  left join sys_menu_hierarchy smh
                            on m1.menu_id = smh.descendant_menu_id and smh.depth = 1

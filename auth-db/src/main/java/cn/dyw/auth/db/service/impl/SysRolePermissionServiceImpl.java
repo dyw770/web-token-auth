@@ -29,4 +29,9 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
     public List<SysPermission> roleMenuPermissions(Integer menuId, String roleCode) {
         return getBaseMapper().queryRoleMenuPermissions(menuId, roleCode);
     }
+
+    @Override
+    public void removeRolePermissions(String roleCode, List<String> permissionIds) {
+        getBaseMapper().deleteRolePermissions(roleCode, permissionIds);
+    }
 }

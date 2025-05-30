@@ -30,4 +30,11 @@ public interface ISysRolePermissionService extends IService<SysRolePermission> {
      * @return 结果
      */
     List<SysPermission> roleMenuPermissions(Integer menuId, String roleCode);
+    
+    /**
+     * 移除角色权限
+     * @param roleCode 角色ID
+     * @param permissionIds 权限ID
+     */
+    void removeRolePermissions(String roleCode, List<String> permissionIds);
 }
