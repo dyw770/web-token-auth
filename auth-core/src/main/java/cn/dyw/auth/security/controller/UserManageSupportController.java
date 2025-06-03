@@ -36,7 +36,7 @@ public class UserManageSupportController {
     }
 
     /**
-     * 强制用户登录
+     * 强制用户下线
      *
      * @param token 用户token
      * @return 结果
