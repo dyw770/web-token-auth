@@ -5,12 +5,11 @@ plugins {
 dependencies {
     api(project(":auth-annotation"))
     api(project(":auth-common"))
-    
-    api("org.springframework:spring-expression")
-    api("org.springframework:spring-aop")
-    
-    implementation("org.slf4j:slf4j-api")
-    
+
+    compileOnly("org.springframework:spring-expression")
+
+    compileOnly("org.slf4j:slf4j-api")
+    compileOnly("org.springframework.boot:spring-boot-starter-aop")
     compileOnly("org.springframework:spring-context")
     compileOnly("org.springframework.security:spring-security-config")
     compileOnly("org.springframework.security:spring-security-web")

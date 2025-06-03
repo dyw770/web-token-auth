@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-annotations")
+    compileOnly("com.fasterxml.jackson.core:jackson-annotations")
     
     compileOnly("jakarta.servlet:jakarta.servlet-api")
     compileOnly("jakarta.validation:jakarta.validation-api")
