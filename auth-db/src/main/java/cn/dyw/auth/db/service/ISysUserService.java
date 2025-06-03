@@ -34,8 +34,9 @@ public interface ISysUserService extends IService<SysUser> {
      *
      * @param username 用户名
      * @param roleCode 角色代码
+     * @param del true 删除角色
      */
-    void addRoleForUser(String username, String roleCode);
+    void addRoleForUser(String username, String roleCode, boolean del);
 
     /**
      * 为用户添加角色

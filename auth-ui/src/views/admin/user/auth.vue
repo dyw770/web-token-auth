@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="show" title="授权" width="500px" @opened="getRoleList">
+  <el-dialog v-model="show" title="授权" width="500px">
     <el-tree
       ref="treeRoleRef"
       :data="treeData"
@@ -19,7 +19,7 @@
                         size="4"/>
                 {{ node.label }}
               </span>
-          <span v-show="data.showButton" class="tree-node-buttons">
+          <span v-show="data.showButton && (data.editRole || !data.checked)" class="tree-node-buttons">
                 <el-button-group>
                   <el-button size="small" :type="data.checked ? 'danger' : 'success'" @click="auth(data)">
                     {{ data.checked ? '取消授权' : '授权' }}
@@ -48,23 +48,23 @@
 <script setup lang="ts">
 import adminApi from "@/api/modules/admin.ts";
 import {ref} from 'vue'
-import type {TreeInstance} from 'element-plus'
 import type {Role, User} from "#/api";
 import {toast} from "vue-sonner";
 
 interface TreeRole extends Role.RoleListRs {
   checked?: boolean
   showButton?: boolean
+  editRole?: boolean
 }
 
 // 控制授权弹窗显示
 const show = defineModel({required: true, type: Boolean})
 
 const {user} = defineProps<{ user: User.UserRs | undefined }>()
+const userRoles = ref<Array<string>>([])
 
-
-watch(() => user, () => {
-  getRoleList()
+watch(() => user, async () => {
+  await refresh()
 })
 
 const emit = defineEmits({
@@ -72,8 +72,6 @@ const emit = defineEmits({
     return true
   }
 })
-
-const treeRef = ref<TreeInstance>()
 
 const treeData = ref<TreeRole[]>([])
 
@@ -83,19 +81,30 @@ const getRoleList = async () => {
   buildTreeRole()
 }
 
+const getUserRoles = async () => {
+  if (!user) {
+    return
+  }
+  const {data} = await adminApi.userRoles(user.username)
+  userRoles.value = data
+  await getRoleList()
+  buildTreeRole()
+}
+
 const buildTreeRole = () => {
   if (!(user && user.roles)) {
     return
   }
-  const roles = user.roles.map(item => item.roleCode)
+
   treeData.value.forEach(item => {
-    checkRole(item, roles, undefined)
+    checkRole(item, userRoles.value, undefined)
   })
 }
 
 const checkRole  = (role: TreeRole, roles: string[], parentRole: TreeRole | undefined) => {
   if (roles.includes(role.roleCode)) {
     role.checked = true
+    role.editRole = true
   }
   if(role.parentRoleCode && roles.includes(role.parentRoleCode)) (
     role.checked = true
@@ -110,25 +119,31 @@ const checkRole  = (role: TreeRole, roles: string[], parentRole: TreeRole | unde
 
 const closeAuthDialog = () => {
   show.value = false
-  treeRef.value!.setCheckedNodes([])
 }
 
 const auth = async (role: TreeRole) => {
-  await adminApi.addRoleForUser(user!.username, [role.roleCode])
-  toast.success('授权成功')
-  await getRoleList()
+  await adminApi.addRoleForUser(user!.username, role.roleCode, !!role.checked)
+  toast.success('操作成功')
+  await refresh()
   emit('success')
 }
 
 const submitAuth = async () => {
   closeAuthDialog()
-  emit('success')
 }
 
 const defaultProps = {
   children: 'children',
   label: 'roleName',
 }
+
+const refresh = async () => {
+  await getUserRoles()
+}
+
+onMounted(async () => {
+  await refresh()
+})
 
 </script>
 

@@ -54,12 +54,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
-    public void addRoleForUser(String username, String roleCode) {
+    @Transactional(rollbackFor = Exception.class)
+    public void addRoleForUser(String username, String roleCode, boolean del) {
+        if (del) {
+            userRoleService.deleteRoleForUser(username, roleCode);
+            return;
+        }
+        
         List<String> userRoles = roleService.userRoleList(username);
         if (userRoles.contains(roleCode)) {
             log.warn("{} 用户已经拥有 {} 角色（或者间接拥有）", username, roleCode);
             return;
         }
+
+        userRoleService.deleteRoleForUser(username, roleCode);
+        
         SysUserRole sysUserRole = new SysUserRole();
         sysUserRole.setUsername(username);
         sysUserRole.setRoleCode(roleCode);

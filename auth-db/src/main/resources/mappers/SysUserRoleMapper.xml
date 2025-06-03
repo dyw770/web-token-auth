@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.dyw.auth.db.mapper.SysUserRoleMapper">
 
+    <delete id="deleteRoleForUser">
+        delete t1
+        from sys_user_role t1
+                 join (select distinct descendant_role_code
+                       from sys_role_hierarchy
+                       where ancestor_role_code = #{roleCode}) t2 on t1.role_code = t2.descendant_role_code
+        where t1.username = #{username}
+    </delete>
 </mapper>

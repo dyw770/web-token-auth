@@ -1,16 +1,18 @@
 package cn.dyw.auth.db.controller;
 
 import cn.dyw.auth.db.domain.SysUser;
+import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.message.rq.UserCreateRq;
 import cn.dyw.auth.db.message.rq.UserEditRq;
 import cn.dyw.auth.db.message.rq.UserSearchRq;
 import cn.dyw.auth.db.message.rs.UserRs;
+import cn.dyw.auth.db.model.UserDto;
+import cn.dyw.auth.db.service.ISysUserRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -36,9 +38,12 @@ public class UserManageController {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserManageController(ISysUserService userService, PasswordEncoder passwordEncoder) {
+    private final ISysUserRoleService userRoleService;
+
+    public UserManageController(ISysUserService userService, PasswordEncoder passwordEncoder, ISysUserRoleService userRoleService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.userRoleService = userRoleService;
     }
 
     /**
@@ -50,6 +55,30 @@ public class UserManageController {
     @PostMapping("list")
     public Result<Page<UserRs>> userList(@RequestBody @Validated UserSearchRq rq) {
         return Result.createSuccess(userService.userList(rq));
+    }
+
+    /**
+     * 查询用户信息
+     *
+     * @param username 用户名
+     * @return 结果
+     */
+    @GetMapping("/{username}")
+    public Result<UserDto> user(@PathVariable("username") String username) {
+        UserDto userDto = userService.getUserByUsername(username);
+        userDto.setPassword("");
+        return Result.createSuccess(userDto);
+    }
+
+    @GetMapping("roles")
+    public Result<List<String>> userRoles(@RequestParam("username") String username) {
+        List<SysUserRole> list = userRoleService.lambdaQuery()
+                .eq(SysUserRole::getUsername, username)
+                .list();
+        List<String> roles = list.stream()
+                .map(SysUserRole::getRoleCode)
+                .toList();
+        return Result.createSuccess(roles);
     }
 
     @PostMapping("add")
@@ -136,13 +165,15 @@ public class UserManageController {
 
     /**
      * 设置用户角色
-     * @param roles 用户角色
+     *
+     * @param role     用户角色
      * @param username 用户名
+     * @param del      删除角色
      * @return 结果
      */
-    @PostMapping("/role/{username}")
-    public Result<Void> addRoleForUser(@RequestBody @NotNull List<String> roles, @PathVariable String username) {
-        userService.addRoleForUser(username, roles);
+    @PostMapping("/auth/{username}")
+    public Result<Void> authRoleForUser(@RequestParam("role") @NotBlank String role, @PathVariable String username, @RequestParam("del") boolean del) {
+        userService.addRoleForUser(username, role, del);
         return Result.createSuccess();
     }
 }

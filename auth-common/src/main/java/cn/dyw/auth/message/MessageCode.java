@@ -22,8 +22,9 @@ public enum MessageCode {
     
     ACCOUNT_ERROR(1110, "账号相关异常"),
     
+    // 请求相关异常
     PARAM_ERROR(2000, "参数错误"),
-    
+    NOT_FOUND_ERROR(2001, "URL错误, 未找到对应资源"),
     REQUEST_METHOD_ERROR(2003, "请求方法错误"),
     REQUEST_BODY_ERROR(2004, "Request Body异常"),
 

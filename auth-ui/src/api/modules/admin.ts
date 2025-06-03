@@ -5,6 +5,8 @@ export default {
   // 获取用户列表
   userList: (rq: User.UserSearchRq) => api.post('/admin/user/list', rq),
 
+  userRoles: (username: string) =>  api.get(`/admin/user/roles?username=${username}`),
+
   userAdd: (rq: User.UserCreateRq) => api.post('/admin/user/add', rq),
 
   userEdit: (rq: User.UserEditRq) => api.put('/admin/user/edit', rq),
@@ -15,7 +17,7 @@ export default {
 
   roleList: () => api.get('/admin/role/list'),
 
-  addRoleForUser: (username: string, roleCode: string[]) => api.post(`/admin/user/role/${username}`, roleCode),
+  addRoleForUser: (username: string, roleCode: string, del: boolean) => api.post(`/admin/user/auth/${username}?role=${roleCode}&del=${del}`),
 
   roleAdd: (role: Role.RoleSaveRq, parentRoleCode?: string) => {
     if (parentRoleCode) {

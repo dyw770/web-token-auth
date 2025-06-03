@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -67,6 +68,14 @@ public class GlobalDefaultExceptionHandler {
         return Result.createFail(MessageCode.ERROR, e.getMessage());
     }
 
+    
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoResourceFoundException.class)
+    public Result<String> noResourceFoundExceptionHandler(Exception e, HttpServletRequest request) {
+        log(e, request);
+        return Result.createFail(MessageCode.NOT_FOUND_ERROR, e.getMessage());
+    }
+    
     /**
      * 用户名密码错误
      *
