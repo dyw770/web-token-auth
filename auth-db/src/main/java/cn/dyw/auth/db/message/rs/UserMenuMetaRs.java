@@ -2,8 +2,6 @@ package cn.dyw.auth.db.message.rs;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * 用户菜单
  * 
@@ -20,6 +18,4 @@ public class UserMenuMetaRs {
     private boolean menu;
     
     private int order;
-    
-    private List<String> permissions;
 }

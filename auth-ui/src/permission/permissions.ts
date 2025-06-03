@@ -1,8 +1,8 @@
 const permissions = {
   simple: {
-    read: "read",
-    write: "write",
-    delete: "delete",
+    read: "menu.test.read",
+    write: "menu.test.edit",
+    delete: "menu.test.delete",
     execute: "execute"
   }
 }

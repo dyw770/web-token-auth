@@ -100,7 +100,8 @@ const useUserStore = defineStore(
 
     // 获取权限
     async function getPermissions() {
-      permissions.value = []
+      const {data} = await apiUser.permissions()
+      permissions.value = data
     }
 
     // 修改密码

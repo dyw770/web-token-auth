@@ -69,4 +69,12 @@ public interface ISysUserService extends IService<SysUser> {
      * @return 权限列表
      */
     Collection<GrantedAuthority> userAuthority(String username);
+    
+     /**
+     * 获取用户权限
+     *
+     * @param username 用户名
+     * @return 权限列表
+     */
+    List<String> userPermission(String username);
 }

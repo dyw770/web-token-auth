@@ -62,7 +62,19 @@ public class UserSupportController {
         BeanUtils.copyProperties(userDto, rs);
         return Result.createSuccess(rs);
     }
+    
+    @GetMapping("/permissions")
+     public Result<List<String>> permission(@AuthenticationPrincipal User user) {
+        return Result.createSuccess(userService.userPermission(user.getUsername()));
+    }
 
+    /**
+     * 修改密码
+     *
+     * @param user  当前登录用户
+     * @param rq    修改密码请求
+     * @return 修改密码结果
+     */
     @PostMapping("/update/password")
     public Result<Void> updatePassword(@AuthenticationPrincipal User user,
                                        @RequestBody @Validated UserUpdatePasswordRq rq) {
@@ -101,7 +113,6 @@ public class UserSupportController {
                     metaRs.setIcon(menuDto.getMenuIcon());
                     metaRs.setOrder(menuDto.getMenuOrder());
                     metaRs.setMenu(menuDto.getNavShow());
-                    metaRs.setPermissions(menuDto.getPermissions());
 
                     menuRs.setMeta(metaRs);
                     return menuRs;

@@ -1,5 +1,6 @@
 package cn.dyw.auth.db.service.impl;
 
+import cn.dyw.auth.db.domain.SysPermission;
 import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.domain.SysUser;
 import cn.dyw.auth.db.domain.SysUserRole;
@@ -7,6 +8,7 @@ import cn.dyw.auth.db.mapper.SysUserMapper;
 import cn.dyw.auth.db.message.rq.UserSearchRq;
 import cn.dyw.auth.db.message.rs.UserRs;
 import cn.dyw.auth.db.model.UserDto;
+import cn.dyw.auth.db.service.ISysRolePermissionService;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
@@ -41,10 +43,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     private final GrantedAuthorityDefaults grantedAuthorityDefaults;
 
-    public SysUserServiceImpl(ISysRoleService roleService, ISysUserRoleService userRoleService, GrantedAuthorityDefaults grantedAuthorityDefaults) {
+    private final ISysRolePermissionService rolePermissionService;
+
+    public SysUserServiceImpl(ISysRoleService roleService,
+                              ISysUserRoleService userRoleService, 
+                              GrantedAuthorityDefaults grantedAuthorityDefaults, 
+                              ISysRolePermissionService rolePermissionService) {
         this.roleService = roleService;
         this.userRoleService = userRoleService;
         this.grantedAuthorityDefaults = grantedAuthorityDefaults;
+        this.rolePermissionService = rolePermissionService;
     }
 
 
@@ -60,7 +68,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
             userRoleService.deleteRoleForUser(username, roleCode);
             return;
         }
-        
+
         List<String> userRoles = roleService.userRoleList(username);
         if (userRoles.contains(roleCode)) {
             log.warn("{} 用户已经拥有 {} 角色（或者间接拥有）", username, roleCode);
@@ -68,7 +76,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         }
 
         userRoleService.deleteRoleForUser(username, roleCode);
-        
+
         SysUserRole sysUserRole = new SysUserRole();
         sysUserRole.setUsername(username);
         sysUserRole.setRoleCode(roleCode);
@@ -140,6 +148,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         return roleService.userRoleList(username)
                 .stream()
                 .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(grantedAuthorityDefaults.getRolePrefix() + role))
+                .toList();
+    }
+
+    @Override
+    public List<String> userPermission(String username) {
+        List<String> roles = roleService.userRoleList(username);
+        return roles.stream()
+                .flatMap(roleCode -> rolePermissionService.rolePermissions(roleCode).stream())
+                .map(SysPermission::getPermissionId)
+                .distinct()
                 .toList();
     }
 }

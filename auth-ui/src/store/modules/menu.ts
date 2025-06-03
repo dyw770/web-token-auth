@@ -5,7 +5,7 @@ import {resolveRoutePath} from '@/utils'
 import {cloneDeep} from 'es-toolkit'
 import useSettingsStore from './settings'
 import useUserStore from './user'
-import {createRouterMatcher, type RouterMatcher, useRoute} from "vue-router";
+import {createRouterMatcher, type RouterMatcher} from "vue-router";
 
 const useMenuStore = defineStore(
   // 唯一ID
@@ -21,23 +21,6 @@ const useMenuStore = defineStore(
     // 路由匹配器
     const routesMatcher = ref<RouterMatcher>()
     // 根据路径获取匹配的路由
-
-    const route = useRoute()
-
-    const currentMenu = computed(() => {
-      if (!routesMatcher.value) {
-        return undefined
-      }
-      const result = routesMatcher.value?.resolve({path: route.path}, undefined as any)?.matched
-      if (!result || result.length === 0) {
-        return undefined
-      }
-      return result.at(-1)
-    })
-
-    const userPermissions = computed((): string[] => {
-      return currentMenu.value?.meta?.permissions as string[] || [] as string[]
-    })
 
     // 完整导航数据
     const allMenus = computed(() => {
@@ -257,9 +240,7 @@ const useMenuStore = defineStore(
       generateMenusAtFront,
       generateMenusAtBack,
       setActived,
-      hasAuthMenu,
-      currentMenu,
-      userPermissions
+      hasAuthMenu
     }
   },
 )

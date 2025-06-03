@@ -18,4 +18,6 @@ export default {
     password: string
     newPassword: string
   }) => api.post('user/update/password', data),
+
+  permissions: () => api.get('user/permissions'),
 }
