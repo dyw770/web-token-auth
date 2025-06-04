@@ -1,5 +1,6 @@
 package cn.dyw.auth.db.service.impl;
 
+import cn.dyw.auth.cache.CacheNames;
 import cn.dyw.auth.db.domain.SysPermission;
 import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.domain.SysUser;
@@ -17,6 +18,7 @@ import cn.dyw.auth.message.MessageCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -57,6 +59,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
 
     @Override
+    @Cacheable(cacheNames = CacheNames.USER_CACHE, key = "#username")
     public UserDto getUserByUsername(String username) {
         return getBaseMapper().getUserByUsername(username);
     }

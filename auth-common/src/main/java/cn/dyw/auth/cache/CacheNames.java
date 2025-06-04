@@ -7,4 +7,6 @@ package cn.dyw.auth.cache;
 public final class CacheNames {
     
     public static final String ROLE_CACHE = "role";
+    
+    public static final String USER_CACHE = "user";
 }
