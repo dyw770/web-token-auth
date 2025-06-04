@@ -43,7 +43,7 @@ import java.util.Collections;
  * @since 2025-06-03
  */
 @EnableCaching
-@Configuration(enforceUniqueMethods = false)
+@Configuration
 @EnableConfigurationProperties(AuthCacheProperties.class)
 public class RedisCacheAutoConfiguration extends RedisConnectionConfiguration {
 
@@ -72,30 +72,33 @@ public class RedisCacheAutoConfiguration extends RedisConnectionConfiguration {
                 .initialCacheNames(Collections.singleton(CacheNames.ROLE_CACHE))
                 .build();
     }
-    
-    @Bean
+
+    @Configuration
     @ConditionalOnProperty(name = "app.auth.cache.use-custom-redis", havingValue = "true")
-    public RedisCacheManager cacheManager(
-            ObjectProvider<LettuceClientConfigurationBuilderCustomizer> clientConfigurationBuilderCustomizers,
-            ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientOptionsBuilderCustomizers,
-            ClientResources clientResources) {
-        
-        LettuceConnectionFactory connectionFactory = redisConnectionFactory(
-                clientConfigurationBuilderCustomizers,
-                clientOptionsBuilderCustomizers,
-                clientResources
-        );
+    public class CustomRedisCacheAutoConfiguration {
+        @Bean
+        public RedisCacheManager cacheManager(
+                ObjectProvider<LettuceClientConfigurationBuilderCustomizer> clientConfigurationBuilderCustomizers,
+                ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientOptionsBuilderCustomizers,
+                ClientResources clientResources) {
 
-        connectionFactory.start();
+            LettuceConnectionFactory connectionFactory = redisConnectionFactory(
+                    clientConfigurationBuilderCustomizers,
+                    clientOptionsBuilderCustomizers,
+                    clientResources
+            );
 
-        RedisCacheWriter cacheWriter = RedisCacheWriter
-                .nonLockingRedisCacheWriter(connectionFactory, BatchStrategies.scan(1000));
+            connectionFactory.start();
 
-        return RedisCacheManager.builder(cacheWriter)
-                .cacheDefaults(defaultConfiguration())
-                .transactionAware()
-                .initialCacheNames(Collections.singleton(CacheNames.ROLE_CACHE))
-                .build();
+            RedisCacheWriter cacheWriter = RedisCacheWriter
+                    .nonLockingRedisCacheWriter(connectionFactory, BatchStrategies.scan(1000));
+
+            return RedisCacheManager.builder(cacheWriter)
+                    .cacheDefaults(defaultConfiguration())
+                    .transactionAware()
+                    .initialCacheNames(Collections.singleton(CacheNames.ROLE_CACHE))
+                    .build();
+        }
     }
     
     public RedisCacheConfiguration defaultConfiguration() {
