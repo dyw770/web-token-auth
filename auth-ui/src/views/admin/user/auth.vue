@@ -11,15 +11,13 @@
       <template #default="{ node, data }">
         <div
           class="tree-node"
-          @mouseenter="data.showButton = true"
-          @mouseleave="data.showButton = false"
         >
               <span class="justify-center inline-flex items-center gap-2">
                 <FaIcon :name="data.checked ? 'ant-design:check-circle-filled' : 'ant-design:close-circle-filled'"
                         size="4"/>
                 {{ node.label }}
               </span>
-          <span v-show="data.showButton && (data.editRole || !data.checked)" class="tree-node-buttons">
+          <span v-show="data.editRole || !data.checked" class="tree-node-buttons">
                 <el-button-group>
                   <el-button size="small" :type="data.checked ? 'danger' : 'success'" @click="auth(data)">
                     {{ data.checked ? '取消授权' : '授权' }}
@@ -53,7 +51,6 @@ import {toast} from "vue-sonner";
 
 interface TreeRole extends Role.RoleListRs {
   checked?: boolean
-  showButton?: boolean
   editRole?: boolean
 }
 

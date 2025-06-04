@@ -61,7 +61,16 @@ public interface ISysRoleService extends IService<SysRole> {
     List<ParentRoleDto> parentRoleList();
 
     /**
+     * 查询用户授权过的角色列表
+     *
+     * @param username 用户名
+     * @return 结果
+     */
+    List<String> userAuthRole(String username);
+
+    /**
      * 查询用户角色列表，包括其拥有的子角色
+     *
      * @param username 用户名
      * @return 角色列表
      */

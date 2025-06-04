@@ -1,7 +1,7 @@
 package cn.dyw.auth.security.configuration;
 
 import cn.dyw.auth.security.AuthProperties;
-import cn.dyw.auth.security.repository.RedisMapSecurityTokenRepository;
+import cn.dyw.auth.security.repository.RedisSecurityTokenRepository;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
 import cn.dyw.auth.security.serializable.UserLoginDetails;
@@ -60,7 +60,7 @@ public class SecurityRedisAutoConfiguration {
                                                                 TokenResolve tokenResolve,
                                                                 RedisTemplate<String, UserLoginDetails> redisTemplate,
                                                                 UserDetailsService userDetailsService) {
-        return new RedisMapSecurityTokenRepository(
+        return new RedisSecurityTokenRepository(
                 redisTemplate,
                 tokenResolve,
                 authProperties.getExpireTime(),

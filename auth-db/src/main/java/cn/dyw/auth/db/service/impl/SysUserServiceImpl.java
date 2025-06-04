@@ -19,15 +19,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.config.core.GrantedAuthorityDefaults;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -43,17 +39,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     private final ISysUserRoleService userRoleService;
 
-    private final GrantedAuthorityDefaults grantedAuthorityDefaults;
-
     private final ISysRolePermissionService rolePermissionService;
 
     public SysUserServiceImpl(ISysRoleService roleService,
-                              ISysUserRoleService userRoleService, 
-                              GrantedAuthorityDefaults grantedAuthorityDefaults, 
+                              ISysUserRoleService userRoleService,
                               ISysRolePermissionService rolePermissionService) {
         this.roleService = roleService;
         this.userRoleService = userRoleService;
-        this.grantedAuthorityDefaults = grantedAuthorityDefaults;
         this.rolePermissionService = rolePermissionService;
     }
 
@@ -147,16 +139,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
-    public Collection<GrantedAuthority> userAuthority(String username) {
-        return roleService.userRoleList(username)
-                .stream()
-                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(grantedAuthorityDefaults.getRolePrefix() + role))
-                .toList();
+    public List<String> userAuthRoles(String username) {
+        return roleService.userRoleList(username);
     }
+
 
     @Override
     public List<String> userPermission(String username) {
-        List<String> roles = roleService.userRoleList(username);
+        List<String> roles = roleService.userAuthRole(username);
         return roles.stream()
                 .flatMap(roleCode -> rolePermissionService.rolePermissions(roleCode).stream())
                 .map(SysPermission::getPermissionId)

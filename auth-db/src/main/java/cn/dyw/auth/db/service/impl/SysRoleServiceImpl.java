@@ -1,5 +1,6 @@
 package cn.dyw.auth.db.service.impl;
 
+import cn.dyw.auth.cache.CacheNames;
 import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.domain.SysUserRole;
@@ -10,6 +11,7 @@ import cn.dyw.auth.db.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,8 +124,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
+    @Cacheable(value = CacheNames.ROLE_LIST, key = "'list'")
     public List<ParentRoleDto> parentRoleList() {
         return getBaseMapper().queryParentRoleList();
+    }
+
+    @Override
+    @Cacheable(value = CacheNames.USER_AUTH_ROLE, key = "#username")
+    public List<String> userAuthRole(String username) {
+        return getBaseMapper().queryUserRoles(username);
     }
 
 

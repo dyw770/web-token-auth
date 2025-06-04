@@ -18,8 +18,6 @@
 
     <resultMap id="UserDto" type="cn.dyw.auth.db.model.UserDto" autoMapping="true">
         <id property="username" column="username"/>
-        <association property="roles" select="cn.dyw.auth.db.mapper.SysRoleMapper.queryRoleCodeByUser"
-                     column="username"/>
     </resultMap>
 
 

@@ -6,7 +6,6 @@ import cn.dyw.auth.db.message.rq.UserCreateRq;
 import cn.dyw.auth.db.message.rq.UserEditRq;
 import cn.dyw.auth.db.message.rq.UserSearchRq;
 import cn.dyw.auth.db.message.rs.UserRs;
-import cn.dyw.auth.db.model.UserDto;
 import cn.dyw.auth.db.service.ISysUserRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
 import cn.dyw.auth.message.MessageCode;
@@ -55,19 +54,6 @@ public class UserManageController {
     @PostMapping("list")
     public Result<Page<UserRs>> userList(@RequestBody @Validated UserSearchRq rq) {
         return Result.createSuccess(userService.userList(rq));
-    }
-
-    /**
-     * 查询用户信息
-     *
-     * @param username 用户名
-     * @return 结果
-     */
-    @GetMapping("/{username}")
-    public Result<UserDto> user(@PathVariable("username") String username) {
-        UserDto userDto = userService.getUserByUsername(username);
-        userDto.setPassword("");
-        return Result.createSuccess(userDto);
     }
 
     @GetMapping("roles")

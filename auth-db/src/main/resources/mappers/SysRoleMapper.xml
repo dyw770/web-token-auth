@@ -46,5 +46,10 @@
                descendant_role_code
         from sys_role_hierarchy
     </select>
+    <select id="queryUserRoles" resultType="java.lang.String">
+        select role_code
+        from sys_user_role
+        where username = #{username}
+    </select>
 
 </mapper>

@@ -110,6 +110,7 @@ public class RedisCacheAutoConfiguration extends RedisConnectionConfiguration {
                         .fromSerializer(new GenericJackson2JsonRedisSerializer(createObjectMapper()))
                 )
                 .entryTtl(cacheProperties.getExpireTime())
+                .enableTimeToIdle()
                 .computePrefixWith(cacheName -> cacheProperties.getCachePrefix() + cacheName + ":");
     }
 
