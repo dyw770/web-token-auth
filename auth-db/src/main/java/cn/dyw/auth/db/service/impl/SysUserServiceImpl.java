@@ -8,12 +8,10 @@ import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.mapper.SysUserMapper;
 import cn.dyw.auth.db.message.rq.UserSearchRq;
 import cn.dyw.auth.db.message.rs.UserRs;
+import cn.dyw.auth.db.model.MenuDto;
 import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.model.UserDto;
-import cn.dyw.auth.db.service.ISysRolePermissionService;
-import cn.dyw.auth.db.service.ISysRoleService;
-import cn.dyw.auth.db.service.ISysUserRoleService;
-import cn.dyw.auth.db.service.ISysUserService;
+import cn.dyw.auth.db.service.*;
 import cn.dyw.auth.exception.ExtensionBusinessException;
 import cn.dyw.auth.message.MessageCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -45,13 +44,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     private final ISysUserRoleService userRoleService;
 
     private final ISysRolePermissionService rolePermissionService;
+    
+    private final ISysMenusService menusService;
 
     public SysUserServiceImpl(ISysRoleService roleService,
                               ISysUserRoleService userRoleService,
-                              ISysRolePermissionService rolePermissionService) {
+                              ISysRolePermissionService rolePermissionService, 
+                              ISysMenusService menusService) {
         this.roleService = roleService;
         this.userRoleService = userRoleService;
         this.rolePermissionService = rolePermissionService;
+        this.menusService = menusService;
     }
 
 
@@ -167,6 +170,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
                 .map(SysPermission::getPermissionId)
                 .distinct()
                 .toList();
+    }
+
+    @Override
+    public List<MenuDto> userMenus(String username) {
+        List<String> roles = userAuthRoles(username);
+        return roles.stream()
+                .flatMap(role -> menusService.roleAuthMenuList(role).stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -6,9 +6,7 @@ import cn.dyw.auth.db.message.rs.UserInfoRs;
 import cn.dyw.auth.db.message.rs.UserMenuMetaRs;
 import cn.dyw.auth.db.message.rs.UserMenuRs;
 import cn.dyw.auth.db.model.MenuDto;
-import cn.dyw.auth.db.model.MenuPermissionDto;
 import cn.dyw.auth.db.model.UserDto;
-import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.db.service.ISysUserService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
@@ -36,15 +34,12 @@ public class UserSupportController {
 
     private final ISysUserService userService;
 
-    private final ISysMenusService menusService;
 
     private final PasswordEncoder passwordEncoder;
 
     public UserSupportController(ISysUserService userService,
-                                 ISysMenusService menusService,
                                  PasswordEncoder passwordEncoder) {
         this.userService = userService;
-        this.menusService = menusService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -99,7 +94,7 @@ public class UserSupportController {
      */
     @GetMapping("/menu")
     public Result<List<UserMenuRs>> menu(@AuthenticationPrincipal User user) {
-        List<MenuPermissionDto> menuList = menusService.userMenuList(user.getUsername());
+        List<MenuDto> menuList = userService.userMenus(user.getUsername());
 
         List<UserMenuRs> menuRsList = menuList.stream()
                 .map(menuDto -> {

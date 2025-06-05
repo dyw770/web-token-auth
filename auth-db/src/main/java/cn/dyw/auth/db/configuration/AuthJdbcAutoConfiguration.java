@@ -3,7 +3,6 @@ package cn.dyw.auth.db.configuration;
 import cn.dyw.auth.db.event.AuthChangedApplicationListener;
 import cn.dyw.auth.db.security.*;
 import cn.dyw.auth.db.service.ISysApiResourceService;
-import cn.dyw.auth.db.service.ISysMenusService;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
 import org.mybatis.spring.annotation.MapperScan;
@@ -63,8 +62,8 @@ public class AuthJdbcAutoConfiguration {
     }
 
     @Bean
-    public MenuAuthorizationManager.MenuAuthorizationManagerFactory menuAuthorizationManagerFactory(ISysMenusService menusService) {
-        return new MenuAuthorizationManager.MenuAuthorizationManagerFactory(menusService);
+    public MenuAuthorizationManager.MenuAuthorizationManagerFactory menuAuthorizationManagerFactory(ISysUserService userService) {
+        return new MenuAuthorizationManager.MenuAuthorizationManagerFactory(userService);
     }
 
     @Bean

@@ -1,6 +1,5 @@
 package cn.dyw.auth.db.controller;
 
-import cn.dyw.auth.cache.CacheNames;
 import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.message.rq.RoleSavaRq;
 import cn.dyw.auth.db.message.rq.RoleUpdateRq;
@@ -12,7 +11,6 @@ import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +48,6 @@ public class RoleManageController {
      * @return 保存成功
      */
     @PostMapping("/save")
-    @CacheEvict(value = CacheNames.ROLE_LIST, allEntries = true)
     public Result<Void> save(@RequestBody @Validated RoleSavaRq rq,
                              @RequestParam(value = "parentRoleCode", required = false) String parentRoleCode) {
         if (StringUtils.isNotBlank(parentRoleCode)) {

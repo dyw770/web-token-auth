@@ -2,7 +2,6 @@ package cn.dyw.auth.db.service;
 
 import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.model.MenuDto;
-import cn.dyw.auth.db.model.MenuPermissionDto;
 import cn.dyw.auth.db.model.MenuRoleDto;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -76,7 +75,7 @@ public interface ISysMenusService extends IService<SysMenus> {
      * @param username 用户名
      * @return 菜单
      */
-    List<MenuPermissionDto> userMenuTreeList(String username);
+    List<MenuDto> userMenuTreeList(String username);
 
     /**
      * 查询用户的菜单列表
@@ -84,7 +83,16 @@ public interface ISysMenusService extends IService<SysMenus> {
      * @param username 用户名
      * @return 菜单
      */
-    List<MenuPermissionDto> userMenuList(String username);
+    List<MenuDto> userMenuList(String username);
+
+    /**
+     * 查询角色的菜单列表
+     * 不包含子角色
+     *
+     * @param roleCode 角色名
+     * @return 角色菜单
+     */
+    List<MenuDto> roleAuthMenuList(String roleCode);
 
     /**
      * 删除角色的菜单授权
@@ -96,7 +104,8 @@ public interface ISysMenusService extends IService<SysMenus> {
 
     /**
      * 添加角色的菜单授权
-     * @param menuIds 菜单ID
+     *
+     * @param menuIds  菜单ID
      * @param roleCode 角色
      */
     void addMenuForRole(List<Integer> menuIds, String roleCode);

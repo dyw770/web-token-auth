@@ -51,6 +51,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_LIST, allEntries = true),
+                    @CacheEvict(value = CacheNames.ROLE_MENU, allEntries = true),
+                    @CacheEvict(value = CacheNames.USER_AUTH_ROLE, allEntries = true)
+            }
+    )
     public void savaRole(SysRole sysRole, String parentRoleCode) {
 
         sysRole.setDel(false);
@@ -72,6 +79,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Caching(
             evict = {
                     @CacheEvict(value = CacheNames.ROLE_LIST, allEntries = true),
+                    @CacheEvict(value = CacheNames.ROLE_MENU, allEntries = true),
                     @CacheEvict(value = CacheNames.USER_AUTH_ROLE, allEntries = true)
             }
     )
@@ -88,6 +96,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Caching(
             evict = {
                     @CacheEvict(value = CacheNames.ROLE_LIST, allEntries = true),
+                    @CacheEvict(value = CacheNames.ROLE_MENU, allEntries = true),
                     @CacheEvict(value = CacheNames.USER_AUTH_ROLE, allEntries = true)
             }
     )

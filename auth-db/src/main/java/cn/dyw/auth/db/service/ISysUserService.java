@@ -3,6 +3,7 @@ package cn.dyw.auth.db.service;
 import cn.dyw.auth.db.domain.SysUser;
 import cn.dyw.auth.db.message.rq.UserSearchRq;
 import cn.dyw.auth.db.message.rs.UserRs;
+import cn.dyw.auth.db.model.MenuDto;
 import cn.dyw.auth.db.model.UserDto;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -75,6 +76,13 @@ public interface ISysUserService extends IService<SysUser> {
      * @return 权限列表
      */
     List<String> userPermission(String username);
+
+    /**
+     * 查询用户菜单
+     * @param username 用户名
+     * @return 菜单
+     */
+    List<MenuDto> userMenus(String username);
     
     /**
      * 获取用户权限

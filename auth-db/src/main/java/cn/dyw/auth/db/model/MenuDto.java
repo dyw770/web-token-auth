@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author dyw770
@@ -22,5 +23,17 @@ public class MenuDto extends SysMenus {
 
     public void addChildren(MenuDto menuDto) {
         children.add(menuDto);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        MenuDto menuDto = (MenuDto) o;
+        return Objects.equals(getId(), menuDto.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

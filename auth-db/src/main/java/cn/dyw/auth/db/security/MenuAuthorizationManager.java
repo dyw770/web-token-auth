@@ -2,8 +2,8 @@ package cn.dyw.auth.db.security;
 
 import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.model.AuthDto;
-import cn.dyw.auth.db.model.MenuPermissionDto;
-import cn.dyw.auth.db.service.ISysMenusService;
+import cn.dyw.auth.db.model.MenuDto;
+import cn.dyw.auth.db.service.ISysUserService;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
@@ -24,17 +24,17 @@ public class MenuAuthorizationManager implements AuthorizationManager<RequestAut
 
     private final List<Integer> menuIds;
 
-    private final ISysMenusService menusService;
+    private final ISysUserService userService;
 
-    private MenuAuthorizationManager(List<Integer> menuIds, ISysMenusService menusService) {
+    private MenuAuthorizationManager(List<Integer> menuIds, ISysUserService userService) {
         this.menuIds = menuIds;
-        this.menusService = menusService;
+        this.userService = userService;
     }
 
 
-    public static MenuAuthorizationManager hasMenus(List<Integer> menuIds, ISysMenusService menusService) {
+    public static MenuAuthorizationManager hasMenus(List<Integer> menuIds, ISysUserService userService) {
         Assert.notEmpty(menuIds, "menus cannot be null");
-        return new MenuAuthorizationManager(menuIds, menusService);
+        return new MenuAuthorizationManager(menuIds, userService);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class MenuAuthorizationManager implements AuthorizationManager<RequestAut
     public AuthorizationDecision check(Supplier<Authentication> authentication,
                                        RequestAuthorizationContext requestAuthorizationContext) {
         String username = authentication.get().getName();
-        List<MenuPermissionDto> menuList = menusService.userMenuList(username);
-        Optional<MenuPermissionDto> any = menuList.stream()
+        List<MenuDto> menuList = userService.userMenus(username);
+        Optional<MenuDto> any = menuList.stream()
                 .filter(menuDto -> menuIds.contains(menuDto.getId()))
                 .findAny();
         if (any.isPresent()) {
@@ -61,10 +61,10 @@ public class MenuAuthorizationManager implements AuthorizationManager<RequestAut
     
     public static class MenuAuthorizationManagerFactory implements AuthorizationManagerFactory {
         
-        private final ISysMenusService menusService;
+        private final ISysUserService userService;
 
-        public MenuAuthorizationManagerFactory(ISysMenusService menusService) {
-            this.menusService = menusService;
+        public MenuAuthorizationManagerFactory(ISysUserService userService) {
+            this.userService = userService;
         }
 
         @Override
@@ -76,7 +76,7 @@ public class MenuAuthorizationManager implements AuthorizationManager<RequestAut
             if (menuIds.isEmpty()) {
                 return List.of();
             }
-            return List.of(MenuAuthorizationManager.hasMenus(menuIds, menusService));
+            return List.of(MenuAuthorizationManager.hasMenus(menuIds, userService));
         }
     }
 }

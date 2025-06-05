@@ -15,4 +15,6 @@ public final class CacheNames {
     public static final String ROLE_LIST = "role_list";
     
     public static final String ROLE_PERMISSION = "role_permission";
+    
+    public static final String ROLE_MENU = "role_menu";
 }

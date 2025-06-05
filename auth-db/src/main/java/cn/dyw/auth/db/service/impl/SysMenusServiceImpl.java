@@ -1,15 +1,18 @@
 package cn.dyw.auth.db.service.impl;
 
+import cn.dyw.auth.cache.CacheNames;
 import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.domain.SysMenus;
 import cn.dyw.auth.db.domain.SysRoleMenu;
 import cn.dyw.auth.db.mapper.SysMenusMapper;
 import cn.dyw.auth.db.model.MenuDto;
-import cn.dyw.auth.db.model.MenuPermissionDto;
 import cn.dyw.auth.db.model.MenuRoleDto;
 import cn.dyw.auth.db.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +55,11 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
 
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_MENU, allEntries = true),
+            }
+    )
     public void savaMenu(SysMenus menu, Integer parentMenuId) {
         menu.setCreateTime(LocalDateTime.now());
         menu.setUpdateTime(LocalDateTime.now());
@@ -61,6 +69,11 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_MENU, allEntries = true),
+            }
+    )
     public void updateMenu(SysMenus menu) {
         menu.setCreateTime(null);
         menu.setUpdateTime(LocalDateTime.now());
@@ -68,6 +81,11 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_MENU, allEntries = true),
+            }
+    )
     public void updateMenuHierarchy(Integer menuId, Integer parentMenuId) {
         lambdaUpdate()
                 .eq(SysMenus::getId, menuId)
@@ -78,6 +96,12 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_MENU, allEntries = true),
+                    @CacheEvict(value = CacheNames.ROLE_PERMISSION, allEntries = true),
+            }
+    )
     public void deleteMenu(Integer menuId) {
         // 删除菜单
         lambdaUpdate().eq(SysMenus::getId, menuId)
@@ -117,17 +141,28 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     }
 
     @Override
-    public List<MenuPermissionDto> userMenuTreeList(String username) {
-        List<MenuPermissionDto> menuDtoList = getBaseMapper().queryUserMenuList(username);
+    public List<MenuDto> userMenuTreeList(String username) {
+        List<MenuDto> menuDtoList = getBaseMapper().queryUserMenuList(username);
         return treeMenu(menuDtoList);
     }
 
     @Override
-    public List<MenuPermissionDto> userMenuList(String username) {
+    public List<MenuDto> userMenuList(String username) {
         return getBaseMapper().queryUserMenuList(username);
     }
 
     @Override
+    @Cacheable(value = CacheNames.ROLE_MENU, key = "#roleCode")
+    public List<MenuDto> roleAuthMenuList(String roleCode) {
+        return getBaseMapper().queryRoleAuthMenuList(roleCode);
+    }
+
+    @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_MENU, key = "#roleCode"),
+            }
+    )
     public void deleteMenuForRole(List<Integer> menuIds, String roleCode) {
         // 删除角色的菜单授权时同时要删除其子角色的授权
         getBaseMapper().deleteMenuForRole(menuIds, roleCode);
@@ -135,6 +170,11 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_MENU, key = "#roleCode"),
+            }
+    )
     public void addMenuForRole(List<Integer> menuIds, String roleCode) {
         // 增加角色菜单授权的同时会把该菜单的父级菜单和子菜单都授权给该角色
         getBaseMapper().insertMenuForRole(menuIds, roleCode);
