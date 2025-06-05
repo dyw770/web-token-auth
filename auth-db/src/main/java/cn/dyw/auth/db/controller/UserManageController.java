@@ -1,12 +1,12 @@
 package cn.dyw.auth.db.controller;
 
+import cn.dyw.auth.cache.CacheNames;
 import cn.dyw.auth.db.domain.SysUser;
-import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.message.rq.UserCreateRq;
 import cn.dyw.auth.db.message.rq.UserEditRq;
 import cn.dyw.auth.db.message.rq.UserSearchRq;
 import cn.dyw.auth.db.message.rs.UserRs;
-import cn.dyw.auth.db.service.ISysUserRoleService;
+import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
@@ -15,6 +15,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,12 +38,12 @@ public class UserManageController {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final ISysUserRoleService userRoleService;
+    private final ISysRoleService roleService;
 
-    public UserManageController(ISysUserService userService, PasswordEncoder passwordEncoder, ISysUserRoleService userRoleService) {
+    public UserManageController(ISysUserService userService, PasswordEncoder passwordEncoder, ISysRoleService roleService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.userRoleService = userRoleService;
+        this.roleService = roleService;
     }
 
     /**
@@ -56,15 +57,14 @@ public class UserManageController {
         return Result.createSuccess(userService.userList(rq));
     }
 
+    /**
+     * 获取用户授权过的角色
+     * @param username 用户名
+     * @return 结果
+     */
     @GetMapping("roles")
     public Result<List<String>> userRoles(@RequestParam("username") String username) {
-        List<SysUserRole> list = userRoleService.lambdaQuery()
-                .eq(SysUserRole::getUsername, username)
-                .list();
-        List<String> roles = list.stream()
-                .map(SysUserRole::getRoleCode)
-                .toList();
-        return Result.createSuccess(roles);
+        return Result.createSuccess(roleService.userAuthRole(username));
     }
 
     @PostMapping("add")
@@ -93,6 +93,7 @@ public class UserManageController {
      * @return 修改成功
      */
     @PutMapping("edit")
+    @CacheEvict(value = CacheNames.USER_CACHE, key = "#rq.username")
     public Result<Void> editUser(@RequestBody @Validated UserEditRq rq) {
         SysUser sysUser = userService.getById(rq.getUsername());
         if (ObjectUtils.isEmpty(sysUser)) {
@@ -118,6 +119,7 @@ public class UserManageController {
      * @return 结果
      */
     @GetMapping("/lock/{username}")
+    @CacheEvict(value = CacheNames.USER_CACHE, key = "#rq.username")
     public Result<Void> lockUser(@PathVariable @NotBlank String username) {
         SysUser sysUser = userService.getById(username);
         if (ObjectUtils.isEmpty(sysUser)) {
@@ -137,6 +139,7 @@ public class UserManageController {
      * @return 结果
      */
     @GetMapping("/enable/{username}")
+    @CacheEvict(value = CacheNames.USER_CACHE, key = "#rq.username")
     public Result<Void> enableUser(@PathVariable @NotBlank String username) {
         SysUser sysUser = userService.getById(username);
         if (ObjectUtils.isEmpty(sysUser)) {

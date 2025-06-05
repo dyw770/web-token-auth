@@ -11,7 +11,9 @@ import cn.dyw.auth.db.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +69,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_LIST, allEntries = true),
+                    @CacheEvict(value = CacheNames.USER_AUTH_ROLE, allEntries = true)
+            }
+    )
     public void updateRoleHierarchy(String roleCode, String parentRoleCode) {
         lambdaUpdate().eq(SysRole::getRoleCode, roleCode)
                 .set(SysRole::getUpdateTime, LocalDateTime.now())
@@ -77,6 +85,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.ROLE_LIST, allEntries = true),
+                    @CacheEvict(value = CacheNames.USER_AUTH_ROLE, allEntries = true)
+            }
+    )
     public void deleteRole(String roleCode) {
         // 将角色状态设置为删除
         lambdaUpdate().eq(SysRole::getRoleCode, roleCode)
@@ -99,6 +113,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
+    @Cacheable(value = CacheNames.ROLE_LIST, key = "'tree'")
     public List<RoleDto> roleList() {
         List<RoleDto> roleDtoList = getBaseMapper().queryRoleList();
 

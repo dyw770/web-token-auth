@@ -19,6 +19,7 @@ import cn.dyw.auth.message.MessageCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -62,6 +63,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = CacheNames.USER_AUTH_ROLE, key = "#username")
     public void addRoleForUser(String username, String roleCode, boolean del) {
         if (del) {
             userRoleService.deleteRoleForUser(username, roleCode);

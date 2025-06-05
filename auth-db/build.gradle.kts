@@ -28,6 +28,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.alibaba:druid-spring-boot-3-starter")
     testImplementation("com.mysql:mysql-connector-j")
+    testImplementation(project(":auth-cache"))
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
