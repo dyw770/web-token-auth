@@ -6,6 +6,7 @@ import cn.dyw.auth.db.message.rs.UserRs;
 import cn.dyw.auth.db.model.UserDto;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;
 
@@ -74,4 +75,13 @@ public interface ISysUserService extends IService<SysUser> {
      * @return 权限列表
      */
     List<String> userPermission(String username);
+    
+    /**
+     * 获取用户权限
+     *
+     * @param username 用户名
+     * @param rolePrefix 角色前缀
+     * @return 权限列表
+     */
+    List<? extends GrantedAuthority> userAuthorities(String username, String rolePrefix);
 }

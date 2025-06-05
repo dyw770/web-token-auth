@@ -20,12 +20,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author dyw770
@@ -161,6 +164,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
                 .flatMap(roleCode -> rolePermissionService.rolePermissions(roleCode).stream())
                 .map(SysPermission::getPermissionId)
                 .distinct()
+                .toList();
+    }
+
+    @Override
+    public List<? extends GrantedAuthority> userAuthorities(String username, String rolePrefix) {
+        List<String> roles = userAuthRoles(username);
+
+        // 权限
+        Stream<SimpleGrantedAuthority> permissionStream = roles.stream()
+                .flatMap(roleCode -> rolePermissionService.rolePermissions(roleCode).stream())
+                .map(SysPermission::getPermissionId)
+                .distinct()
+                .map(SimpleGrantedAuthority::new);
+
+        // 角色
+        Stream<SimpleGrantedAuthority> roleStream = roles
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(rolePrefix + role));
+
+        return Stream.concat(permissionStream, roleStream)
                 .toList();
     }
 }
