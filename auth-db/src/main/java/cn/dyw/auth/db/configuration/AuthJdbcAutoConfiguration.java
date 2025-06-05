@@ -48,9 +48,8 @@ public class AuthJdbcAutoConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService(ISysUserService userService,
-                                                 GrantedAuthorityDefaults grantedAuthorityDefaults,
-                                                 ISysRoleService roleService) {
-        return new JdbcUserDetailsService(userService, grantedAuthorityDefaults, roleService);
+                                                 GrantedAuthorityDefaults grantedAuthorityDefaults) {
+        return new JdbcUserDetailsService(userService, grantedAuthorityDefaults);
     }
 
     @Bean
