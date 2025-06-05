@@ -1,22 +1,28 @@
 package cn.dyw.auth.security.repository;
 
+import cn.dyw.auth.exception.BusinessException;
+import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.security.TokenAuthenticationToken;
 import cn.dyw.auth.security.serializable.UserLoginDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author dyw770
  * @since 2025-02-21
  */
+@Slf4j
 public class RedisSecurityTokenRepository extends AbstractSecurityTokenRepository {
 
     /**
@@ -111,8 +117,7 @@ public class RedisSecurityTokenRepository extends AbstractSecurityTokenRepositor
     @Override
     public int userTokens(String username) {
         if (StringUtils.hasText(username)) {
-            Set<String> keys = redisTemplate.keys(keyPrefix + username + ":*");
-            return keys.size();
+            return userKeys(username).size();
         } else {
             return 0;
         }
@@ -121,7 +126,8 @@ public class RedisSecurityTokenRepository extends AbstractSecurityTokenRepositor
     @Override
     public List<UserLoginDetails> listUserTokens(String username) {
         if (StringUtils.hasText(username)) {
-            Set<String> keys = redisTemplate.keys(keyPrefix + username + ":*");
+            List<String> keys = userKeys(username);
+            
             if (CollectionUtils.isEmpty(keys)) {
                 return List.of();
             }
@@ -133,6 +139,26 @@ public class RedisSecurityTokenRepository extends AbstractSecurityTokenRepositor
         } else {
             return List.of();
         }
+    }
+    
+    private List<String> userKeys(String username) {
+
+        ScanOptions options = ScanOptions.scanOptions()
+                .match(keyPrefix + username + ":*")
+                .count(100)
+                .build();
+        
+        List<String> keys = new ArrayList<>(12);
+
+        try (Cursor<String> scan = redisTemplate.scan(options)){
+            while (scan.hasNext()) {
+                keys.add(scan.next());
+            }
+        } catch (Exception e) {
+            log.error("扫描redis key 失败", e);
+            throw new BusinessException(MessageCode.ERROR);
+        }
+        return keys;
     }
 
     private String buildRedisKey(String token) {
