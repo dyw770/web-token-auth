@@ -1,8 +1,6 @@
 package cn.dyw.auth.db.security;
 
-import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.model.UserDto;
-import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
@@ -11,7 +9,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -26,14 +23,11 @@ public class JdbcUserDetailsService implements UserDetailsService {
 
     private final GrantedAuthorityDefaults grantedAuthorityDefaults;
     
-    private final ISysRoleService roleService;
 
     public JdbcUserDetailsService(ISysUserService userService,
-                                  GrantedAuthorityDefaults grantedAuthorityDefaults,
-                                  ISysRoleService roleService) {
+                                  GrantedAuthorityDefaults grantedAuthorityDefaults) {
         this.userService = userService;
         this.grantedAuthorityDefaults = grantedAuthorityDefaults;
-        this.roleService = roleService;
     }
 
     @Override
@@ -42,23 +36,19 @@ public class JdbcUserDetailsService implements UserDetailsService {
         if (ObjectUtils.isEmpty(userDto)) {
             throw new UsernameNotFoundException(username + "用户不存在");
         }
-
-        // 用户授权的角色
-        List<String> authRole = roleService.userAuthRole(username);
-        // 通过授权的角色查询到权限
+    
+        // 查询权限
         Stream<SimpleGrantedAuthority> permissionStream = userService
                 .userPermission(username)
                 .stream()
                 .map(SimpleGrantedAuthority::new);
 
-        // 根据用户已有的橘色 将其子角色一起构建出来
-        List<ParentRoleDto> parentRoles= roleService.parentRoleList();
-        Stream<SimpleGrantedAuthority> roleStream = parentRoles
+        // 查询角色
+        Stream<SimpleGrantedAuthority> roleStream = userService.userAuthRoles(username)
                 .stream()
-                .filter(item -> CollectionUtils.containsAny(item.getParentRoleCode(), authRole))
-                .map(role -> new SimpleGrantedAuthority(grantedAuthorityDefaults.getRolePrefix() + role.getRoleCode()));
-        
-        
+                .map(role -> new SimpleGrantedAuthority(grantedAuthorityDefaults.getRolePrefix() + role));
+
+
         List<SimpleGrantedAuthority> authorities = Stream.concat(permissionStream, roleStream)
                 .toList();
 

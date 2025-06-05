@@ -8,6 +8,7 @@ import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.mapper.SysUserMapper;
 import cn.dyw.auth.db.message.rq.UserSearchRq;
 import cn.dyw.auth.db.message.rs.UserRs;
+import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.model.UserDto;
 import cn.dyw.auth.db.service.ISysRolePermissionService;
 import cn.dyw.auth.db.service.ISysRoleService;
@@ -140,13 +141,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Override
     public List<String> userAuthRoles(String username) {
-        return roleService.userRoleList(username);
+        // 用户授权的角色
+        List<String> authRole = roleService.userAuthRole(username);
+
+        // 根据用户已有的橘色 将其子角色一起构建出来
+        List<ParentRoleDto> parentRoles = roleService.parentRoleList();
+        return parentRoles
+                .stream()
+                .filter(item -> CollectionUtils.containsAny(item.getParentRoleCode(), authRole))
+                .map(ParentRoleDto::getRoleCode)
+                .toList();
     }
 
 
     @Override
     public List<String> userPermission(String username) {
-        List<String> roles = roleService.userAuthRole(username);
+        List<String> roles = userAuthRoles(username);
         return roles.stream()
                 .flatMap(roleCode -> rolePermissionService.rolePermissions(roleCode).stream())
                 .map(SysPermission::getPermissionId)

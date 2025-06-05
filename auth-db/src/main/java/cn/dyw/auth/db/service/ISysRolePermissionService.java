@@ -17,7 +17,7 @@ import java.util.List;
 public interface ISysRolePermissionService extends IService<SysRolePermission> {
 
     /**
-     * 查询角色以及子角色的权限
+     * 查询角色授权的权限
      * @param roleCode 角色ID
      * @return 结果
      */

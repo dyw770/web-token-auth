@@ -21,12 +21,10 @@
             t3.permission_desc,
             t3.permission_type,
             t3.create_time
-        from sys_role_permission t1 join (
-            select descendant_role_code from sys_role_hierarchy
-            where ancestor_role_code = #{roleCode}
-        ) t2 on t1.role_code = t2.descendant_role_code
+        from sys_role_permission t1 
         join sys_permission t3
         on t1.permission_id = t3.permission_id
+        where t1.role_code = #{roleCode}
     </select>
     <select id="queryRoleMenuPermissions" resultType="cn.dyw.auth.db.domain.SysPermission">
         select t1.permission_id,
