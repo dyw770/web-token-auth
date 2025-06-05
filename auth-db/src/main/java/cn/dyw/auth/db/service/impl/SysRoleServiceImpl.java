@@ -135,7 +135,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
                     }
                 }).filter(
                         dto -> StringUtils.isBlank(dto.getParentRoleCode())
-                ).toList();
+                ).collect(Collectors.toList());
     }
 
     @Override
