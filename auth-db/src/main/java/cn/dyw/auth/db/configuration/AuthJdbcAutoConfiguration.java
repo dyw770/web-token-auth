@@ -2,8 +2,8 @@ package cn.dyw.auth.db.configuration;
 
 import cn.dyw.auth.db.event.AuthChangedApplicationListener;
 import cn.dyw.auth.db.security.*;
+import cn.dyw.auth.db.service.ICachedRoleService;
 import cn.dyw.auth.db.service.ISysApiResourceService;
-import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.db.service.ISysUserService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -52,7 +52,7 @@ public class AuthJdbcAutoConfiguration {
     }
 
     @Bean
-    public RoleAuthorizationManagerFactory roleAuthorizationManagerFactory(GrantedAuthorityDefaults grantedAuthorityDefaults, ISysRoleService roleService) {
+    public RoleAuthorizationManagerFactory roleAuthorizationManagerFactory(GrantedAuthorityDefaults grantedAuthorityDefaults, ICachedRoleService roleService) {
         return new RoleAuthorizationManagerFactory(grantedAuthorityDefaults, roleService);
     }
 

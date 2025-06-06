@@ -4,6 +4,7 @@ import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.message.rq.RoleSavaRq;
 import cn.dyw.auth.db.message.rq.RoleUpdateRq;
 import cn.dyw.auth.db.model.RoleDto;
+import cn.dyw.auth.db.service.ICachedRoleService;
 import cn.dyw.auth.db.service.ISysRoleService;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
@@ -25,9 +26,12 @@ import java.util.List;
 public class RoleManageController {
 
     private final ISysRoleService sysRoleService;
+    
+    private final ICachedRoleService cachedRoleService;
 
-    public RoleManageController(ISysRoleService sysRoleService) {
+    public RoleManageController(ISysRoleService sysRoleService, ICachedRoleService cachedRoleService) {
         this.sysRoleService = sysRoleService;
+        this.cachedRoleService = cachedRoleService;
     }
 
     /**
@@ -37,7 +41,7 @@ public class RoleManageController {
      */
     @GetMapping("list")
     public Result<List<RoleDto>> roleList() {
-        return Result.createSuccess(sysRoleService.roleList());
+        return Result.createSuccess(cachedRoleService.roleTree());
     }
 
     /**

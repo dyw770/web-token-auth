@@ -5,12 +5,9 @@ import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.domain.SysRole;
 import cn.dyw.auth.db.domain.SysUserRole;
 import cn.dyw.auth.db.mapper.SysRoleMapper;
-import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.model.RoleDto;
 import cn.dyw.auth.db.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -19,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author dyw770
@@ -122,35 +117,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    @Cacheable(value = CacheNames.ROLE_LIST, key = "'tree'")
-    public List<RoleDto> roleList() {
-        List<RoleDto> roleDtoList = getBaseMapper().queryRoleList();
-
-        Map<String, RoleDto> dtoMap = roleDtoList
-                .stream()
-                .collect(
-                        Collectors
-                                .toMap(RoleDto::getRoleCode, dto -> dto)
-                );
-
-        return roleDtoList
-                .stream()
-                .peek(dto -> {
-                    if (StringUtils.isNotBlank(dto.getParentRoleCode())) {
-                        RoleDto roleDto = dtoMap.get(dto.getParentRoleCode());
-                        if (ObjectUtils.isNotEmpty(roleDto)) {
-                            roleDto.addChildren(dto);
-                        }
-                    }
-                }).filter(
-                        dto -> StringUtils.isBlank(dto.getParentRoleCode())
-                ).collect(Collectors.toList());
-    }
-
-    @Override
     @Cacheable(value = CacheNames.ROLE_LIST, key = "'list'")
-    public List<ParentRoleDto> parentRoleList() {
-        return getBaseMapper().queryParentRoleList();
+    public List<RoleDto> roleList() {
+       return getBaseMapper().queryRoleList();
     }
 
     @Override

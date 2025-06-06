@@ -46,15 +46,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     private final ISysRolePermissionService rolePermissionService;
     
     private final ISysMenusService menusService;
+    
+    private final ICachedRoleService cachedRoleService;
 
     public SysUserServiceImpl(ISysRoleService roleService,
                               ISysUserRoleService userRoleService,
-                              ISysRolePermissionService rolePermissionService, 
-                              ISysMenusService menusService) {
+                              ISysRolePermissionService rolePermissionService,
+                              ISysMenusService menusService, 
+                              ICachedRoleService cachedRoleService) {
         this.roleService = roleService;
         this.userRoleService = userRoleService;
         this.rolePermissionService = rolePermissionService;
         this.menusService = menusService;
+        this.cachedRoleService = cachedRoleService;
     }
 
 
@@ -153,7 +157,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         List<String> authRole = roleService.userAuthRole(username);
 
         // 根据用户已有的橘色 将其子角色一起构建出来
-        List<ParentRoleDto> parentRoles = roleService.parentRoleList();
+        List<ParentRoleDto> parentRoles = cachedRoleService.parentRoleList();
         return parentRoles
                 .stream()
                 .filter(item -> CollectionUtils.containsAny(item.getParentRoleCode(), authRole))

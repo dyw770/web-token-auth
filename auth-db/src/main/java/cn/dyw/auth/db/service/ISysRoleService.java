@@ -1,7 +1,6 @@
 package cn.dyw.auth.db.service;
 
 import cn.dyw.auth.db.domain.SysRole;
-import cn.dyw.auth.db.model.ParentRoleDto;
 import cn.dyw.auth.db.model.RoleDto;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -52,13 +51,6 @@ public interface ISysRoleService extends IService<SysRole> {
      * @return 角色列表
      */
     List<RoleDto> roleList();
-
-    /**
-     * 获取角色列表
-     *
-     * @return 角色列表
-     */
-    List<ParentRoleDto> parentRoleList();
 
     /**
      * 查询用户授权过的角色列表

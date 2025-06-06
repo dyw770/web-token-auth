@@ -3,7 +3,7 @@ package cn.dyw.auth.db.security;
 import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.model.AuthDto;
 import cn.dyw.auth.db.model.ParentRoleDto;
-import cn.dyw.auth.db.service.ISysRoleService;
+import cn.dyw.auth.db.service.ICachedRoleService;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
@@ -23,9 +23,9 @@ public class RoleAuthorizationManagerFactory implements AuthorizationManagerFact
 
     private final GrantedAuthorityDefaults grantedAuthorityDefaults;
 
-    private final ISysRoleService roleService;
+    private final ICachedRoleService roleService;
 
-    public RoleAuthorizationManagerFactory(GrantedAuthorityDefaults grantedAuthorityDefaults, ISysRoleService roleService) {
+    public RoleAuthorizationManagerFactory(GrantedAuthorityDefaults grantedAuthorityDefaults, ICachedRoleService roleService) {
         this.grantedAuthorityDefaults = grantedAuthorityDefaults;
         this.roleService = roleService;
     }
