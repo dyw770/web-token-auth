@@ -27,7 +27,8 @@
       <el-table-column label="操作" align="center">
         <template #default="{ row }">
           <el-button-group>
-            <el-button type="primary" @click="openEditDialog(row)" size="small">编辑</el-button>
+            <el-button @click="openEditDialog(row)" size="small">编辑</el-button>
+            <el-button type="primary" @click="authPermissionFun(row)" size="small">授权</el-button>
             <el-button type="danger" @click="deletePermission(row.permissionId)" size="small">删除</el-button>
           </el-button-group>
         </template>
@@ -56,6 +57,8 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <auth :permission="authPermission?.permissionId" v-model="showAuth" v-if="authPermission?.permissionId"></auth>
   </FaPageMain>
 </template>
 
@@ -63,6 +66,7 @@
 import type {Permission} from "#/api";
 import adminApi from "@/api/modules/admin.ts";
 import {ElMessageBox} from "element-plus";
+import Auth from "@/views/admin/permission/auth.vue";
 
 const permissionData = ref<Permission.PermissionRs[]>([])
 const searchRq = ref<Permission.PermissionSearchRq>({
@@ -79,6 +83,8 @@ const form = ref<Permission.PermissionSaveRq>({
   permissionId: '',
   permissionDesc: ''
 })
+const showAuth = ref(false)
+const authPermission = ref<Permission.PermissionRs>()
 
 // 打开新增弹窗
 const openAddDialog = () => {
@@ -133,6 +139,11 @@ const deletePermission = async (permissionId: string) => {
   } catch (error) {
 
   }
+}
+
+const authPermissionFun = (data: Permission.PermissionRs) => {
+  showAuth.value = true
+  authPermission.value = data
 }
 
 const refresh = async () => {

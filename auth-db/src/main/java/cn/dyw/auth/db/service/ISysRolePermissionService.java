@@ -37,4 +37,18 @@ public interface ISysRolePermissionService extends IService<SysRolePermission> {
      * @param permissionIds 权限ID
      */
     void removeRolePermissions(String roleCode, List<String> permissionIds);
+    
+    /**
+     * 添加权限授权
+     * @param roleCode 角色ID
+     * @param permission 权限ID
+     */
+    void addPermissionRoleAuth(String roleCode, String permission);
+
+    /**
+     * 查询权限授权过的角色
+     * @param permission 权限ID
+     * @return 角色列表
+     */
+    List<String> authRoles(String permission);
 }

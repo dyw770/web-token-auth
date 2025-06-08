@@ -8,6 +8,7 @@ import cn.dyw.auth.db.service.ISysPermissionService;
 import cn.dyw.auth.db.service.ISysRolePermissionService;
 import cn.dyw.auth.message.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -52,6 +53,17 @@ public class RolePermissionManageController {
     }
 
     /**
+     * 获取权限列表
+     *
+     * @return 权限列表
+     */
+    @GetMapping("list/all")
+    public Result<List<SysPermission>> list() {
+        List<SysPermission> list = permissionService.list();
+        return Result.createSuccess(list);
+    }
+
+    /**
      * 新增权限
      *
      * @param rq 权限信息
@@ -82,9 +94,22 @@ public class RolePermissionManageController {
      * @param permissionId 权限ID
      * @return 结果
      */
-    @DeleteMapping("delete")
+    @DeleteMapping("/auth/delete")
     public Result<Void> delete(@RequestParam("roleCode") String roleCode, @RequestParam("permissionId") String permissionId) {
         rolePermissionService.removeRolePermissions(roleCode, List.of(permissionId));
+        return Result.createSuccess();
+    }
+
+    /**
+     * 删除角色授权
+     *
+     * @param roleCode     角色ID
+     * @param permissionId 权限ID
+     * @return 结果
+     */
+    @GetMapping("/auth/add")
+    public Result<Void> authAdd(@RequestParam("roleCode") String roleCode, @RequestParam("permissionId") String permissionId) {
+        rolePermissionService.addPermissionRoleAuth(roleCode, permissionId);
         return Result.createSuccess();
     }
 
@@ -101,5 +126,16 @@ public class RolePermissionManageController {
                 .set(SysPermission::getPermissionDesc, rq.getPermissionDesc())
                 .update();
         return Result.createSuccess();
+    }
+
+    /**
+     * 获取权限授权角色列表
+     *
+     * @param permission 权限ID
+     * @return 授权角色列表
+     */
+    @GetMapping("/auth/{permission}")
+    public Result<List<String>> authRoles(@PathVariable("permission") @NotBlank String permission) {
+        return Result.createSuccess(rolePermissionService.authRoles(permission));
     }
 }

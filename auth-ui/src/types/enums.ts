@@ -38,6 +38,11 @@ export enum AuthType {
    * 静态授权（无条件访问）
    */
   STATIC = 'STATIC',
+
+  /**
+   * 权限授权
+   */
+  PERMISSION = 'PERMISSION'
 }
 
 export const staticAuth : {
@@ -59,6 +64,10 @@ export const authType = [
   {
     type: AuthType.STATIC,
     label: "静态授权"
+  },
+  {
+    type: AuthType.PERMISSION,
+    label: "权限授权"
   }
 ]
 

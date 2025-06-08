@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -155,11 +154,7 @@ public class MenuPermissionManageController {
             return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "角色菜单权限" + rq.getPermissionId() + "已存在");
         }
 
-        SysRolePermission sysRolePermission = new SysRolePermission();
-        sysRolePermission.setRoleCode(rq.getRoleCode());
-        sysRolePermission.setAuthTime(LocalDateTime.now());
-        sysRolePermission.setPermissionId(rq.getPermissionId());
-        rolePermissionService.save(sysRolePermission);
+        rolePermissionService.addPermissionRoleAuth(rq.getRoleCode(), rq.getPermissionId());
         return Result.createSuccess();
     }
 }

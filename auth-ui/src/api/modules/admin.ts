@@ -109,8 +109,6 @@ export default {
 
   addRoleMenuPermissions: (saveRq: Menu.RoleMenuPermissionSaveRq) => api.post(`/admin/menu/permission/role/save`, saveRq),
 
-  deleteRoleMenuPermissions: (roleCode: string, permissionId: string) => api.delete(`/admin/permission/delete?roleCode=${roleCode}&permissionId=${permissionId}`),
-
   permissionList: (rq: Permission.PermissionSearchRq) => api.post(`/admin/permission/list`, rq),
 
   deletePermission: (permissionId: string) => api.delete(`/admin/permission/delete/${permissionId}`),
@@ -118,6 +116,12 @@ export default {
   addPermission: (saveRq: Permission.PermissionSaveRq) => api.post(`/admin/permission/save`, saveRq),
 
   updatePermission: (saveRq: Permission.PermissionSaveRq) => api.post(`/admin/permission/update`, saveRq),
+
+  permissionRoles: (permissionId: string) => api.get(`/admin/permission/auth/${permissionId}`),
+
+  addPermissionRoleAuth: (roleCode: string, permissionId: string) => api.get(`/admin/permission/auth/add?roleCode=${roleCode}&permissionId=${permissionId}`),
+  deletePermissionRoleAuth: (roleCode: string, permissionId: string) => api.delete(`/admin/permission/auth/delete?roleCode=${roleCode}&permissionId=${permissionId}`),
+  permissionAll: () => api.get(`/admin/permission/list/all`),
 
   testPublicApi: () => api.get('/test/static'),
 

@@ -1,5 +1,6 @@
 package cn.dyw.auth.db.service.impl;
 
+import cn.dyw.auth.cache.CacheNames;
 import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.domain.SysPermission;
 import cn.dyw.auth.db.domain.SysRolePermission;
@@ -11,6 +12,7 @@ import cn.dyw.auth.db.service.ISysPermissionService;
 import cn.dyw.auth.db.service.ISysRolePermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = CacheNames.ROLE_PERMISSION, allEntries = true)
     public void removeMenuPermission(List<String> permissions) {
         // 删除角色授权
         rolePermissionService.lambdaUpdate()

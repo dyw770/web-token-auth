@@ -10,7 +10,7 @@
       <el-input v-model="authObject.authIp" placeholder="请输入IP"
                 v-if="resourceAuthType === AuthType.IP"/>
 
-      <el-select v-model="authObject.authStatic" placeholder="请选择授权对象"
+      <el-select v-model="authObject.authStatic" placeholder="请选择授静态授权类型"
                  class="w-full"
                  v-else-if="resourceAuthType === AuthType.STATIC">
         <el-option :label="v" :value="k" :key="k" v-for="(v, k) in staticAuth"/>
@@ -22,6 +22,28 @@
                    :props="props"
                    :options="roleData"
                    v-if="resourceAuthType === AuthType.ROLE"/>
+
+      <el-select v-model="authObject.authPermission" placeholder="请选择授权权限"
+                 class="w-full"
+                 v-else-if="resourceAuthType === AuthType.PERMISSION">
+        <el-option
+          :label="v.permissionId"
+          :value="v.permissionId"
+          :key="v.permissionId"
+          v-for="v in authPermission">
+          <span style="float: left">{{ v.permissionId }}</span>
+          <span
+            style="
+          float: right;
+          color: var(--el-text-color-secondary);
+          font-size: 13px;
+        "
+          >
+        {{ v.permissionDesc }}
+      </span>
+        </el-option>
+      </el-select>
+
     </el-form-item>
     <el-form-item>
       <el-button type="primary" native-type="submit">提交</el-button>
@@ -33,7 +55,7 @@
 <script setup lang="ts">
 
 import {AuthType, authType, staticAuth} from "#/enums.ts";
-import type {Resource, Role} from "#/api";
+import type {Permission, Resource, Role} from "#/api";
 import adminApi from '@/api/modules/admin.ts'
 import type {CascaderProps} from "element-plus";
 
@@ -115,11 +137,13 @@ const rules = {
 const authObject = ref<{
   authRole: string
   authIp: string
-  authStatic: string
+  authStatic: string,
+  authPermission: string
 }>({
   authRole: "",
   authIp: "",
-  authStatic: ""
+  authStatic: "",
+  authPermission: ""
 })
 
 const emit = defineEmits({
@@ -148,6 +172,8 @@ const submitAuth = async () => {
     authModel.value.authObject = authObject.value.authIp
   } else if (resourceAuthType.value === AuthType.STATIC) {
     authModel.value.authObject = authObject.value.authStatic
+  } else if (resourceAuthType.value === AuthType.PERMISSION) {
+    authModel.value.authObject = authObject.value.authPermission
   }
   emit('submit')
 }
@@ -159,8 +185,15 @@ const loadRoleData = async () => {
   roleData.value = data
 }
 
+const authPermission = ref<Permission.PermissionRs[]>([])
+const loadPermissionData = async () => {
+  const {data} = await adminApi.permissionAll();
+  authPermission.value = data
+}
+
 onMounted(async () => {
   await loadRoleData()
+  await loadPermissionData()
 })
 
 const props: CascaderProps = {
@@ -177,7 +210,8 @@ watch(() => authModel.value,
     authObject.value = {
       authRole: "",
       authIp: "",
-      authStatic: ""
+      authStatic: "",
+      authPermission: ""
     }
     if (authModel.value.authType === AuthType.ROLE) {
       authObject.value.authRole = authModel.value.authObject
@@ -185,6 +219,8 @@ watch(() => authModel.value,
       authObject.value.authIp = authModel.value.authObject
     } else if (authModel.value.authType === AuthType.STATIC) {
       authObject.value.authStatic = authModel.value.authObject
+    } else if (authModel.value.authType === AuthType.PERMISSION) {
+      authObject.value.authPermission = authModel.value.authObject
     }
     resourceAuthType.value = authModel.value.authType
   },
