@@ -1,5 +1,6 @@
 package cn.dyw.auth.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.context.ApplicationEvent;
 
 import java.time.Clock;
@@ -12,7 +13,7 @@ import java.time.Clock;
  */
 public class AuthChangedApplicationEvent extends ApplicationEvent {
 
-    public AuthChangedApplicationEvent(Object source) {
+    public AuthChangedApplicationEvent(@JsonProperty("source") Object source) {
         super(source);
     }
 

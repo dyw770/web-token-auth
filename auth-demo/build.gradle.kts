@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":auth-db"))
     implementation(project(":auth-support"))
     implementation(project(":auth-cache"))
+    implementation(project(":auth-sync"))
 
     implementation("com.alibaba:druid-spring-boot-3-starter")
     implementation("com.mysql:mysql-connector-j")

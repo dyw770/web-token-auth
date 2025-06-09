@@ -5,18 +5,18 @@ import cn.dyw.auth.security.repository.RedisSecurityTokenRepository;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
 import cn.dyw.auth.security.serializable.UserLoginDetails;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import cn.dyw.auth.utils.ObjectMapperUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
@@ -31,19 +31,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class SecurityRedisAutoConfiguration {
 
     @Bean
+    @Primary
     @ConditionalOnProperty(prefix = "app.auth", name = "token-repository", havingValue = "redis")
     public RedisTemplate<String, UserLoginDetails> tokenRedisTemplate(RedisConnectionFactory factory) {
         // 创建 ObjectMapper
-        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder
-                .json()
-                .build();
-        // 启用自动包含类型信息，用于反序列化时重建对象的实际类型
-        objectMapper.activateDefaultTyping(
-                objectMapper.getPolymorphicTypeValidator(),
-                ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY);
-
-
+        ObjectMapper objectMapper = ObjectMapperUtils.createRedisObjectMapper();
+        
         Jackson2JsonRedisSerializer<UserLoginDetails> jackson2JsonRedisSerializer =
                 new Jackson2JsonRedisSerializer<>(objectMapper, UserLoginDetails.class);
 

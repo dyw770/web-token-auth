@@ -112,7 +112,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
 
     public void refresh() {
-        StopWatch stopWatch = new StopWatch();
+        StopWatch stopWatch = new StopWatch("jdbc 授权加载信息");
         stopWatch.start("初始化jdbc api授权信息");
 
         if (authorizationManagerFactories.isEmpty()) {

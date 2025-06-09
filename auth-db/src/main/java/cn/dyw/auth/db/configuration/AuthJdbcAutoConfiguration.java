@@ -1,11 +1,14 @@
 package cn.dyw.auth.db.configuration;
 
 import cn.dyw.auth.db.event.AuthChangedApplicationListener;
+import cn.dyw.auth.db.event.DefaultAuthChangedHandler;
 import cn.dyw.auth.db.security.*;
 import cn.dyw.auth.db.service.ICachedRoleService;
 import cn.dyw.auth.db.service.ISysApiResourceService;
 import cn.dyw.auth.db.service.ISysUserService;
+import cn.dyw.auth.event.AuthChangedHandler;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -36,8 +39,14 @@ public class AuthJdbcAutoConfiguration {
     }
 
     @Bean
-    public AuthChangedApplicationListener authChangedApplicationListener(JdbcAuthorizationManager authorizationManager) {
-        return new AuthChangedApplicationListener(authorizationManager);
+    @ConditionalOnMissingClass("cn.dyw.auth.sync.RedisAuthChangedApplicationListener")
+    public AuthChangedApplicationListener authChangedApplicationListener(DefaultAuthChangedHandler handler) {
+        return new AuthChangedApplicationListener(handler);
+    }
+
+    @Bean
+    public AuthChangedHandler defaultAuthChangedHandler(JdbcAuthorizationManager authorizationManager) {
+        return new DefaultAuthChangedHandler(authorizationManager);
     }
 
     @Bean

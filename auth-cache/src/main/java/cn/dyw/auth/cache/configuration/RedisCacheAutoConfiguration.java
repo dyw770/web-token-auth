@@ -1,8 +1,7 @@
 package cn.dyw.auth.cache.configuration;
 
 import cn.dyw.auth.cache.CacheNames;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cn.dyw.auth.utils.ObjectMapperUtils;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
@@ -32,7 +31,6 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
@@ -100,35 +98,20 @@ public class RedisCacheAutoConfiguration extends RedisConnectionConfiguration {
                     .build();
         }
     }
-    
+
     public RedisCacheConfiguration defaultConfiguration() {
 
         return RedisCacheConfiguration
                 .defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext
                         .SerializationPair
-                        .fromSerializer(new GenericJackson2JsonRedisSerializer(createObjectMapper()))
+                        .fromSerializer(new GenericJackson2JsonRedisSerializer(ObjectMapperUtils.createRedisObjectMapper()))
                 )
                 .entryTtl(cacheProperties.getExpireTime())
                 .enableTimeToIdle()
                 .computePrefixWith(cacheName -> cacheProperties.getCachePrefix() + cacheName + ":");
     }
 
-    private ObjectMapper createObjectMapper() {
-
-        // 创建 ObjectMapper
-        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder
-                .json()
-                .build();
-        // 启用自动包含类型信息，用于反序列化时重建对象的实际类型
-        objectMapper.activateDefaultTyping(
-                objectMapper.getPolymorphicTypeValidator(),
-                ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY);
-        
-        return objectMapper;
-    }
-    
 
     private LettuceConnectionFactory redisConnectionFactory(
             ObjectProvider<LettuceClientConfigurationBuilderCustomizer> clientConfigurationBuilderCustomizers,

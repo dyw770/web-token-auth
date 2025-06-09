@@ -45,7 +45,7 @@ public class ResourceManageController {
     
     @GetMapping("/auth/refresh")
     public Result<Void> refresh() {
-        AuthChangedApplicationEvent event = new AuthChangedApplicationEvent(new Object());
+        AuthChangedApplicationEvent event = new AuthChangedApplicationEvent(1);
         applicationContext.publishEvent(event);
         return Result.createSuccess();
     }

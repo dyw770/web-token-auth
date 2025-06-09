@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+    compileOnly("com.fasterxml.jackson.core:jackson-databind")
     
     compileOnly("jakarta.servlet:jakarta.servlet-api")
     compileOnly("jakarta.validation:jakarta.validation-api")
@@ -20,6 +21,7 @@ dependencies {
     
     compileOnly("com.baomidou:mybatis-plus-core")
     compileOnly("com.baomidou:mybatis-plus-extension")
+    compileOnly("org.springframework:spring-web")
     
     api("org.apache.commons:commons-lang3")
     
