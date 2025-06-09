@@ -1,1 +1,2 @@
 cn.dyw.auth.cache.configuration.RedisCacheAutoConfiguration
+cn.dyw.auth.cache.configuration.CustomRedisCacheAutoConfiguration
