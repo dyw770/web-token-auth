@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.context.ApplicationEvent;
 
 import java.time.Clock;
+import java.util.List;
 
 /**
  * 授权资源变动事件
@@ -13,11 +14,7 @@ import java.time.Clock;
  */
 public class AuthChangedApplicationEvent extends ApplicationEvent {
 
-    public AuthChangedApplicationEvent(@JsonProperty("source") Object source) {
-        super(source);
-    }
-
-    public AuthChangedApplicationEvent(Object source, Clock clock) {
-        super(source, clock);
+    public AuthChangedApplicationEvent(@JsonProperty("source") List<Integer> source) {
+        super(source, Clock.systemDefaultZone());
     }
 }

@@ -110,10 +110,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
         // 删除权限
         rolePermissionService.removeRolePermissions(roleCode, List.of());
         // 删除资源授权
-        resourceAuthService.lambdaUpdate()
-                .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.ROLE)
-                .eq(SysApiResourceAuth::getAuthObject, roleCode)
-                .remove();
+        resourceAuthService.removeResourceAuth(SysApiResourceAuth.AuthType.ROLE, roleCode);
     }
 
     @Override

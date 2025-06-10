@@ -115,10 +115,7 @@ public class SysMenusServiceImpl extends ServiceImpl<SysMenusMapper, SysMenus> i
         // 删除菜单的权限池和已经授权的权限
         menuPermissionService.removeMenuPermissions(menuId);
         // 删除菜单的资源授权
-        resourceAuthService.lambdaUpdate()
-                .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.MENU)
-                .eq(SysApiResourceAuth::getAuthObject, menuId.toString())
-                .remove();
+        resourceAuthService.removeResourceAuth(SysApiResourceAuth.AuthType.MENU, menuId.toString());
     }
 
     @Override

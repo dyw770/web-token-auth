@@ -63,6 +63,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
                 .in(SysApiResourceAuth::getAuthObject, permissions)
                 .eq(SysApiResourceAuth::getAuthType, SysApiResourceAuth.AuthType.MENU)
                 .remove();
+        resourceAuthService.removeResourceAuth(SysApiResourceAuth.AuthType.MENU, permissions);
         // 删除权限
         this.removeByIds(permissions);
     }

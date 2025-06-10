@@ -22,7 +22,7 @@ public class DefaultAuthChangedHandler implements AuthChangedHandler {
 
     @Override
     public void handle(AuthChangedApplicationEvent event) {
-        log.info("授权数据发生改变，将刷新全部数据");
+        log.info("授权数据发生改变，将刷新数据: {}", event.getSource());
         authorizationManager.refresh();
     }
 }

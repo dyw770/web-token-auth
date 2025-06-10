@@ -12,12 +12,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,7 +44,7 @@ public class ResourceManageController {
     
     @GetMapping("/auth/refresh")
     public Result<Void> refresh() {
-        AuthChangedApplicationEvent event = new AuthChangedApplicationEvent(1);
+        AuthChangedApplicationEvent event = new AuthChangedApplicationEvent(new ArrayList<>());
         applicationContext.publishEvent(event);
         return Result.createSuccess();
     }
@@ -87,12 +86,7 @@ public class ResourceManageController {
      */
     @PostMapping("save")
     public Result<Void> save(@RequestBody @Validated ResourceSaveRq resource) {
-        SysApiResource apiResource = new SysApiResource();
-        BeanUtils.copyProperties(resource, apiResource);
-        apiResource.setUpdateTime(LocalDateTime.now());
-        apiResource.setCreateTime(LocalDateTime.now());
-        apiResource.setEnable(false);
-        apiResourceService.save(apiResource);
+        apiResourceService.saveResource(resource);
         return Result.createSuccess();
     }
 
@@ -106,10 +100,7 @@ public class ResourceManageController {
     @GetMapping("/enable/{resourceId}/{enable}")
     public Result<Void> enable(@PathVariable("enable") @NotNull Boolean enable,
                                @PathVariable("resourceId") @NotNull Integer resourceId) {
-        apiResourceService.lambdaUpdate()
-                .eq(SysApiResource::getId, resourceId)
-                .set(SysApiResource::getEnable, enable)
-                .update();
+        apiResourceService.enableResource(resourceId, enable);
         return Result.createSuccess();
     }
 
@@ -121,11 +112,7 @@ public class ResourceManageController {
      */
     @PostMapping("update")
     public Result<Void> update(@RequestBody @Validated ResourceUpdateRq rq) {
-        SysApiResource apiResource = new SysApiResource();
-        BeanUtils.copyProperties(rq, apiResource);
-        apiResource.setUpdateTime(LocalDateTime.now());
-        apiResource.setEnable(null);
-        apiResourceService.updateById(apiResource);
+        apiResourceService.updateResource(rq);
         return Result.createSuccess();
     }
 
@@ -137,7 +124,7 @@ public class ResourceManageController {
      */
     @DeleteMapping("delete/{resourceId}")
     public Result<Void> delete(@PathVariable("resourceId") @NotNull @Min(1) Integer resourceId) {
-        apiResourceService.removeById(resourceId);
+        apiResourceService.removeResource(resourceId);
         return Result.createSuccess();
     }
 
@@ -161,11 +148,7 @@ public class ResourceManageController {
      */
     @PostMapping("/auth/add")
     public Result<Void> authAdd(@RequestBody @Validated ApiResourceAuthAddRq auth) {
-        SysApiResourceAuth resourceAuth = new SysApiResourceAuth();
-        BeanUtils.copyProperties(auth, resourceAuth);
-        resourceAuth.setAuthTime(LocalDateTime.now());
-        resourceAuth.setExpiredTime(LocalDateTime.now());
-        apiResourceAuthService.save(resourceAuth);
+        apiResourceAuthService.saveAuth(auth);
         return Result.createSuccess();
     }
     
@@ -176,12 +159,7 @@ public class ResourceManageController {
      */
     @PostMapping("/auth/update")
     public Result<Void> authUpdate(@RequestBody @Validated ApiResourceAuthUpdateRq auth) {
-        apiResourceAuthService.lambdaUpdate()
-                .eq(SysApiResourceAuth::getAuthId, auth.getAuthId())
-                .set(SysApiResourceAuth::getApiResourceId, auth.getApiResourceId())
-                .set(SysApiResourceAuth::getAuthType, auth.getAuthType())
-                .set(SysApiResourceAuth::getAuthObject, auth.getAuthObject())
-                .update();
+        apiResourceAuthService.updateAuth(auth);
         return Result.createSuccess();
     }
     
@@ -192,7 +170,7 @@ public class ResourceManageController {
      */
     @DeleteMapping("/auth/delete/{authId}")
     public Result<Void> authDelete(@PathVariable @NotNull @Min(1) Integer authId) {
-        apiResourceAuthService.removeById(authId);
+        apiResourceAuthService.removeAuth(authId);
         return Result.createSuccess();
     }
 }
