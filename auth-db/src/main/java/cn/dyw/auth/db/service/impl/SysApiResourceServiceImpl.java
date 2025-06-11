@@ -43,6 +43,16 @@ public class SysApiResourceServiceImpl extends ServiceImpl<SysApiResourceMapper,
     }
 
     @Override
+    public ApiResourceDto getResourceById(Integer resourceId) {
+        return getBaseMapper().queryById(resourceId);
+    }
+
+    @Override
+    public List<ApiResourceDto> getResourceByIds(List<Integer> resourceIds) {
+        return getBaseMapper().queryByIds(resourceIds);
+    }
+
+    @Override
     public void removeResource(Integer resourceId) {
         this.removeById(resourceId);
         resourceAuthService.removeAllAuth(resourceId);

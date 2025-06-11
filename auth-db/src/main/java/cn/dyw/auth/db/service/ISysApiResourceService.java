@@ -24,6 +24,22 @@ public interface ISysApiResourceService extends IService<SysApiResource> {
      * @return api资源
      */
     List<ApiResourceDto> listAll();
+    
+    /**
+     * 根据id查询api资源
+     *
+     * @param resourceId api资源id
+     * @return api资源
+     */
+    ApiResourceDto getResourceById(Integer resourceId);
+    
+    /**
+     * 根据id列表查询api资源
+     *
+     * @param resourceIds api资源id列表
+     * @return api资源
+     */
+    List<ApiResourceDto> getResourceByIds(List<Integer> resourceIds);
 
     /**
      * 删除api资源

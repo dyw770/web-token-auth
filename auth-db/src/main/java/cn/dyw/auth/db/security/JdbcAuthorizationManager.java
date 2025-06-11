@@ -136,6 +136,27 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         log.info("初始化 jdbc api 授权信息 \n{}", stopWatch.prettyPrint());
     }
 
+    public void refresh(List<Integer> resourceIds) {
+        StopWatch stopWatch = new StopWatch("刷新jdbc 授权加载信息");
+        stopWatch.start("刷新jdbc api授权信息 " + resourceIds);
+        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+        try {
+            writeLock.lock();
+            mappings.removeIf(mapping -> resourceIds.contains(mapping.dto().getId()));
+            List<ApiResourceDto> resources = apiResourceService.getResourceByIds(resourceIds);
+            if (CollectionUtils.isEmpty(resources)) {
+                return;
+            }
+            initAuthorizationManager(resources);
+        } catch (Exception e) {
+            log.error("更新资源授权信息失败", e);
+        } finally {
+            writeLock.unlock();
+        }
+        stopWatch.stop();
+        log.info("刷新 jdbc api 授权信息 \n{}", stopWatch.prettyPrint());
+    }
+
     private void initAuthorizationManager(List<ApiResourceDto> resourceList) {
         for (ApiResourceDto apiResourceDto : resourceList) {
             initAuthorizationManager(apiResourceDto);
