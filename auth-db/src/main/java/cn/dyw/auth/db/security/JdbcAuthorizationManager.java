@@ -1,6 +1,7 @@
 package cn.dyw.auth.db.security;
 
 import cn.dyw.auth.db.Constants;
+import cn.dyw.auth.db.configuration.JdbcAuthProperties;
 import cn.dyw.auth.db.domain.SysApiResource;
 import cn.dyw.auth.db.domain.SysApiResourceAuth;
 import cn.dyw.auth.db.model.ApiResourceDto;
@@ -49,12 +50,18 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
     private final ReentrantLock lock = new ReentrantLock();
 
     private final List<AuthorizationManagerFactory> authorizationManagerFactories;
+    
+    private final JdbcAuthProperties jdbcAuthProperties;
+
+    private final AuthorizationManager<RequestAuthorizationContext> denyAllAuthorizationManager = (a, o) -> new AuthorizationDecision(false);
 
     public JdbcAuthorizationManager(ISysApiResourceService apiResourceService,
                                     ApplicationContext context,
-                                    List<AuthorizationManagerFactory> authorizationManagerFactories) {
+                                    List<AuthorizationManagerFactory> authorizationManagerFactories,
+                                    JdbcAuthProperties jdbcAuthProperties) {
         this.apiResourceService = apiResourceService;
         this.authorizationManagerFactories = authorizationManagerFactories;
+        this.jdbcAuthProperties = jdbcAuthProperties;
 
         authenticatedAuthorizationManager = AuthenticatedAuthorizationManager.authenticated();
         requestMatcherRegistry = new RequestMatcherRegistry(context);
@@ -74,8 +81,11 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         } catch (Exception e) {
             log.error("权限校验时出现异常", e);
         }
-        // TODO: 根据配置 当发生异常时 是否继续执行
-        return authenticatedAuthorizationManager.check(authentication, requestContext);
+        if(jdbcAuthProperties.isEnableAuthError()) {
+            return denyAllAuthorizationManager.check(authentication, requestContext);
+        } else {
+            return authenticatedAuthorizationManager.check(authentication, requestContext);
+        }
     }
 
     @SuppressWarnings("deprecation")

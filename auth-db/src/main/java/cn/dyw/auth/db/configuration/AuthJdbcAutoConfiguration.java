@@ -34,8 +34,9 @@ public class AuthJdbcAutoConfiguration {
     @Bean
     public JdbcAuthorizationManager jdbcAuthorizationManager(ISysApiResourceService apiResourceService,
                                                              ApplicationContext context,
-                                                             List<AuthorizationManagerFactory> authorizationManagerFactories) {
-        return new JdbcAuthorizationManager(apiResourceService, context, authorizationManagerFactories);
+                                                             List<AuthorizationManagerFactory> authorizationManagerFactories,
+                                                             JdbcAuthProperties jdbcAuthProperties) {
+        return new JdbcAuthorizationManager(apiResourceService, context, authorizationManagerFactories, jdbcAuthProperties);
     }
 
     @Bean
