@@ -21,14 +21,13 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * jdbc 权限管理器
@@ -39,7 +38,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JdbcAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
 
-    private final CopyOnWriteArrayList<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
+    private CopyOnWriteArrayList<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
 
     private final AuthenticatedAuthorizationManager<RequestAuthorizationContext> authenticatedAuthorizationManager;
 
@@ -47,7 +46,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
     private final RequestMatcherRegistry requestMatcherRegistry;
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReentrantLock lock = new ReentrantLock();
 
     private final List<AuthorizationManagerFactory> authorizationManagerFactories;
 
@@ -57,7 +56,6 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         this.apiResourceService = apiResourceService;
         this.authorizationManagerFactories = authorizationManagerFactories;
 
-        mappings = new CopyOnWriteArrayList<>();
         authenticatedAuthorizationManager = AuthenticatedAuthorizationManager.authenticated();
         requestMatcherRegistry = new RequestMatcherRegistry(context);
 
@@ -71,15 +69,12 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
         log.debug("请求授权：{}", RequestUtils.requestLine(requestContext.getRequest()));
 
-        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
         try {
-            readLock.lock();
             return doCheck(authentication, requestContext);
         } catch (Exception e) {
             log.error("权限校验时出现异常", e);
-        } finally {
-            readLock.unlock();
         }
+        // TODO: 根据配置 当发生异常时 是否继续执行
         return authenticatedAuthorizationManager.check(authentication, requestContext);
     }
 
@@ -116,19 +111,19 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         stopWatch.start("初始化jdbc api授权信息");
 
         if (authorizationManagerFactories.isEmpty()) {
-            log.warn("当前幻境没有注入权限管理器, 跳过初始化");
+            log.warn("当前环境没有注入权限管理器, 跳过初始化");
         } else {
             List<ApiResourceDto> resourceList = apiResourceService.listAll();
 
-            ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
             try {
-                writeLock.lock();
-                mappings.clear();
-                initAuthorizationManager(resourceList);
+                lock.lock();
+                List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> entries
+                        = initAuthorizationManager(resourceList);
+                mappings = new CopyOnWriteArrayList<>(entries);
             } catch (Exception e) {
                 log.error("更新资源授权信息失败", e);
             } finally {
-                writeLock.unlock();
+                lock.unlock();
             }
         }
 
@@ -139,46 +134,68 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
     public void refresh(List<Integer> resourceIds) {
         StopWatch stopWatch = new StopWatch("刷新jdbc 授权加载信息");
         stopWatch.start("刷新jdbc api授权信息 " + resourceIds);
-        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         try {
-            writeLock.lock();
+            lock.lock();
             mappings.removeIf(mapping -> resourceIds.contains(mapping.dto().getId()));
             List<ApiResourceDto> resources = apiResourceService.getResourceByIds(resourceIds);
             if (CollectionUtils.isEmpty(resources)) {
                 return;
             }
-            initAuthorizationManager(resources);
+            List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> entries
+                    = initAuthorizationManager(resources);
+
+            Map<Integer, ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> map = entries.stream()
+                    .collect(toMap(entry -> entry.dto().getId(), entry -> entry));
+            Set<Integer> findResourceIds = map.keySet();
+
+            if (!entries.isEmpty()) {
+                mappings.removeIf(mapping ->
+                        // 如果在刷新列表中, 但是不在从数据库中加载出来的列表 则删除
+                        resourceIds.contains(mapping.dto().getId()) && !findResourceIds.contains(mapping.dto().getId()));
+
+                mappings.replaceAll(mapping ->
+                        // 如果在刷新列表中, 则替换
+                        map.getOrDefault(mapping.dto().getId(), mapping));
+            }
         } catch (Exception e) {
             log.error("更新资源授权信息失败", e);
         } finally {
-            writeLock.unlock();
+            lock.unlock();
         }
         stopWatch.stop();
         log.info("刷新 jdbc api 授权信息 \n{}", stopWatch.prettyPrint());
     }
 
-    private void initAuthorizationManager(List<ApiResourceDto> resourceList) {
+    private List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> initAuthorizationManager(List<ApiResourceDto> resourceList) {
+        List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> entries
+                = new ArrayList<>(resourceList.size());
         for (ApiResourceDto apiResourceDto : resourceList) {
-            initAuthorizationManager(apiResourceDto);
+            List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> list
+                    = initAuthorizationManager(apiResourceDto);
+            entries.addAll(list);
         }
+
+        return entries;
     }
 
-    private void initAuthorizationManager(ApiResourceDto resource) {
+    private List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> initAuthorizationManager(ApiResourceDto resource) {
 
         if (StringUtils.isBlank(resource.getApiPath())) {
-            return;
+            return Collections.emptyList();
         }
 
         List<AuthorizationManager<RequestAuthorizationContext>> managers = getAuthorizationManagers(resource);
-
+        List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> entries
+                = new ArrayList<>(managers.size());
         // 如果没有配置授权模式则不处理，交给最外层的登录授权管理器处理
         if (!CollectionUtils.isEmpty(managers)) {
             List<RequestMatcher> matchers = createMatcher(resource);
             DelegatingAuthorizationManager authorizationManager = new DelegatingAuthorizationManager(managers);
             for (RequestMatcher matcher : matchers) {
-                mappings.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authorizationManager));
+                entries.add(new ApiResourceRequestMatcherEntry<>(resource, matcher, authorizationManager));
             }
         }
+        return entries;
     }
 
     public List<RequestMatcher> createMatcher(ApiResourceDto resource) {
