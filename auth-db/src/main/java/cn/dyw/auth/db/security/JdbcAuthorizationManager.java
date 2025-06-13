@@ -146,7 +146,6 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         stopWatch.start("刷新jdbc api授权信息 " + resourceIds);
         try {
             lock.lock();
-            mappings.removeIf(mapping -> resourceIds.contains(mapping.dto().getId()));
             List<ApiResourceDto> resources = apiResourceService.getResourceByIds(resourceIds);
             if (CollectionUtils.isEmpty(resources)) {
                 return;
