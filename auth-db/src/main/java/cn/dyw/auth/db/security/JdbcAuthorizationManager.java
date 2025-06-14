@@ -118,13 +118,14 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
     public void refresh() {
         StopWatch stopWatch = new StopWatch("jdbc 授权加载信息");
-        stopWatch.start("初始化jdbc api授权信息");
+        stopWatch.start("加载jdbc api授权信息");
 
         if (authorizationManagerFactories.isEmpty()) {
             log.warn("当前环境没有注入权限管理器, 跳过初始化");
         } else {
             List<ApiResourceDto> resourceList = apiResourceService.listAll();
-
+            stopWatch.stop();
+            stopWatch.start("构建授权组件");
             try {
                 lock.lock();
                 List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> entries
@@ -143,11 +144,12 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
 
     public void refresh(List<Integer> resourceIds) {
         StopWatch stopWatch = new StopWatch("刷新jdbc 授权加载信息");
-        stopWatch.start("刷新jdbc api授权信息 " + resourceIds);
+        stopWatch.start("加载jdbc api授权信息, ids: " + resourceIds);
+        List<ApiResourceDto> resources = apiResourceService.getResourceByIds(resourceIds);
+        stopWatch.stop();
+        stopWatch.start("构建授权组件");
         try {
             lock.lock();
-            List<ApiResourceDto> resources = apiResourceService.getResourceByIds(resourceIds);
-      
             List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> entries
                     = initAuthorizationManager(resources);
 
@@ -163,6 +165,14 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
                 mappings.replaceAll(mapping ->
                         // 如果在刷新列表中, 则替换
                         map.getOrDefault(mapping.dto().getId(), mapping));
+                
+                // 将新增的添加到列表中
+                List<Integer> list = mappings.stream()
+                        .map(mapping -> mapping.dto().getId())
+                        .toList();
+                findResourceIds.stream()
+                        .filter(id -> !list.contains(id))
+                        .forEach(id -> mappings.add(map.get(id)));
             }
         } catch (Exception e) {
             log.error("更新资源授权信息失败", e);
