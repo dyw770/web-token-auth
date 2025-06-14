@@ -147,9 +147,7 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
         try {
             lock.lock();
             List<ApiResourceDto> resources = apiResourceService.getResourceByIds(resourceIds);
-            if (CollectionUtils.isEmpty(resources)) {
-                return;
-            }
+      
             List<ApiResourceRequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> entries
                     = initAuthorizationManager(resources);
 
@@ -157,11 +155,11 @@ public class JdbcAuthorizationManager implements AuthorizationManager<RequestAut
                     .collect(toMap(entry -> entry.dto().getId(), entry -> entry));
             Set<Integer> findResourceIds = map.keySet();
 
+            mappings.removeIf(mapping ->
+                    // 如果在刷新列表中, 但是不在从数据库中加载出来的列表 则删除
+                    resourceIds.contains(mapping.dto().getId()) && !findResourceIds.contains(mapping.dto().getId()));
+            
             if (!entries.isEmpty()) {
-                mappings.removeIf(mapping ->
-                        // 如果在刷新列表中, 但是不在从数据库中加载出来的列表 则删除
-                        resourceIds.contains(mapping.dto().getId()) && !findResourceIds.contains(mapping.dto().getId()));
-
                 mappings.replaceAll(mapping ->
                         // 如果在刷新列表中, 则替换
                         map.getOrDefault(mapping.dto().getId(), mapping));
