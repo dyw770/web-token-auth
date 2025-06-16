@@ -155,17 +155,18 @@ const authResource = (resource: Resource.ResourceListRs) => {
 }
 
 const refreshAuth = async () => {
-  try {
-    await ElMessageBox.confirm(
-      `确认刷新资源授权?`,
-      `刷新资源授权`,
-      {
-        distinguishCancelAndClose: true,
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-      }
-    )
 
+  await ElMessageBox.confirm(
+    `确认刷新资源授权?`,
+    `刷新资源授权`,
+    {
+      distinguishCancelAndClose: true,
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+    }
+  )
+
+  try {
     await adminApi.resourceAuthRefresh()
     toast.success("系统资源授权刷新成功")
   } catch (err) {
