@@ -1,8 +1,9 @@
 package cn.dyw.auth.jwt.repository;
 
 import cn.dyw.auth.jwt.token.JwtToken;
-import cn.dyw.auth.security.repository.TokenResolve;
 import cn.dyw.auth.token.Token;
+import cn.dyw.auth.token.TokenCreateContext;
+import cn.dyw.auth.token.TokenResolve;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.UUID;
@@ -48,8 +50,8 @@ public class JwtTokenResolve implements TokenResolve {
     }
 
     @Override
-    public Token createToken(Authentication token) {
-        return new JwtToken(refreshTokenGenerator.generateKey(), generateJwt(token).getTokenValue());
+    public Token createToken(Authentication token, TokenCreateContext context) {
+        return new JwtToken(generateJwt(token).getTokenValue(), refreshTokenGenerator.generateKey(), LocalDateTime.now());
     }
 
     @Override

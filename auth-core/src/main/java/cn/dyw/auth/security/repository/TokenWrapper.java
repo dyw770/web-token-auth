@@ -18,10 +18,9 @@ public class TokenWrapper implements Serializable {
 
     private LocalDateTime expireTime;
 
-
     public TokenWrapper(UserLoginDetails token, long expireTime) {
         this.token = token;
-        LocalDateTime createTime = this.token.createTime();
+        LocalDateTime createTime = this.token.token().createTime();
         this.expireTime = createTime.plusSeconds(expireTime);
     }
 

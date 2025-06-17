@@ -17,7 +17,7 @@
 package cn.dyw.auth.security.filter;
 
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
-import cn.dyw.auth.security.repository.TokenResolve;
+import cn.dyw.auth.token.TokenResolve;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;

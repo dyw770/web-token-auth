@@ -6,7 +6,7 @@ import cn.dyw.auth.exception.ExtensionBusinessException;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
-import cn.dyw.auth.security.repository.TokenResolve;
+import cn.dyw.auth.token.TokenResolve;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

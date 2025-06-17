@@ -1,9 +1,10 @@
 package cn.dyw.auth.security;
 
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
-import cn.dyw.auth.security.repository.TokenResolve;
 import cn.dyw.auth.security.serializable.UserLoginDetails;
 import cn.dyw.auth.token.Token;
+import cn.dyw.auth.token.TokenCreateContext;
+import cn.dyw.auth.token.TokenResolve;
 import cn.dyw.auth.utils.RequestUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,8 +16,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-
-import java.time.LocalDateTime;
 
 /**
  * @author dyw770
@@ -55,8 +54,12 @@ public class LoginLogoutHandler {
 
         String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
         String loginIp = RequestUtils.getClientIp(request);
-        Token token = tokenResolve.createToken(authenticationResponse);
-        UserLoginDetails details = new UserLoginDetails(token, username, LocalDateTime.now(), userAgent, loginIp);
+
+        TokenCreateContext createContext = new TokenCreateContext(username);
+        createContext.setLoginIp(loginIp);
+        createContext.setLoginUserAgent(userAgent);
+        Token token = tokenResolve.createToken(authenticationResponse, createContext);
+        UserLoginDetails details = new UserLoginDetails(token, username, userAgent, loginIp);
         
         TokenAuthenticationToken authenticationToken = 
                 new TokenAuthenticationToken(

@@ -17,7 +17,7 @@
 package cn.dyw.auth.security.filter;
 
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
-import cn.dyw.auth.security.repository.TokenResolve;
+import cn.dyw.auth.token.TokenResolve;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;

@@ -4,6 +4,7 @@ import cn.dyw.auth.exception.BusinessException;
 import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.security.TokenAuthenticationToken;
 import cn.dyw.auth.security.serializable.UserLoginDetails;
+import cn.dyw.auth.token.TokenResolve;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.redis.core.Cursor;
