@@ -1,4 +1,4 @@
-package cn.dyw.auth.oauth.message.rq;
+package cn.dyw.auth.jwt.message.rq;
 
 import jakarta.validation.constraints.NotBlank;
 

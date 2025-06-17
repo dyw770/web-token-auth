@@ -1,4 +1,4 @@
-package cn.dyw.auth.oauth.controller;
+package cn.dyw.auth.jwt.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
