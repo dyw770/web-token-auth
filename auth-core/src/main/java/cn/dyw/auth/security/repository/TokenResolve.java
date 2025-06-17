@@ -1,5 +1,6 @@
 package cn.dyw.auth.security.repository;
 
+import cn.dyw.auth.token.Token;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 
@@ -25,7 +26,7 @@ public interface TokenResolve {
      * @param token 用户信息
      * @return token
      */
-    String createToken(Authentication token);
+    Token createToken(Authentication token);
 
     /**
      * 从token字符串中解析出用户ID

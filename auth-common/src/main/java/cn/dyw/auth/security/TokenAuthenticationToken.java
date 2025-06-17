@@ -1,6 +1,7 @@
 package cn.dyw.auth.security;
 
 import cn.dyw.auth.security.serializable.UserLoginDetails;
+import cn.dyw.auth.token.Token;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -28,7 +29,7 @@ public class TokenAuthenticationToken extends UsernamePasswordAuthenticationToke
         return loginDetails;
     }
 
-    public String getToken() {
+    public Token getToken() {
         return loginDetails.token();
     }
 }

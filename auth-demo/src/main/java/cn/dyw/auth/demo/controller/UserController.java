@@ -36,7 +36,7 @@ public class UserController {
     @SystemEvent(message = "用户 {0} 登陆结果 {1}", module = "user", execute = {"#p0.username", "#result.msg"}, throwable = "'用户 ' + #p0.username + ' 登陆失败：' + #throwable.message")
     public Result<String> login(@RequestBody @Validated LoginRq loginRq, HttpServletRequest request) {
         TokenAuthenticationToken login = loginLogoutHandler.login(loginRq.username(), loginRq.password(), request);
-        return Result.createSuccess("登录成功", login.getToken());
+        return Result.createSuccess("登录成功", login.getToken().token());
     }
 
     /**

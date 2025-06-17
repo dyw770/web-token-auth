@@ -1,5 +1,7 @@
 package cn.dyw.auth.security.serializable;
 
+import cn.dyw.auth.token.Token;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -15,7 +17,7 @@ import java.time.LocalDateTime;
  * @since 2025-05-22
  */
 public record UserLoginDetails(
-        String token,
+        Token token,
         String username,
         LocalDateTime createTime,
         String loginUserAgent,

@@ -12,6 +12,7 @@ import cn.dyw.auth.security.repository.RequestTokenResolve;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -58,7 +59,7 @@ public class SecurityAutoConfiguration {
                                            SecurityTokenRepository securityTokenRepository,
                                            TokenResolve tokenResolve,
                                            SecurityExceptionResolverHandler exceptionResolverHandler,
-                                           @Autowired(required = false) AuthorizeHttpRequestsCustomizer customizer,
+                                           ObjectProvider<AuthorizeHttpRequestsCustomizer> customizerProvider,
                                            List<HttpSecurityCustomizer> httpSecurityCustomizers,
                                            @Autowired(required = false) AuthorizationManager<RequestAuthorizationContext> authorizationManager) throws Exception {
         http
@@ -84,8 +85,10 @@ public class SecurityAutoConfiguration {
                 )
                 .authenticationManager(authenticationManager)
                 .authorizeHttpRequests(authorize -> {
-                            if (!ObjectUtils.isEmpty(customizer)) {
-                                customizer.consume(authorize);
+                            for (AuthorizeHttpRequestsCustomizer customizer : customizerProvider) {
+                                if (!ObjectUtils.isEmpty(customizer)) {
+                                    customizer.consume(authorize);
+                                }
                             }
                             if (ObjectUtils.isEmpty(authorizationManager)) {
                                 authorize.anyRequest().authenticated();

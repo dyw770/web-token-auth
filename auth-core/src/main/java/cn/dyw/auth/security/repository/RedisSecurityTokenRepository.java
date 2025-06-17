@@ -60,7 +60,7 @@ public class RedisSecurityTokenRepository extends AbstractSecurityTokenRepositor
         UserLoginDetails details = token.getDetails();
         ValueOperations<String, UserLoginDetails> ops = redisTemplate.opsForValue();
 
-        String key = buildRedisKey(token.getToken());
+        String key = buildRedisKey(token.getToken().token());
 
         ops.set(key, details, expireTime, TimeUnit.SECONDS);
     }

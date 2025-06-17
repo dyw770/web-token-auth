@@ -1,5 +1,7 @@
 package cn.dyw.auth.security.repository;
 
+import cn.dyw.auth.token.SimpleToken;
+import cn.dyw.auth.token.Token;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,11 +46,11 @@ public class RequestTokenResolve implements TokenResolve {
     }
 
     @Override
-    public String createToken(Authentication token) {
+    public Token createToken(Authentication token) {
         String username = ((UserDetails) token.getPrincipal()).getUsername();
         String tokenStr = username + TOKEN_SPLIT + LocalDateTime.now();
 
-        return Base64.getEncoder().encodeToString(tokenStr.getBytes(StandardCharsets.UTF_8));
+        return new SimpleToken(Base64.getEncoder().encodeToString(tokenStr.getBytes(StandardCharsets.UTF_8)));
     }
 
     @Override

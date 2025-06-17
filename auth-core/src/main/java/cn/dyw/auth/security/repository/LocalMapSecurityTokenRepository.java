@@ -41,7 +41,7 @@ public class LocalMapSecurityTokenRepository extends AbstractSecurityTokenReposi
     public void savaToken(TokenAuthenticationToken token) {
         UserLoginDetails details = token.getDetails();
         TokenWrapper wrapper = new TokenWrapper(details, expireTime);
-        map.put(token.getToken(), wrapper);
+        map.put(token.getToken().token(), wrapper);
     }
     
     @Override

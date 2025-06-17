@@ -3,6 +3,7 @@ package cn.dyw.auth.security;
 import cn.dyw.auth.security.repository.SecurityTokenRepository;
 import cn.dyw.auth.security.repository.TokenResolve;
 import cn.dyw.auth.security.serializable.UserLoginDetails;
+import cn.dyw.auth.token.Token;
 import cn.dyw.auth.utils.RequestUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,7 +55,7 @@ public class LoginLogoutHandler {
 
         String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
         String loginIp = RequestUtils.getClientIp(request);
-        String token = tokenResolve.createToken(authenticationResponse);
+        Token token = tokenResolve.createToken(authenticationResponse);
         UserLoginDetails details = new UserLoginDetails(token, username, LocalDateTime.now(), userAgent, loginIp);
         
         TokenAuthenticationToken authenticationToken = 
