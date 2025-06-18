@@ -1,9 +1,10 @@
 package cn.dyw.auth.jwt.repository;
 
-import cn.dyw.auth.security.TokenAuthenticationToken;
-import cn.dyw.auth.security.repository.AbstractSecurityTokenRepository;
+import cn.dyw.auth.jwt.security.JwtTokenAuthenticationToken;
 import cn.dyw.auth.security.serializable.UserLoginDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -11,64 +12,67 @@ import java.util.List;
  * @author dyw770
  * @since 2025-06-17
  */
-public class JwtSecurityTokenRepository extends AbstractSecurityTokenRepository {
+public interface JwtSecurityTokenRepository {
+
+    /**
+     * 保存token
+     *
+     * @param token 用户token
+     */
+    void savaToken(JwtTokenAuthenticationToken token, UserLoginDetails details);
+
+    /**
+     * 获取token
+     *
+     * @param token 用户token
+     * @return token对象
+     */
+    JwtTokenAuthenticationToken loadToken(String token);
+
+
+    /**
+     * 获取securityContext
+     *
+     * @param token 用户token
+     * @return securityContext对象
+     */
+    default SecurityContext loadContext(String token) {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        if (!StringUtils.hasText(token)) {
+            return context;
+        }
+        JwtTokenAuthenticationToken tokenAuthenticationToken = loadToken(token);
+        context.setAuthentication(tokenAuthenticationToken);
+
+        return context;
+    }
+
+    /**
+     * 删除token
+     *
+     * @param token 用户token
+     */
+    void removeToken(String token);
+
+    /**
+     * 判断token是否存在
+     *
+     * @param token 用户token
+     * @return true/false
+     */
+    boolean containsToken(String token);
     
-    public JwtSecurityTokenRepository(UserDetailsService userDetailsService) {
-        super(userDetailsService);
-    }
+    /**
+     * 用户token数量
+     *
+     * @return 数量
+     */
+    int userTokens(String username);
 
-    @Override
-    protected UserLoginDetails internalLoadToken(String token) {
-        return null;
-    }
-
-    @Override
-    public void savaToken(TokenAuthenticationToken token) {
-
-    }
-
-    @Override
-    public void removeToken(String token) {
-
-    }
-
-    @Override
-    public boolean containsToken(String token) {
-        return false;
-    }
-
-    @Override
-    public boolean isExpired(String token) {
-        return false;
-    }
-
-    @Override
-    public void updateExpireTime(String token, long expireTime) {
-
-    }
-
-    @Override
-    public void updateExpireTime(String token) {
-
-    }
-
-    @Override
-    public void expireToken(String token) {
-
-    }
-
-    @Override
-    public void removeExpireToken() {
-
-    }
-
-    @Override
-    public int userTokens(String username) {
-        return 0;
-    }
-
-    @Override
-    public List<UserLoginDetails> listUserTokens(String username) {
-        return List.of();
-    }
+    /**
+     * 用户token数量
+     *
+     * @return 数量
+     */
+    List<UserLoginDetails> listUserTokens(String username);
 }

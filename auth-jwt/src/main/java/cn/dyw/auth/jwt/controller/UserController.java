@@ -1,22 +1,15 @@
 package cn.dyw.auth.jwt.controller;
 
+import cn.dyw.auth.jwt.message.rq.LoginRq;
+import cn.dyw.auth.jwt.security.JwtLoginLogoutHandler;
+import cn.dyw.auth.jwt.security.JwtTokenAuthenticationToken;
+import cn.dyw.auth.jwt.token.JwtToken;
 import cn.dyw.auth.message.Result;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.OAuth2Token;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.authorization.token.JwtGenerator;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2AccessTokenGenerator;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2RefreshTokenGenerator;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author dyw770
@@ -27,9 +20,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
 
-    @Autowired
-    private JWKSource<SecurityContext> jwkSource;
-    
+    private final JwtLoginLogoutHandler loginLogoutHandler;
+
+    public UserController(JwtLoginLogoutHandler loginLogoutHandler) {
+        this.loginLogoutHandler = loginLogoutHandler;
+    }
+
+    /**
+     * 登录
+     *
+     * @param loginRq 账号和密码
+     * @return 结果
+     */
+    @PostMapping("/login")
+    public Result<JwtToken> login(@RequestBody @Validated LoginRq loginRq, HttpServletRequest request) {
+        JwtTokenAuthenticationToken login = loginLogoutHandler.login(loginRq.username(), loginRq.password(), request);
+        return Result.createSuccess("登录成功", login.getJwtToken());
+    }
+
     /**
      * 登出
      *
@@ -40,12 +48,7 @@ public class UserController {
      */
     @GetMapping("/logout")
     public Result<String> logout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
-        JwtEncoder jwtEncoder = new NimbusJwtEncoder(jwkSource);
-        JwtGenerator jwtGenerator = new JwtGenerator(jwtEncoder);;
-        OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();
-        OAuth2RefreshTokenGenerator refreshTokenGenerator = new OAuth2RefreshTokenGenerator();
-        OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
-   
+        loginLogoutHandler.logout(authentication, request, response);
         return Result.createSuccess("登出成功");
     }
 

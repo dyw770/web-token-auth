@@ -1,7 +1,5 @@
-package cn.dyw.auth.jwt.repository;
+package cn.dyw.auth.jwt.token;
 
-import cn.dyw.auth.jwt.token.JwtToken;
-import cn.dyw.auth.token.Token;
 import cn.dyw.auth.token.TokenCreateContext;
 import cn.dyw.auth.token.TokenResolve;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,7 +48,7 @@ public class JwtTokenResolve implements TokenResolve {
     }
 
     @Override
-    public Token createToken(Authentication token, TokenCreateContext context) {
+    public JwtToken createToken(Authentication token, TokenCreateContext context) {
         return new JwtToken(generateJwt(token).getTokenValue(), refreshTokenGenerator.generateKey(), LocalDateTime.now());
     }
 
