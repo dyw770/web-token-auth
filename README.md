@@ -14,3 +14,177 @@
 6. `auth-ui` 模块提供权限管理界面，基于 [Fantastic-admin](https://fantastic-admin.hurui.me) 实现，实现了常用的用户管理、角色管理、菜单管理、权限管理、日志查询、API授权管理功能
 7. `auth-demo` demo示例
 
+## 快速开始
+
+新建`springboot`项目，引入`auth-core`模块，添加如下依赖：
+
+```xml
+<dependency>
+    <groupId>cn.dyw</groupId>
+    <artifactId>auth-core</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+在启动类中使用`@EnableAuthCore`启用`auth-core`模块：
+
+```java
+import cn.dyw.auth.security.configuration.EnableAuthCore;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@EnableAuthCore
+@SpringBootApplication
+public class AuthDemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(AuthDemoApplication.class, args);
+    }
+
+}
+
+```
+
+配置`spring security`需要忽略的`url`:
+
+```java
+@Bean
+public AuthorizeHttpRequestsCustomizer authorizeHttpRequestsCustomizer() throws Exception {
+    return (authorize) -> authorize
+            .requestMatchers("/user/login").permitAll()
+            .requestMatchers("/error").permitAll()
+            .requestMatchers("/doc/**").permitAll()
+            .requestMatchers("/favicon.ico").permitAll();
+}
+```
+
+在`application.yml`中配置`token`存储方式和token的请求头：
+
+```yaml
+app:
+  auth:
+    token-repository: local
+    auth-header-name: Authorization # 默认值为 Authorization
+```
+
+注入自己项目的`UserDetailsService`(`auth-db`模块提供了`mysql`的实现，如果引入该模块则无需配置自定义的`UserDetailsService`)：
+
+```java
+@Bean
+@SuppressWarnings("deprecation")
+@ConditionalOnMissingBean(UserDetailsService.class)
+public UserDetailsService userDetailsService() {
+    // 仅测试示例
+    UserDetails userDetails = User.withDefaultPasswordEncoder()
+            .username("user")
+            .password("password")
+            .roles("USER")
+            .build();
+
+    return new InMemoryUserDetailsManager(userDetails);
+}
+```
+
+
+新建`LoginController`实现登陆和登出逻辑：
+
+```java
+import cn.dyw.auth.message.Result;
+import cn.dyw.auth.security.LoginLogoutHandler;
+import cn.dyw.auth.security.TokenAuthenticationToken;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
+
+
+@RestController
+@RequestMapping("/user")
+public class LoginController {
+
+    private final LoginLogoutHandler loginLogoutHandler;
+
+
+    public LoginController(LoginLogoutHandler loginLogoutHandler) {
+        this.loginLogoutHandler = loginLogoutHandler;
+    }
+
+    /**
+     * 登录
+     *
+     * @param loginRq 账号和密码
+     * @return 结果
+     */
+    @PostMapping("/login")
+    public Result<String> login(@RequestBody @Validated LoginRq loginRq, HttpServletRequest request) {
+        TokenAuthenticationToken login = loginLogoutHandler.login(loginRq.username(), loginRq.password(), request);
+        return Result.createSuccess("登录成功", login.getToken().token());
+    }
+
+    /**
+     * 登出
+     *
+     * @param authentication 授权信息
+     * @param request        request
+     * @param response       response
+     * @return 结果
+     */
+    @GetMapping("/logout")
+    public Result<String> logout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
+        loginLogoutHandler.logout(authentication, request, response);
+        return Result.createSuccess("登出成功");
+    }
+
+    /**
+     * @param username 用户名
+     * @param password 密码
+     */
+    public record LoginRq(
+            @NotBlank
+            String username,
+            @NotBlank
+            String password
+    ) {
+
+    }
+}
+```
+
+`LoginLogoutHandler`类封装了登陆和登出逻辑，调用`login()`方法会返回用户登陆后的token，将token返回给前台即可。如果登陆失败则会抛出异常，只需要注册自己的全局异常处理即可自定义错误处理结果，可以参考`auth-demo`模块中的[GlobalDefaultExceptionHandler.java](auth-demo/src/main/java/cn/dyw/auth/demo/configuration/GlobalDefaultExceptionHandler.java)
+
+完成以上配置后，访问`/user/login`接口即可进行登陆，登陆成功后访问其他接口需要携带登陆获取到的`token`，如果`token`无效则会抛出异常，可以通过全局异常处理捕获到该异常，可以参考可以参考`auth-demo`模块中的[GlobalDefaultExceptionHandler.java](auth-demo/src/main/java/cn/dyw/auth/demo/configuration/GlobalDefaultExceptionHandler.java)。同时该模块还内置了一个[UserManageSupportController.java](auth-core/src/main/java/cn/dyw/auth/security/controller/UserManageSupportController.java)接口，用来获取用户的登陆信息，以及强制下线功能。
+
+默认`token`要求放在请求头中，可以通过`app.auth.auth-header-name`属性修改请求头名称，默认值为`Authorization`， 请求示例：`Authorization: Bearer ${token}`。可以通过自定义`TokenResolve`来实现自己的`token`获取逻辑。
+
+`auth-core`模块只提供了基础授权逻辑，并无权限相关实现，但是该模块完全基于`spring security`，因此`spring security`中的注解依然生效。如果不需要`auth-db`模块提供的动态权限功能，只需要实现`token`访问则只需要引入该模块即可，可以通过`@PreAuthorize`等`spring security`注解控制权限。
+
+## 动态权限控制
+
+如果需要权限动态控制则可以引入`auth-db`模块，该模块提供了用户的角色管理、权限管理、菜单管理、`api`访问权限管理。在上述项目中引入如下依赖并在启动类中增加`@EnableJdbcAuth`注解启用。
+
+```xml
+<dependency>
+    <groupId>cn.dyw</groupId>
+    <artifactId>auth-db</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+配置`mysql`数据库连接，并且执行`auth-db`模块提供的数据库脚本[db.sql](auth-db/src/main/resources/db.sql)，数据库内置了`admin`用户，密码为`123456`。
+
+如果需要水平扩展部署还需要引入`auth-sync`模块，同时需要`redis`组件，该模块依赖`redis`来发布订阅权限改变事件来实现各节点之间的权限数据同步。引入该模块并配置`redis`连接信息即可。
+
+```xml
+<dependency>
+    <groupId>cn.dyw</groupId>
+    <artifactId>auth-sync</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+权限信息在每次访问时都需要从`db`中加载角色信息和权限信息，如果访问比较频繁可以引入`auth-cache`模块来缓存角色信息和权限信息以减少数据库的压力，该模块只支持`redis`缓存，如果需要其他缓存只需要注入`CacheManager`实现即可切换缓存的存储实现。
+
+## 管理UI
+
+基于`auth-db`模块提供的权限管理API`auth-ui`模块实现了一个UI管理界面。
