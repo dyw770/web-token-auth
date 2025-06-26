@@ -59,6 +59,7 @@ public class UserManageController {
 
     /**
      * 获取用户授权过的角色
+     *
      * @param username 用户名
      * @return 结果
      */
@@ -119,7 +120,7 @@ public class UserManageController {
      * @return 结果
      */
     @GetMapping("/lock/{username}")
-    @CacheEvict(value = CacheNames.USER_CACHE, key = "#rq.username")
+    @CacheEvict(value = CacheNames.USER_CACHE, key = "#username")
     public Result<Void> lockUser(@PathVariable @NotBlank String username) {
         SysUser sysUser = userService.getById(username);
         if (ObjectUtils.isEmpty(sysUser)) {
@@ -132,6 +133,16 @@ public class UserManageController {
         return Result.createSuccess();
     }
 
+    @DeleteMapping("/delete/{username}")
+    public Result<Void> deleteUser(@PathVariable @NotBlank String username) {
+        SysUser sysUser = userService.getById(username);
+        if (ObjectUtils.isEmpty(sysUser)) {
+            return Result.createFailWithMsg(MessageCode.PARAM_ERROR, "用户名不存在");
+        }
+        userService.remove(username);
+        return Result.createSuccess();
+    }
+
     /**
      * 启用用户
      *
@@ -139,7 +150,7 @@ public class UserManageController {
      * @return 结果
      */
     @GetMapping("/enable/{username}")
-    @CacheEvict(value = CacheNames.USER_CACHE, key = "#rq.username")
+    @CacheEvict(value = CacheNames.USER_CACHE, key = "#username")
     public Result<Void> enableUser(@PathVariable @NotBlank String username) {
         SysUser sysUser = userService.getById(username);
         if (ObjectUtils.isEmpty(sysUser)) {

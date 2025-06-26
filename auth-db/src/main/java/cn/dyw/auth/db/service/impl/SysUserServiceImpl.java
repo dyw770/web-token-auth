@@ -44,15 +44,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     private final ISysUserRoleService userRoleService;
 
     private final ISysRolePermissionService rolePermissionService;
-    
+
     private final ISysMenusService menusService;
-    
+
     private final ICachedRoleService cachedRoleService;
 
     public SysUserServiceImpl(ISysRoleService roleService,
                               ISysUserRoleService userRoleService,
                               ISysRolePermissionService rolePermissionService,
-                              ISysMenusService menusService, 
+                              ISysMenusService menusService,
                               ICachedRoleService cachedRoleService) {
         this.roleService = roleService;
         this.userRoleService = userRoleService;
@@ -149,6 +149,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     @Override
     public Page<UserRs> userList(UserSearchRq rq) {
         return getBaseMapper().userList(rq, rq.toPage());
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = CacheNames.USER_CACHE, key = "#username")
+    public void remove(String username) {
+        this.removeById(username);
+        roleService.removeUserRole(username);
     }
 
     @Override

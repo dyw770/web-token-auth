@@ -127,7 +127,7 @@ const resetSearch = () => {
 const deleteResource = async (resource: Resource.ResourceListRs) => {
   await ElMessageBox.confirm(
     `确认删除系统API资源?`,
-    `删除统API资源`,
+    `删除系统API资源`,
     {
       distinguishCancelAndClose: true,
       confirmButtonText: '确认',

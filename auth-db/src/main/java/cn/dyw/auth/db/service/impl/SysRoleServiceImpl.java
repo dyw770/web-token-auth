@@ -31,7 +31,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     private final ISysUserRoleService userRoleService;
 
     private final ISysApiResourceAuthService resourceAuthService;
-    
+
     private final ISysRolePermissionService rolePermissionService;
 
     public SysRoleServiceImpl(ISysRoleHierarchyService roleHierarchyService,
@@ -116,13 +116,21 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Override
     @Cacheable(value = CacheNames.ROLE_LIST, key = "'list'")
     public List<RoleDto> roleList() {
-       return getBaseMapper().queryRoleList();
+        return getBaseMapper().queryRoleList();
     }
 
     @Override
     @Cacheable(value = CacheNames.USER_AUTH_ROLE, key = "#username")
     public List<String> userAuthRole(String username) {
         return getBaseMapper().queryUserRoles(username);
+    }
+
+    @Override
+    public void removeUserRole(String username) {
+        this.userRoleService
+                .lambdaUpdate()
+                .eq(SysUserRole::getUsername, username)
+                .remove();
     }
 
 

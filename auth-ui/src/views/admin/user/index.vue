@@ -67,7 +67,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" align="center"/>
-      <el-table-column label="操作" align="center" width="320px">
+      <el-table-column label="操作" align="center" width="400px">
         <template #default="{ row }">
           <el-button-group>
             <el-button size="small" @click="openLoginInfo(row)">登录信息</el-button>
@@ -80,6 +80,9 @@
             <el-button type="danger" size="small" @click="enableUser(row)">{{
                 row.enabled ? '禁用' : '启用'
               }}
+            </el-button>
+            <el-button type="danger" size="small" @click="deleteUser(row)">
+              删除
             </el-button>
           </el-button-group>
         </template>
@@ -108,6 +111,7 @@ import Edit from "@/views/admin/user/edit.vue";
 import {toast} from "vue-sonner";
 import Auth from "@/views/admin/user/auth.vue";
 import LoginInfo from "@/views/admin/user/LoginInfo.vue";
+import {ElMessageBox} from "element-plus";
 
 const addUserDialog = ref(false)
 const editUserDialog = ref(false)
@@ -169,6 +173,21 @@ const enableUser = async (row: User.UserRs) => {
   } else {
     toast.success('用户启用成功')
   }
+  await refresh()
+}
+
+const deleteUser = async (row: User.UserRs) => {
+  await ElMessageBox.confirm(
+    `确认删除用户${row.username}?`,
+    `删除用户`,
+    {
+      distinguishCancelAndClose: true,
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+    }
+  )
+  await adminApi.userDelete(row.username)
+  toast.success('用户删除成功')
   await refresh()
 }
 

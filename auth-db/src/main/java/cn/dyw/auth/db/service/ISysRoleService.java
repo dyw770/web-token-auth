@@ -61,6 +61,13 @@ public interface ISysRoleService extends IService<SysRole> {
     List<String> userAuthRole(String username);
 
     /**
+     * 删除用户角色信息
+     *
+     * @param username 用户名
+     */
+    void removeUserRole(String username);
+
+    /**
      * 查询用户角色列表，包括其拥有的子角色
      *
      * @param username 用户名
