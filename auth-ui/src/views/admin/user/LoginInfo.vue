@@ -2,7 +2,7 @@
   <el-drawer v-model="showDrawer" title="用户登录信息" direction="rtl" size="60%">
     <el-table :data="loginInfos" style="width: 100%" table-layout="auto" border>
       <el-table-column prop="token.token" label="Token" show-overflow-tooltip />
-      <el-table-column prop="createTime" label="创建时间" width="160">
+      <el-table-column prop="token.createTime" label="创建时间" width="160">
         <template #default="{ row }">
           {{ row.createTime }}
         </template>
