@@ -14,7 +14,7 @@ allprojects {
     }
 
     group = "cn.dyw"
-    version = "0.0.1-SNAPSHOT"
+    version = "1.0.0"
 }
 
 val nonJavaProjects = listOf("auth-ui")
