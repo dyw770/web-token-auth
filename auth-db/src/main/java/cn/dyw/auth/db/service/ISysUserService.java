@@ -61,6 +61,12 @@ public interface ISysUserService extends IService<SysUser> {
      * @return 用户列表
      */
     Page<UserRs> userList(UserSearchRq rq);
+    
+    /**
+     * 删除用户
+     * @param username 用户名
+     */
+    void remove(String username);
 
     /**
      * 查询用户授权的角色

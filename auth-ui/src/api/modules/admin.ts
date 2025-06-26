@@ -15,6 +15,8 @@ export default {
 
   userEnable: (username: string) => api.get(`/admin/user/enable/${username}`),
 
+  userDelete: (username: string) => api.delete(`/admin/user/delete/${username}`),
+
   roleList: () => api.get('/admin/role/list'),
 
   addRoleForUser: (username: string, roleCode: string, del: boolean) => api.post(`/admin/user/auth/${username}?role=${roleCode}&del=${del}`),
