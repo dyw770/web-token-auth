@@ -187,4 +187,31 @@ public class LoginController {
 
 ## 管理UI
 
-基于`auth-db`模块提供的权限管理API`auth-ui`模块实现了一个UI管理界面。
+基于`auth-db`模块提供的权限管理API`auth-ui`模块实现了一个UI管理界面。部分界面如图：
+
+![角色管理](assets/%E8%A7%92%E8%89%B2%E7%AE%A1%E7%90%86.png)
+
+![用户管理](assets/%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86.png)
+
+![API资源管理](assets/API%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86.png)
+
+![API授权](assets/API%E6%8E%88%E6%9D%83.png)
+
+![权限管理](assets/%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86.png)
+
+![菜单管理](assets/%E8%8F%9C%E5%8D%95%E7%AE%A1%E7%90%86.png)
+
+![菜单权限](assets/%E8%8F%9C%E5%8D%95%E6%9D%83%E9%99%90.png)
+
+![访问日志](assets/%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97.png)
+
+![系统事件](assets/%E7%B3%BB%E7%BB%9F%E4%BA%8B%E4%BB%B6.png)
+
+
+## 其他功能
+
+`auth-support`模块提供了两个注解`EnableSystemAccess`、`EnableSystemEvent`。
+
+`EnableSystemAccess`注解用来记录系统的访问日志，默认由[DefaultSystemAccessHandler.java](auth-support/src/main/java/cn/dyw/auth/support/access/DefaultSystemAccessHandler.java)记录到日志中，可以自定义实现来记录。在`auth-db`模块提供了[JdbcSystemAccessHandler.java](auth-db/src/main/java/cn/dyw/auth/db/support/JdbcSystemAccessHandler.java)jdbc实现，可以直接注入该类。
+
+`EnableSystemEvent`注解用来启用`SystemEvent`注解，该注解用来记录系统事件，默认由[DefaultSystemEventHandler.java](auth-support/src/main/java/cn/dyw/auth/support/system/DefaultSystemEventHandler.java)来记录，可以自定义实现来记录。在`auth-db`模块提供了[JdbcSystemEventHandler.java](auth-db/src/main/java/cn/dyw/auth/db/support/JdbcSystemEventHandler.java)jdbc实现，可以直接注入该类。`SystemEvent`注解提供了`spel`能力，可以通过`spel`获取参数或者调用方法，详细用法可以参考[UserController.java](auth-demo/src/main/java/cn/dyw/auth/demo/controller/UserController.java)中的`login()`方法。
