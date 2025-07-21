@@ -41,7 +41,7 @@ public class AuthJdbcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingClass("cn.dyw.auth.sync.RedisAuthChangedApplicationListener")
-    public AuthChangedApplicationListener authChangedApplicationListener(DefaultAuthChangedHandler handler) {
+    public AuthChangedApplicationListener authChangedApplicationListener(AuthChangedHandler handler) {
         return new AuthChangedApplicationListener(handler);
     }
 
