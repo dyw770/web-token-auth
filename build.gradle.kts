@@ -76,27 +76,31 @@ subprojects {
 }
 
 tasks.register("statistic") {
-    val suffix = arrayOf("java", "xml", "vue", "ts", "kt")
-    val ignore = arrayOf("node_modules", ".git", "target", "dist", "build", ".idea")
-    val statistic = project.projectDir.walk()
-        .onEnter { file ->
-            ignore.none { it == file.name }
-        }
-        .filter { file ->
-            file.isFile && suffix.any { file.extension == it }
-        }
-        .map {
-            it.extension to it.readLines(charset = Charsets.UTF_8).count()
-        }
-        .groupBy { it.first }
-        .map { (key, value) ->
-            key to value.sumOf { it.second }
-        }
-        .toList()
+    doLast {
+        val suffix = arrayOf("java", "xml", "vue", "ts", "kt")
+        val ignore = arrayOf("node_modules", ".git", "target", "dist", "build", ".idea")
+        val statistic = project.projectDir.walk()
+            .onEnter { file ->
+                ignore.none { it == file.name }
+            }
+            .filter { file ->
+                file.isFile && suffix.any { file.extension == it }
+            }
+            .map {
+                it.extension to it.readLines(charset = Charsets.UTF_8).count()
+            }
+            .groupBy { it.first }
+            .map { (key, value) ->
+                key to value.sumOf { it.second }
+            }
+            .toList()
 
-    statistic.forEach { (key, value) -> 
-        println("""
+        statistic.forEach { (key, value) ->
+            println(
+                """
             文件类型:  $key, 代码行数: $value
-        """.trimIndent())
+        """.trimIndent()
+            )
+        }
     }
 }
