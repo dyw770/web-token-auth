@@ -54,6 +54,9 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = CacheNames.ROLE_PERMISSION, allEntries = true)
     public void removeMenuPermission(List<String> permissions) {
+        if (permissions.isEmpty()) {
+            return;
+        }
         // 删除角色授权
         rolePermissionService.lambdaUpdate()
                 .in(SysRolePermission::getPermissionId, permissions)
