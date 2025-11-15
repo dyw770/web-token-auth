@@ -1,6 +1,6 @@
 <template>
   <!-- 新增弹窗 -->
-  <el-dialog v-model="show" title="新增用户" width="500px">
+  <el-dialog v-model="show" title="新增角色" width="500px">
     <el-form ref="roleFormRef" :model="roleAddRq" label-width="100px" :rules="rules">
       <el-form-item label="角色ID" prop="roleCode" required>
         <el-input v-model="roleAddRq.roleCode"/>
