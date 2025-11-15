@@ -39,6 +39,6 @@ public class OrderRq {
     }
 
     public OrderItem toOrderItem() {
-        return asc ? OrderItem.asc(getSqlColumn()) : OrderItem.desc(StringUtils.camelToUnderline(getSqlColumn()));
+        return asc ? OrderItem.asc(getSqlColumn()) : OrderItem.desc(getSqlColumn());
     }
 }
