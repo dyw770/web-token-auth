@@ -98,4 +98,11 @@ public interface ISysUserService extends IService<SysUser> {
      * @return 权限列表
      */
     List<? extends GrantedAuthority> userAuthorities(String username, String rolePrefix);
+    
+    /**
+     * 修改密码
+     * @param username 用户名
+     * @param password 密码
+     */
+    void updatePassword(String username, String password);
 }

@@ -212,6 +212,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         return Stream.concat(permissionStream, roleStream)
                 .toList();
     }
+
+    @Override
+    @CacheEvict(value = CacheNames.USER_CACHE, key = "#username")
+    public void updatePassword(String username, String password) {
+        this.lambdaUpdate()
+                .eq(SysUser::getUsername, username)
+                .set(SysUser::getUpdateTime, LocalDateTime.now())
+                .set(SysUser::getPassword, password)
+                .update();
+    }
 }
 
 
