@@ -1,5 +1,6 @@
 package cn.dyw.auth.db.controller;
 
+import cn.dyw.auth.cache.CacheNames;
 import cn.dyw.auth.db.domain.SysUser;
 import cn.dyw.auth.db.message.rq.UserUpdatePasswordRq;
 import cn.dyw.auth.db.message.rs.UserInfoRs;
@@ -12,6 +13,7 @@ import cn.dyw.auth.message.MessageCode;
 import cn.dyw.auth.message.Result;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -71,6 +73,7 @@ public class UserSupportController {
      * @return 修改密码结果
      */
     @PostMapping("/update/password")
+    @CacheEvict(value = CacheNames.USER_CACHE, key = "#user.username")
     public Result<Void> updatePassword(@AuthenticationPrincipal User user,
                                        @RequestBody @Validated UserUpdatePasswordRq rq) {
         SysUser sysUser = userService.getById(user.getUsername());
