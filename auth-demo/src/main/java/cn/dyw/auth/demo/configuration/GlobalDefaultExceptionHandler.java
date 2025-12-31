@@ -146,7 +146,7 @@ public class GlobalDefaultExceptionHandler {
             ConstraintViolationException.class,
             ServletRequestBindingException.class,
             MethodArgumentTypeMismatchException.class})
-    private Result<Void> argumentExceptionHandler(Exception e,
+    public Result<Void> argumentExceptionHandler(Exception e,
                                                   HttpServletRequest request) {
         log(e, request);
 
@@ -188,7 +188,7 @@ public class GlobalDefaultExceptionHandler {
      * @return 响应
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    private Result<Void> httpRequestMethodNotSupportedExceptionHandler(HttpRequestMethodNotSupportedException e,
+    public Result<Void> httpRequestMethodNotSupportedExceptionHandler(HttpRequestMethodNotSupportedException e,
                                                                        HttpServletRequest request) {
         log(e, request);
         return Result.createFail(MessageCode.REQUEST_METHOD_ERROR);
@@ -202,7 +202,7 @@ public class GlobalDefaultExceptionHandler {
      * @return 响应
      */
     @ExceptionHandler({HttpMessageNotReadableException.class})
-    private Result<Void> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e,
+    public Result<Void> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e,
                                                                 HttpServletRequest request) {
         log(e, request);
         return Result.createFailWithMsg(MessageCode.REQUEST_BODY_ERROR, e.getMessage());
