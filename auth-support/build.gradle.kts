@@ -15,6 +15,7 @@ dependencies {
     compileOnly("org.springframework.security:spring-security-web")
     compileOnly("org.springframework:spring-webmvc")
     compileOnly("jakarta.servlet:jakarta.servlet-api")
+    compileOnly("jakarta.validation:jakarta.validation-api")
 
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
