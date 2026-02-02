@@ -39,6 +39,8 @@ subprojects {
 
                 dependency("com.github.therapi:therapi-runtime-javadoc:0.15.0")
                 dependency("com.github.therapi:therapi-runtime-javadoc-scribe:0.15.0")
+                
+                dependency("commons-io:commons-io:2.21.0")
             }
         }
     }

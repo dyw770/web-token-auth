@@ -24,6 +24,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
     compileOnly("com.github.therapi:therapi-runtime-javadoc")
     kapt("com.github.therapi:therapi-runtime-javadoc-scribe")
+
+    implementation("commons-io:commons-io")
     
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

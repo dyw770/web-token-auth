@@ -5,12 +5,14 @@ import cn.dyw.auth.support.message.rs.LoggerGroupLevel;
 import cn.dyw.auth.support.message.rs.LoggerLevel;
 import cn.dyw.auth.support.message.rs.LoggerLevelRs;
 import jakarta.validation.constraints.NotBlank;
+import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.logging.*;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +92,13 @@ public class LoggingController {
         return Result.createSuccess(levelRs);
     }
 
+    /**
+     * 设置日志级别
+     *
+     * @param name  日志名称
+     * @param level 日志级别
+     * @return 日志级别
+     */
     @GetMapping("configure")
     public Result<Void> configureLogLevel(@NotBlank @RequestParam("name") String name,
                                           @RequestParam("level") LogLevel level) {
@@ -103,16 +114,30 @@ public class LoggingController {
     /**
      * 获取日志文件
      *
+     * @param line 行数
      * @return 日志文件
      */
     @GetMapping(path = "file", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<Resource> logFile() {
+    public ResponseEntity<Resource> logFile(@RequestParam(name = "line", defaultValue = "0", required = false) int line) throws IOException {
         if (ObjectUtils.isEmpty(this.logFile.getIfAvailable())) {
             return ResponseEntity.ok()
                     .body(new ByteArrayResource("No Log File".getBytes(StandardCharsets.UTF_8)));
         }
-        FileSystemResource resource = new FileSystemResource(this.logFile.getIfAvailable().toString());
-        return ResponseEntity.ok()
-                .body(resource);
+        if (line <= 0) {
+            FileSystemResource resource = new FileSystemResource(this.logFile.getIfAvailable().toString());
+            String filename = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(resource);
+        }
+
+        try (ReversedLinesFileReader fileReader = ReversedLinesFileReader.builder()
+                .setFile(this.logFile.getIfAvailable().toString())
+                .setCharset(StandardCharsets.UTF_8)
+                .get()) {
+            String string = fileReader.toString(line);
+            return ResponseEntity.ok()
+                    .body(new ByteArrayResource(string.getBytes(StandardCharsets.UTF_8)));
+        }
     }
 }
