@@ -115,6 +115,15 @@ export const adminRoutes: RouteRecordRaw = {
             icon: 'ri:file-list-line',
           },
         },
+        {
+          path: '/admin/logs/logger',
+          component: () => import('@/views/admin/logger/index.vue'),
+          name: 'logfile',
+          meta: {
+            title: '日志查看',
+            icon: 'ri:file-list-line',
+          },
+        },
       ]
     },
     {

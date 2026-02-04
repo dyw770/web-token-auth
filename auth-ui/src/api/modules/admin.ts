@@ -128,4 +128,10 @@ export default {
   testPublicApi: () => api.get('/test/static'),
 
   testPrivateApi: () => api.get('/test/info'),
+
+  logfile: (line: number) => api.get("/admin/logging/file", { params: { line } }),
+
+  loggerList: () => api.get('/admin/logging/level'),
+
+  configLogger: (name: string, level: string) => api.get(`/admin/logging/update?name=${name}&level=${level}`),
 }
