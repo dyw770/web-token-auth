@@ -32,7 +32,7 @@ api.interceptors.response.use(
   (response) => {
     // @ts-ignore
     if (!response.headers.hasContentType('application/json')) {
-      return Promise.resolve(response.data)
+      return Promise.resolve(response)
     }
     /**
      * 全局拦截请求发送后返回的数据，如果数据有报错则在这做全局的错误提示
