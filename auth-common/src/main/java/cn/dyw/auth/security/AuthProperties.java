@@ -20,6 +20,11 @@ public class AuthProperties {
      * token 请求头名字
      */
     private String authHeaderName = "Authorization";
+    
+    /**
+     * token 请求参数名字
+     */
+    private String tokenParamName = "token";
 
     /**
      * token redis key 前缀

@@ -108,7 +108,7 @@ public class SecurityAutoConfiguration {
 
     @Bean
     public TokenResolve tokenResolve(AuthProperties authProperties) {
-        return new RequestTokenResolve(authProperties.getAuthHeaderName());
+        return new RequestTokenResolve(authProperties.getAuthHeaderName(), authProperties.getTokenParamName());
     }
 
     @Bean

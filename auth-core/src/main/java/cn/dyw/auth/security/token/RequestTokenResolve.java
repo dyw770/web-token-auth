@@ -4,6 +4,7 @@ import cn.dyw.auth.token.Token;
 import cn.dyw.auth.token.TokenCreateContext;
 import cn.dyw.auth.token.TokenResolve;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,9 +27,15 @@ public class RequestTokenResolve implements TokenResolve {
      * token header名称
      */
     private final String tokenHeaderName;
+    
+    /**
+     * token 参数名称
+     */
+    private final String tokenParamName;
 
-    public RequestTokenResolve(String tokenHeaderName) {
+    public RequestTokenResolve(String tokenHeaderName, String tokenParamName) {
         this.tokenHeaderName = tokenHeaderName;
+        this.tokenParamName = tokenParamName;
     }
 
     @Override
@@ -41,7 +48,11 @@ public class RequestTokenResolve implements TokenResolve {
             // 返回令牌内容，去掉"Bearer "前缀
             return authorizationHeader.substring(7);
         }
-
+        
+        String token = request.getParameter(tokenParamName);
+        if (StringUtils.isNotBlank(token)) {
+            return token;
+        }
         // 如果没有找到令牌，返回null或者你自定义的处理逻辑
         return "";
     }
