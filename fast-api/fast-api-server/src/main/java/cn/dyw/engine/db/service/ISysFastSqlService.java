@@ -1,6 +1,8 @@
 package cn.dyw.engine.db.service;
 
 import cn.dyw.engine.db.domain.SysFastSql;
+import cn.dyw.engine.message.rq.SqlCreateRq;
+import cn.dyw.engine.message.rq.SqlEditRq;
 import cn.dyw.engine.message.rq.SqlSearchRq;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -23,4 +25,25 @@ public interface ISysFastSqlService extends IService<SysFastSql> {
      * @return 列表
      */
     Page<SysFastSql> queryList(SqlSearchRq rq);
+    
+    /**
+     * 新增
+     *
+     * @param rq 新增参数
+     */
+    void addSql(SqlCreateRq rq);
+    
+    /**
+     * 修改
+     *
+     * @param rq 修改参数
+     */
+    void updateSql(SqlEditRq rq);
+    
+    /**
+     * 删除
+     *
+     * @param id 删除id
+     */
+    void deleteSql(Integer id);
 }

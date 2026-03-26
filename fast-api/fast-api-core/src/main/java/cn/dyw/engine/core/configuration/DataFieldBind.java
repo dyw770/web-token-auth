@@ -1,5 +1,6 @@
 package cn.dyw.engine.core.configuration;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -14,10 +15,12 @@ public class DataFieldBind {
     /**
      * 真实字段名
      */
+    @NotBlank
     private String headerField;
 
     /**
      * 映射字段名
      */
+    @NotBlank
     private String headerName;
 }

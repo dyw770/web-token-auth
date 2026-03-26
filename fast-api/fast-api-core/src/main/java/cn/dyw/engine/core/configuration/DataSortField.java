@@ -1,5 +1,6 @@
 package cn.dyw.engine.core.configuration;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -14,6 +15,7 @@ public class DataSortField {
     /**
      * 排序字段名
      */
+    @NotBlank
     private String fieldName;
 
     /**
