@@ -34,6 +34,7 @@ subprojects {
                 }
 
                 dependency("com.alibaba:druid-spring-boot-3-starter:1.2.22")
+                dependency("com.alibaba:druid:1.2.22")
 
                 dependency("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 
@@ -41,6 +42,7 @@ subprojects {
                 dependency("com.github.therapi:therapi-runtime-javadoc-scribe:0.15.0")
                 
                 dependency("commons-io:commons-io:2.21.0")
+                dependency("commons-beanutils:commons-beanutils:1.9.4")
             }
         }
     }

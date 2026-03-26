@@ -27,3 +27,6 @@ include(":auth-support")
 include(":auth-ui")
 include(":auth-cache")
 include(":auth-sync")
+
+include(":fast-api:fast-api-core")
+include(":fast-api:fast-api-server")
