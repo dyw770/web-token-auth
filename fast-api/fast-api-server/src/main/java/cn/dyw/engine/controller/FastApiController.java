@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * SQL模板管理控制器
+ * API 管理控制器
  *
  * @author dyw770
  * @since 2026-03-26
