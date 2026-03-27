@@ -1,4 +1,4 @@
-package cn.dyw.engine.db.domain;
+package cn.dyw.engine.server.db.domain;
 
 import cn.dyw.engine.core.configuration.DataFieldBind;
 import cn.dyw.engine.core.configuration.DataPageOption;

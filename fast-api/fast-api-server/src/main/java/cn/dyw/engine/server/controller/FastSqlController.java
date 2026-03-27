@@ -1,11 +1,11 @@
-package cn.dyw.engine.controller;
+package cn.dyw.engine.server.controller;
 
 import cn.dyw.auth.message.Result;
-import cn.dyw.engine.db.domain.SysFastSql;
-import cn.dyw.engine.db.service.ISysFastSqlService;
-import cn.dyw.engine.message.rq.SqlCreateRq;
-import cn.dyw.engine.message.rq.SqlEditRq;
-import cn.dyw.engine.message.rq.SqlSearchRq;
+import cn.dyw.engine.server.db.domain.SysFastSql;
+import cn.dyw.engine.server.db.service.ISysFastSqlService;
+import cn.dyw.engine.server.message.rq.SqlCreateRq;
+import cn.dyw.engine.server.message.rq.SqlEditRq;
+import cn.dyw.engine.server.message.rq.SqlSearchRq;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

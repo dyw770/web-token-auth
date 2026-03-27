@@ -1,4 +1,4 @@
-package cn.dyw.engine.message.rq;
+package cn.dyw.engine.server.message.rq;
 
 import cn.dyw.auth.message.PageRq;
 import lombok.Data;

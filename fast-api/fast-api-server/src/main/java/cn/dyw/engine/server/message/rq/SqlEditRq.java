@@ -1,4 +1,4 @@
-package cn.dyw.engine.message.rq;
+package cn.dyw.engine.server.message.rq;
 
 import cn.dyw.engine.core.configuration.DataFieldBind;
 import cn.dyw.engine.core.configuration.DataPageOption;
@@ -15,13 +15,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 创建SQL模板请求
+ * 编辑SQL模板请求
  *
  * @author dyw770
  * @since 2026-03-26
  */
 @Data
-public class SqlCreateRq {
+public class SqlEditRq {
+
+    /**
+     * ID
+     */
+    @NotNull
+    private Integer id;
 
     /**
      * 名称

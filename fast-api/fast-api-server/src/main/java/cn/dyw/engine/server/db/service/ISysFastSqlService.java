@@ -1,9 +1,9 @@
-package cn.dyw.engine.db.service;
+package cn.dyw.engine.server.db.service;
 
-import cn.dyw.engine.db.domain.SysFastSql;
-import cn.dyw.engine.message.rq.SqlCreateRq;
-import cn.dyw.engine.message.rq.SqlEditRq;
-import cn.dyw.engine.message.rq.SqlSearchRq;
+import cn.dyw.engine.server.db.domain.SysFastSql;
+import cn.dyw.engine.server.message.rq.SqlCreateRq;
+import cn.dyw.engine.server.message.rq.SqlEditRq;
+import cn.dyw.engine.server.message.rq.SqlSearchRq;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 

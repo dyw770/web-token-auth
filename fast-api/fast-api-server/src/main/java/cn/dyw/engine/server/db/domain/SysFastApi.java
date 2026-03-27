@@ -1,4 +1,4 @@
-package cn.dyw.engine.db.domain;
+package cn.dyw.engine.server.db.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

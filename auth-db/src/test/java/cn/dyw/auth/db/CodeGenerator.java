@@ -1,4 +1,4 @@
-package cn.dyw.engine.db.code;
+package cn.dyw.auth.db;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
@@ -39,17 +39,17 @@ public class CodeGenerator {
                 .globalConfig(builder -> builder
                         .disableOpenDir()
                         .author("dyw770")
-                        .outputDir(Paths.get(System.getProperty("user.dir")) + "/fast-api/fast-api-server/src/main/java")
+                        .outputDir(Paths.get(System.getProperty("user.dir")) + "/auth-db/src/main/java")
                         .commentDate("yyyy-MM-dd")
                 )
                 .packageConfig(builder -> builder
-                        .parent("cn.dyw.engine.db")
+                        .parent("cn.dyw.auth.db")
                         .entity("domain")
                         .mapper("mapper")
                         .service("service")
                         .serviceImpl("service.impl")
                         .xml("mappers")
-                        .pathInfo(Collections.singletonMap(OutputFile.xml, Paths.get(System.getProperty("user.dir")) + "/fast-api/fast-api-server/src/main/resources/mappers"))
+                        .pathInfo(Collections.singletonMap(OutputFile.xml, Paths.get(System.getProperty("user.dir")) + "/auth-db/src/main/resources/mappers"))
                 )
                 .strategyConfig(builder -> {
                             builder
@@ -59,11 +59,11 @@ public class CodeGenerator {
                                     .controllerBuilder().disable()
                                     .mapperBuilder()
                                     .mapperAnnotation(Mapper.class);
-                            
-                            builder.addInclude("sys_fast_api", "sys_fast_sql")
+                            /*
+                            builder.addInclude("sys_api_resource", "sys_api_resource_auth")
                                     .entityBuilder()
                                     .enableFileOverride();
-                             
+                             */
                         }
                 )
                 .templateEngine(new FreemarkerTemplateEngine())

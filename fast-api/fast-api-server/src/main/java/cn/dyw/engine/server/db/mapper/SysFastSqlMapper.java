@@ -1,6 +1,6 @@
-package cn.dyw.engine.db.mapper;
+package cn.dyw.engine.server.db.mapper;
 
-import cn.dyw.engine.db.domain.SysFastApi;
+import cn.dyw.engine.server.db.domain.SysFastSql;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2026-03-25
  */
 @Mapper
-public interface SysFastApiMapper extends BaseMapper<SysFastApi> {
+public interface SysFastSqlMapper extends BaseMapper<SysFastSql> {
 
 }
 
