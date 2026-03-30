@@ -1,10 +1,10 @@
 package cn.dyw.engine.server.db.domain;
 
-import cn.dyw.engine.core.configuration.DataFieldBind;
-import cn.dyw.engine.core.configuration.DataPageOption;
-import cn.dyw.engine.core.configuration.DataSortField;
 import cn.dyw.engine.core.context.DynamicFilterParameter;
 import cn.dyw.engine.core.context.StatementType;
+import cn.dyw.engine.core.model.DataFieldBind;
+import cn.dyw.engine.core.model.DataPageOption;
+import cn.dyw.engine.core.model.DataSortField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;

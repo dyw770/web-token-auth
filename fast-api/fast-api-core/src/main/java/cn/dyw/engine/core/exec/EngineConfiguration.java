@@ -1,7 +1,7 @@
 package cn.dyw.engine.core.exec;
 
-import cn.dyw.engine.core.configuration.DataPageOption;
 import cn.dyw.engine.core.exec.plugin.SqlExecPlugin;
+import cn.dyw.engine.core.model.DataPageOption;
 import lombok.Getter;
 import lombok.Setter;
 

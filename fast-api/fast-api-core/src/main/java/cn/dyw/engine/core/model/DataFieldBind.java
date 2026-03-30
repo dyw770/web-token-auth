@@ -1,4 +1,4 @@
-package cn.dyw.engine.core.configuration;
+package cn.dyw.engine.core.model;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

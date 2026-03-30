@@ -9,6 +9,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     compileOnly("jakarta.validation:jakarta.validation-api")
+    compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
     api("com.baomidou:mybatis-plus-spring-boot3-starter")
     api("org.apache.commons:commons-lang3")

@@ -14,46 +14,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 创建SQL模板请求
+ * 执行sql配置
  *
  * @author dyw770
- * @since 2026-03-26
+ * @since 2026-3-27
  */
 @Data
-public class SqlCreateRq {
+public class ExecSqlRq {
 
     /**
-     * 名称
+     * sql
      */
     @NotBlank
-    @Length(min = 1, max = 32)
-    private String sqlName;
-
-    /**
-     * 描述
-     */
-    @NotBlank
-    @Length(min = 1, max = 128)
-    private String sqlDescribe;
-
-    /**
-     * SQL模板
-     */
-    @NotBlank
-    @Length(min = 1, max = 2000)
-    private String sqlTemplate;
-
-    /**
-     * 自定义计数SQL
-     */
     @Length(max = 2000)
-    private String customCountSql;
-
-    /**
-     * 语句类型
-     */
-    @NotNull
-    private StatementType statementType;
+    private String sql;
 
     /**
      * 排序字段
@@ -68,20 +42,32 @@ public class SqlCreateRq {
     private List<DynamicFilterParameter> parameters;
 
     /**
-     * 分页参数
+     * 结果表头配置
+     */
+    @NotNull
+    private List<DataFieldBind> dataFieldBinds;
+
+    /**
+     * 分页配置
      */
     @NotNull
     private DataPageOption dataPage;
 
     /**
-     * 扩展字段
+     * 语句类型
+     */
+    @NotNull
+    private StatementType statementType;
+
+    /**
+     * 自定义统计sql
+     */
+    @Length(max = 2000)
+    private String customCountSql;
+
+    /**
+     * 扩展参数
      */
     @NotNull
     private Map<String, Object> extend;
-
-    /**
-     * 数据字段绑定
-     */
-    @NotNull
-    private List<DataFieldBind> dataFieldBinds;
 }

@@ -1,6 +1,7 @@
 package cn.dyw.engine.core.exec;
 
 import cn.dyw.engine.core.context.ExecContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 报表结果
@@ -15,5 +16,6 @@ public abstract class ExecResult {
      *
      * @return 结果
      */
+    @JsonIgnore
     public abstract ExecContext getContext();
 }

@@ -1,7 +1,5 @@
 package cn.dyw.engine.core.exec.plugin;
 
-import cn.dyw.engine.core.configuration.DataPageOption;
-import cn.dyw.engine.core.configuration.PageType;
 import cn.dyw.engine.core.context.DynamicFilterParameter;
 import cn.dyw.engine.core.context.ExecContext;
 import cn.dyw.engine.core.context.SelectExecContext;
@@ -11,6 +9,8 @@ import cn.dyw.engine.core.exec.EngineExecutor;
 import cn.dyw.engine.core.exec.ExecResult;
 import cn.dyw.engine.core.exec.result.DataSetResult;
 import cn.dyw.engine.core.exec.result.PageDataSetResult;
+import cn.dyw.engine.core.model.DataPageOption;
+import cn.dyw.engine.core.model.PageType;
 import cn.dyw.engine.core.sql.template.SqlSources;
 import cn.dyw.engine.core.utils.DatabaseResultSetUtils;
 import com.alibaba.druid.DbType;

@@ -1,10 +1,10 @@
 package cn.dyw.engine.core.exec.result;
 
-import cn.dyw.engine.core.configuration.DataFieldBind;
-import cn.dyw.engine.core.configuration.DataSortField;
 import cn.dyw.engine.core.context.DynamicFilterParameter;
 import cn.dyw.engine.core.context.SelectExecContext;
 import cn.dyw.engine.core.exec.ExecResult;
+import cn.dyw.engine.core.model.DataFieldBind;
+import cn.dyw.engine.core.model.DataSortField;
 import lombok.Getter;
 
 import java.util.ArrayList;

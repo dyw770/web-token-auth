@@ -1,10 +1,10 @@
 package cn.dyw.engine.core.exec.plugin;
 
-import cn.dyw.engine.core.configuration.DataSortField;
 import cn.dyw.engine.core.context.ExecContext;
 import cn.dyw.engine.core.context.SelectExecContext;
 import cn.dyw.engine.core.exec.EngineExecutor;
 import cn.dyw.engine.core.exec.ExecResult;
+import cn.dyw.engine.core.model.DataSortField;
 import cn.dyw.engine.core.sql.template.SqlSources;
 import com.alibaba.druid.DbType;
 import com.alibaba.druid.sql.SQLUtils;

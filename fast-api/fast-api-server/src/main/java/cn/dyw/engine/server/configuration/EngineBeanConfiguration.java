@@ -11,7 +11,6 @@ import cn.dyw.engine.core.sql.template.ITemplateEngine;
 import cn.dyw.engine.core.sql.template.MybatisTemplateEngine;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
@@ -24,11 +23,9 @@ import java.util.List;
  */
 @Configuration
 @ConditionalOnBean(DataSource.class)
-@ComponentScan(basePackages = "cn.dyw.engine.server")
 public class EngineBeanConfiguration {
 
     @Bean
-    @ConditionalOnBean(DataSource.class)
     public IExecEngine sqlExecEngin(DataSource dataSource, ITemplateEngine templateEngine) {
         return new DefaultExecEngine(dataSource, templateEngine);
     }

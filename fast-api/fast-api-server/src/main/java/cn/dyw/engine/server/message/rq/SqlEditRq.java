@@ -1,12 +1,11 @@
 package cn.dyw.engine.server.message.rq;
 
-import cn.dyw.engine.core.configuration.DataFieldBind;
-import cn.dyw.engine.core.configuration.DataPageOption;
-import cn.dyw.engine.core.configuration.DataSortField;
 import cn.dyw.engine.core.context.DynamicFilterParameter;
 import cn.dyw.engine.core.context.StatementType;
+import cn.dyw.engine.core.model.DataFieldBind;
+import cn.dyw.engine.core.model.DataPageOption;
+import cn.dyw.engine.core.model.DataSortField;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -65,13 +64,13 @@ public class SqlEditRq {
     /**
      * 排序字段
      */
-    @NotEmpty
+    @NotNull
     private List<DataSortField> sortFields;
 
     /**
      * 参数
      */
-    @NotEmpty
+    @NotNull
     private List<DynamicFilterParameter> parameters;
 
     /**
@@ -83,12 +82,12 @@ public class SqlEditRq {
     /**
      * 扩展字段
      */
-    @NotEmpty
+    @NotNull
     private Map<String, Object> extend;
 
     /**
      * 数据字段绑定
      */
-    @NotEmpty
+    @NotNull
     private List<DataFieldBind> dataFieldBinds;
 }

@@ -1,9 +1,6 @@
 package cn.dyw.engine.core.exec;
 
 
-import cn.dyw.engine.core.configuration.DataPageOption;
-import cn.dyw.engine.core.configuration.DataSortField;
-import cn.dyw.engine.core.configuration.PageType;
 import cn.dyw.engine.core.context.DeleteExecContext;
 import cn.dyw.engine.core.context.DynamicFilterParameter;
 import cn.dyw.engine.core.context.SelectExecContext;
@@ -11,6 +8,9 @@ import cn.dyw.engine.core.context.UpdateExecContext;
 import cn.dyw.engine.core.exec.plugin.PageSqlExecPlugin;
 import cn.dyw.engine.core.exec.plugin.SingleLineResultExecPlugin;
 import cn.dyw.engine.core.exec.plugin.SortSqlExecPlugin;
+import cn.dyw.engine.core.model.DataPageOption;
+import cn.dyw.engine.core.model.DataSortField;
+import cn.dyw.engine.core.model.PageType;
 import cn.dyw.engine.core.sql.template.ITemplateEngine;
 import cn.dyw.engine.core.sql.template.MybatisTemplateEngine;
 import com.alibaba.druid.pool.DruidDataSource;
