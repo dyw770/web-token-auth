@@ -41,3 +41,10 @@ spring:
           statement-close-after-log-enabled: false
 mybatis-plus:
   mapper-locations: classpath:/mappers/*.xml
+springdoc:
+  api-docs:
+    enabled: true
+    path: /doc/v3/api-docs
+  swagger-ui:
+    path: /doc/swagger-ui.html
+    enabled: true

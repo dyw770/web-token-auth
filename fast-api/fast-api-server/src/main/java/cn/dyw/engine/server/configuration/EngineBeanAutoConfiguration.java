@@ -9,9 +9,8 @@ import cn.dyw.engine.core.exec.plugin.SortSqlExecPlugin;
 import cn.dyw.engine.core.exec.plugin.SqlExecPlugin;
 import cn.dyw.engine.core.sql.template.ITemplateEngine;
 import cn.dyw.engine.core.sql.template.MybatisTemplateEngine;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -21,9 +20,8 @@ import java.util.List;
  * @author dyw770
  * @since 2026-03-27
  */
-@Configuration
-@ConditionalOnBean(DataSource.class)
-public class EngineBeanConfiguration {
+@ConditionalOnClass(DataSource.class)
+public class EngineBeanAutoConfiguration {
 
     @Bean
     public IExecEngine sqlExecEngin(DataSource dataSource, ITemplateEngine templateEngine) {

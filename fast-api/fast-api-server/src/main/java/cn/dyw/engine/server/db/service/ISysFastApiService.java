@@ -4,6 +4,7 @@ import cn.dyw.engine.server.db.domain.SysFastApi;
 import cn.dyw.engine.server.message.rq.ApiCreateRq;
 import cn.dyw.engine.server.message.rq.ApiEditRq;
 import cn.dyw.engine.server.message.rq.ApiSearchRq;
+import cn.dyw.engine.server.model.FastApi;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -52,4 +53,12 @@ public interface ISysFastApiService extends IService<SysFastApi> {
      * @param sqlId SQL ID
      */
     void deleteApiBySqlId(Integer sqlId);
+    
+    /**
+     * 根据API路径查询API
+     *
+     * @param path API路径
+     * @return API
+     */
+    FastApi queryApi(String path);
 }

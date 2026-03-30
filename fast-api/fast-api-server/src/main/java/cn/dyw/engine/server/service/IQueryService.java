@@ -2,7 +2,8 @@ package cn.dyw.engine.server.service;
 
 import cn.dyw.engine.core.context.ExecContext;
 import cn.dyw.engine.core.exec.ExecResult;
-import cn.dyw.engine.server.message.rq.ExecSqlRq;
+import cn.dyw.engine.server.message.rq.ExecParameterRq;
+import cn.dyw.engine.server.message.rq.ExecRq;
 
 /**
  *
@@ -17,7 +18,7 @@ public interface IQueryService {
      * @param rq 请求参数
      * @return 结果
      */
-    ExecResult execQuery(ExecSqlRq rq);
+    ExecResult execQuery(ExecRq rq);
 
     /**
      * 创建执行上下文
@@ -25,7 +26,7 @@ public interface IQueryService {
      * @param rq 请求参数
      * @return 执行上下文
      */
-    ExecContext contextFactory(ExecSqlRq rq);
+    ExecContext contextFactory(ExecRq rq);
 
     /**
      * 执行查询
@@ -34,4 +35,22 @@ public interface IQueryService {
      * @return 执行结果
      */
     ExecResult execResult(ExecContext context);
+
+    /**
+     * 执行
+     *
+     * @param rq 执行参数
+     * @param sqlId sqlId
+     * @return 执行结果
+     */
+    ExecResult execSql(ExecParameterRq rq, Integer sqlId);
+    
+    /**
+     * 执行API
+     *
+     * @param rq 执行参数
+     * @param path api路径
+     * @return 执行结果
+     */
+    ExecResult execApi(ExecParameterRq rq, String path);
 }

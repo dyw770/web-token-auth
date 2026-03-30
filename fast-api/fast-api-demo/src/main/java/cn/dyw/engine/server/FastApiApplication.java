@@ -9,9 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 2026-03-30
  */
 @SpringBootApplication
-public class FastApiApplicationTest {
+public class FastApiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(FastApiApplicationTest.class, args);
+        SpringApplication.run(FastApiApplication.class, args);
     }
 }

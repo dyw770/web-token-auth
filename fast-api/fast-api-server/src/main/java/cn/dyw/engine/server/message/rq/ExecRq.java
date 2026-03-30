@@ -20,7 +20,7 @@ import java.util.Map;
  * @since 2026-3-27
  */
 @Data
-public class ExecSqlRq {
+public class ExecRq {
 
     /**
      * sql

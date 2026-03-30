@@ -1,5 +1,7 @@
 package cn.dyw.engine.server.service.impl;
 
+import cn.dyw.auth.exception.ExtensionBusinessException;
+import cn.dyw.auth.message.MessageCode;
 import cn.dyw.engine.core.context.*;
 import cn.dyw.engine.core.exception.EngineExecException;
 import cn.dyw.engine.core.exec.EngineConfiguration;
@@ -8,7 +10,12 @@ import cn.dyw.engine.core.exec.IExecEngine;
 import cn.dyw.engine.core.model.DataFieldBind;
 import cn.dyw.engine.core.model.DataPageOption;
 import cn.dyw.engine.core.model.DataSortField;
-import cn.dyw.engine.server.message.rq.ExecSqlRq;
+import cn.dyw.engine.server.db.domain.SysFastSql;
+import cn.dyw.engine.server.db.service.ISysFastApiService;
+import cn.dyw.engine.server.db.service.ISysFastSqlService;
+import cn.dyw.engine.server.message.rq.ExecParameterRq;
+import cn.dyw.engine.server.message.rq.ExecRq;
+import cn.dyw.engine.server.model.FastApi;
 import cn.dyw.engine.server.service.IQueryService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -29,20 +36,28 @@ public class QueryServiceImpl implements IQueryService {
 
     private final EngineConfiguration configuration;
 
-    public QueryServiceImpl(IExecEngine engine, EngineConfiguration configuration) {
+    private final ISysFastSqlService sqlService;
+
+    private final ISysFastApiService apiService;
+
+    public QueryServiceImpl(IExecEngine engine,
+                            EngineConfiguration configuration,
+                            ISysFastSqlService sqlService, ISysFastApiService apiService) {
         this.engine = engine;
         this.configuration = configuration;
+        this.sqlService = sqlService;
+        this.apiService = apiService;
     }
 
 
     @Override
-    public ExecResult execQuery(ExecSqlRq rq) {
+    public ExecResult execQuery(ExecRq rq) {
         ExecContext context = contextFactory(rq);
         return execResult(context);
     }
 
     @Override
-    public ExecContext contextFactory(ExecSqlRq rq) {
+    public ExecContext contextFactory(ExecRq rq) {
         StatementType statementType = rq.getStatementType();
         String sqlTemplate = rq.getSql();
         List<DynamicFilterParameter> parameters = rq.getParameters();
@@ -95,5 +110,41 @@ public class QueryServiceImpl implements IQueryService {
     @Override
     public ExecResult execResult(ExecContext context) {
         return engine.exec(context);
+    }
+
+    @Override
+    public ExecResult execSql(ExecParameterRq rq, Integer sqlId) {
+        SysFastSql fastSql = sqlService.getById(sqlId);
+        if (ObjectUtils.isEmpty(fastSql)) {
+            throw new ExtensionBusinessException(MessageCode.PARAM_ERROR, "未找到对应的SQL配置");
+        }
+
+        return execQuery(createExecRq(rq, fastSql));
+    }
+
+    @Override
+    public ExecResult execApi(ExecParameterRq rq, String path) {
+        FastApi api = apiService.queryApi(path);
+        if (ObjectUtils.isEmpty(api)) {
+            throw new ExtensionBusinessException(MessageCode.PARAM_ERROR, "未找到对应的API配置");
+        }
+
+        SysFastSql fastSql = api.getFastSql();
+        return execQuery(createExecRq(rq, fastSql));
+    }
+
+
+    private ExecRq createExecRq(ExecParameterRq rq, SysFastSql fastSql) {
+        ExecRq execRq = new ExecRq();
+        execRq.setSql(fastSql.getSqlTemplate());
+        execRq.setStatementType(fastSql.getStatementType());
+        execRq.setDataFieldBinds(fastSql.getDataFieldBinds());
+        execRq.setCustomCountSql(fastSql.getCustomCountSql());
+        execRq.setExtend(fastSql.getExtend());
+
+        execRq.setParameters(rq.getParameters());
+        execRq.setDataPage(rq.getDataPage());
+        execRq.setSortFields(rq.getSortFields());
+        return execRq;
     }
 }

@@ -1,11 +1,14 @@
 package cn.dyw.engine.server.controller;
 
 import cn.dyw.auth.message.Result;
+import cn.dyw.engine.core.exec.ExecResult;
 import cn.dyw.engine.server.db.domain.SysFastSql;
 import cn.dyw.engine.server.db.service.ISysFastSqlService;
+import cn.dyw.engine.server.message.rq.ExecParameterRq;
 import cn.dyw.engine.server.message.rq.SqlCreateRq;
 import cn.dyw.engine.server.message.rq.SqlEditRq;
 import cn.dyw.engine.server.message.rq.SqlSearchRq;
+import cn.dyw.engine.server.service.IQueryService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -24,9 +27,12 @@ import org.springframework.web.bind.annotation.*;
 public class FastSqlController {
 
     private final ISysFastSqlService sysFastSqlService;
+    
+    private final IQueryService queryService;
 
-    public FastSqlController(ISysFastSqlService sysFastSqlService) {
+    public FastSqlController(ISysFastSqlService sysFastSqlService, IQueryService queryService) {
         this.sysFastSqlService = sysFastSqlService;
+        this.queryService = queryService;
     }
 
     /**
@@ -74,5 +80,17 @@ public class FastSqlController {
     public Result<Void> deleteSql(@PathVariable @NotNull @Min(1) Integer id) {
         sysFastSqlService.deleteSql(id);
         return Result.createSuccess();
+    }
+
+    /**
+     * 执行SQL模板
+     *
+     * @param rq 执行参数
+     * @return 执行结果
+     */
+    @PostMapping("/exec/{sqlId}")
+    public Result<ExecResult> execSql(@RequestBody @Validated ExecParameterRq rq, @PathVariable int sqlId) {
+        ExecResult result = queryService.execSql(rq, sqlId);
+        return Result.createSuccess(result);
     }
 }

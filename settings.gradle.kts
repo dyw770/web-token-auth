@@ -30,3 +30,4 @@ include(":auth-sync")
 
 include(":fast-api:fast-api-core")
 include(":fast-api:fast-api-server")
+include(":fast-api:fast-api-demo")

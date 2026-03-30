@@ -8,6 +8,7 @@ import cn.dyw.engine.server.db.service.ISysFastApiService;
 import cn.dyw.engine.server.message.rq.ApiCreateRq;
 import cn.dyw.engine.server.message.rq.ApiEditRq;
 import cn.dyw.engine.server.message.rq.ApiSearchRq;
+import cn.dyw.engine.server.model.FastApi;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -75,5 +76,10 @@ public class SysFastApiServiceImpl extends ServiceImpl<SysFastApiMapper, SysFast
         this.lambdaUpdate()
                 .eq(SysFastApi::getSysSql, sqlId)
                 .remove();
+    }
+
+    @Override
+    public FastApi queryApi(String path) {
+        return getBaseMapper().queryApiByPath(path);
     }
 }

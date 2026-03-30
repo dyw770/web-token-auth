@@ -32,4 +32,7 @@ public class DataSortField {
     public DataSortField(String fieldName) {
         this.fieldName = fieldName;
     }
+
+    public DataSortField() {
+    }
 }
