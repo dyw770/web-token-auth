@@ -34,7 +34,7 @@ public class FastApiController {
      * @param rq 查询参数
      * @return 分页结果
      */
-    @GetMapping("/list")
+    @PostMapping("/list")
     public Result<Page<SysFastApi>> list(@RequestBody @Validated ApiSearchRq rq) {
         return Result.createSuccess(sysFastApiService.queryList(rq));
     }

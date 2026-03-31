@@ -41,7 +41,7 @@ public class FastSqlController {
      * @param rq 查询参数
      * @return 分页结果
      */
-    @GetMapping("/list")
+    @PostMapping("/list")
     public Result<Page<SysFastSql>> list(@RequestBody @Validated SqlSearchRq rq) {
         return Result.createSuccess(sysFastSqlService.queryList(rq));
     }
