@@ -5,6 +5,7 @@ import generatedRoutes from 'virtual:generated-pages'
 import {setupLayouts} from 'virtual:meta-layouts'
 import MultilevelMenuExample from './modules/multilevel.menu.example'
 import {adminRoutes, simpleRoutes} from './modules/admin.ts'
+import fastApi from './modules/fast-api.ts'
 
 // 固定路由（默认路由）
 const constantRoutes: RouteRecordRaw[] = [
@@ -67,6 +68,15 @@ const asyncRoutes: Route.recordMainRaw[] = [
     },
     children: [
       adminRoutes
+    ],
+  },
+  {
+    meta: {
+      title: 'Fast API',
+      icon: 'ant-design:setting-outlined',
+    },
+    children: [
+      fastApi
     ],
   },
   {

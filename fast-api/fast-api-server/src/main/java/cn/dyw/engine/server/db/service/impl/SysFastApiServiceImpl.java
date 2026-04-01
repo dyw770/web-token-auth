@@ -41,6 +41,11 @@ public class SysFastApiServiceImpl extends ServiceImpl<SysFastApiMapper, SysFast
     }
 
     @Override
+    public Page<FastApi> queryDetailsList(ApiSearchRq rq) {
+        return getBaseMapper().queryDetailsApi(rq, rq.toPage());
+    }
+
+    @Override
     public void addApi(ApiCreateRq rq) {
         SysFastApi sysFastApi = new SysFastApi();
         BeanUtils.copyProperties(rq, sysFastApi);

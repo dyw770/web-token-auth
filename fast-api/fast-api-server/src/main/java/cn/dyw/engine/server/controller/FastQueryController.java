@@ -42,7 +42,7 @@ public class FastQueryController {
      */
     @PostMapping("/**")
     public Result<ExecResult> postQuery(@RequestBody ExecParameterRq rq, HttpServletRequest request) {
-        String apiPath = getApiPath(request);
+        String apiPath = getApiPath(request, apiPathPrefix);
         return Result.createSuccess(queryService.execApi(rq, apiPath));
     }
 
@@ -54,7 +54,7 @@ public class FastQueryController {
      */
     @GetMapping("/**")
     public Result<ExecResult> getQuery(@RequestParam Map<String, Object> map, HttpServletRequest request) {
-        String apiPath = getApiPath(request);
+        String apiPath = getApiPath(request, apiPathPrefix);
         ExecParameterRq rq = new ExecParameterRq();
         rq.setParameters(
                 map.entrySet()
@@ -67,7 +67,7 @@ public class FastQueryController {
     }
     
 
-    private String getApiPath(HttpServletRequest request) {
+    private String getApiPath(HttpServletRequest request, String apiPathPrefix) {
         String requestPath = request.getRequestURI();
         int i = StringUtils.indexOf(requestPath, apiPathPrefix);
         return requestPath.substring(i + apiPathPrefix.length());

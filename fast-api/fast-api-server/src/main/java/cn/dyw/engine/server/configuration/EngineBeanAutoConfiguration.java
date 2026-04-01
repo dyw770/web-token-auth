@@ -9,8 +9,10 @@ import cn.dyw.engine.core.exec.plugin.SortSqlExecPlugin;
 import cn.dyw.engine.core.exec.plugin.SqlExecPlugin;
 import cn.dyw.engine.core.sql.template.ITemplateEngine;
 import cn.dyw.engine.core.sql.template.MybatisTemplateEngine;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.List;
  * @author dyw770
  * @since 2026-03-27
  */
+@ComponentScan("cn.dyw.engine.server")
+@MapperScan(basePackages = "cn.dyw.engine.server.db.mapper")
 @ConditionalOnClass(DataSource.class)
 public class EngineBeanAutoConfiguration {
 

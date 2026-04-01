@@ -2,7 +2,6 @@ package cn.dyw.engine.core.exec;
 
 import cn.dyw.engine.core.context.ExecContext;
 import cn.dyw.engine.core.exception.DataSourceException;
-import cn.dyw.engine.core.exception.EngineExecException;
 import cn.dyw.engine.core.exception.ExecSqlException;
 import cn.dyw.engine.core.exception.SqlException;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +51,8 @@ public abstract class AbstractExecEngine implements IExecEngine {
             EngineExecutor executor = executor(context, connection);
             return executor.execWithPlugin();
         } catch (SqlException e) {
-            throw new EngineExecException("执行SQL失败, SQL: [" + context.getSqlTemplate() + "]", e);
+            log.error("执行SQL失败, SQL: [{}]", context.getSqlTemplate(), e);
+            throw e;
         }
     }
 

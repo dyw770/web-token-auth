@@ -51,4 +51,39 @@
                  join sys_fast_sql sfs on sfa.sys_sql = sfs.id
         where sfa.api_path = #{path}
     </select>
+    <select id="queryDetailsApi" resultMap="FastApi">
+        select sfa.id,
+        sfa.api_name,
+        sfa.api_describe,
+        sfa.api_path,
+        sfa.sys_sql,
+        sfa.create_time,
+        sfa.update_time,
+        sfs.id as sql_id,
+        sfs.sql_name,
+        sfs.sql_describe,
+        sfs.sql_template,
+        sfs.custom_count_sql,
+        sfs.statement_type,
+        sfs.sort_fields,
+        sfs.parameters,
+        sfs.data_page,
+        sfs.extend,
+        sfs.data_field_binds,
+        sfs.create_time as sql_create_time,
+        sfs.update_time as sql_update_time
+        from sys_fast_api sfa
+        join sys_fast_sql sfs on sfa.sys_sql = sfs.id
+        <where>
+            <if test="rq.apiName != null and rq.apiName != ''">
+                and sfa.api_name like concat(#{rq.apiName}, '%')
+            </if>
+            <if test="rq.apiDescribe != null and rq.apiDescribe != ''">
+                and sfa.api_describe like concat(#{rq.apiDescribe}, '%')
+            </if>
+            <if test="rq.apiPath != null and rq.apiPath != ''">
+                and sfa.api_path like concat(#{rq.apiPath}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

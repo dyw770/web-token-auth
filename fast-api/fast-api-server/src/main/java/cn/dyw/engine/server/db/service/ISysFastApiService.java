@@ -27,6 +27,14 @@ public interface ISysFastApiService extends IService<SysFastApi> {
     Page<SysFastApi> queryList(ApiSearchRq rq);
 
     /**
+     * 查询API列表
+     *
+     * @param rq 搜索参数
+     * @return 分页结果
+     */
+    Page<FastApi> queryDetailsList(ApiSearchRq rq);
+    
+    /**
      * 新增API
      *
      * @param rq 新增参数

@@ -6,6 +6,7 @@ import cn.dyw.engine.server.db.service.ISysFastApiService;
 import cn.dyw.engine.server.message.rq.ApiCreateRq;
 import cn.dyw.engine.server.message.rq.ApiEditRq;
 import cn.dyw.engine.server.message.rq.ApiSearchRq;
+import cn.dyw.engine.server.model.FastApi;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +38,17 @@ public class FastApiController {
     @PostMapping("/list")
     public Result<Page<SysFastApi>> list(@RequestBody @Validated ApiSearchRq rq) {
         return Result.createSuccess(sysFastApiService.queryList(rq));
+    }
+
+    /**
+     * 查询API详情列表
+     *
+     * @param rq 查询参数
+     * @return 分页结果
+     */
+    @PostMapping("/details/list")
+    public Result<Page<FastApi>> detailsList(@RequestBody @Validated ApiSearchRq rq) {
+        return Result.createSuccess(sysFastApiService.queryDetailsList(rq));
     }
 
     /**
