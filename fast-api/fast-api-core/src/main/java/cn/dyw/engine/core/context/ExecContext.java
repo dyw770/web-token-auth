@@ -40,6 +40,11 @@ public abstract class ExecContext {
      * 数据库类型
      */
     private String dbType;
+    
+    /**
+     * 数据源
+     */
+    private String dataSource;
 
     /**
      * 全局配置

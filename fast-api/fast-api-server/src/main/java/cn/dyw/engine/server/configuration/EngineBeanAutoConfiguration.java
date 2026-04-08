@@ -1,5 +1,6 @@
 package cn.dyw.engine.server.configuration;
 
+import cn.dyw.engine.core.datasource.DataSourceProvide;
 import cn.dyw.engine.core.exec.DefaultExecEngine;
 import cn.dyw.engine.core.exec.EngineConfiguration;
 import cn.dyw.engine.core.exec.IExecEngine;
@@ -9,6 +10,7 @@ import cn.dyw.engine.core.exec.plugin.SortSqlExecPlugin;
 import cn.dyw.engine.core.exec.plugin.SqlExecPlugin;
 import cn.dyw.engine.core.sql.template.ITemplateEngine;
 import cn.dyw.engine.core.sql.template.MybatisTemplateEngine;
+import com.alibaba.druid.pool.DruidDataSource;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +30,8 @@ import java.util.List;
 public class EngineBeanAutoConfiguration {
 
     @Bean
-    public IExecEngine sqlExecEngin(DataSource dataSource, ITemplateEngine templateEngine) {
-        return new DefaultExecEngine(dataSource, templateEngine);
+    public IExecEngine sqlExecEngin(DataSourceProvide<DruidDataSource> dataSourceProvide, ITemplateEngine templateEngine) {
+        return new DefaultExecEngine(dataSourceProvide, templateEngine);
     }
 
     @Bean

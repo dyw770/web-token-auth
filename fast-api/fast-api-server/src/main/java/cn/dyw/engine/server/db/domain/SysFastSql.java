@@ -1,36 +1,25 @@
 package cn.dyw.engine.server.db.domain;
 
-import cn.dyw.engine.core.context.DynamicFilterParameter;
-import cn.dyw.engine.core.context.StatementType;
-import cn.dyw.engine.core.model.DataFieldBind;
-import cn.dyw.engine.core.model.DataPageOption;
-import cn.dyw.engine.core.model.DataSortField;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.ibatis.type.JdbcType;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
 /**
  * <p>
- *
+ * 
  * </p>
  *
  * @author dyw770
- * @since 2026-03-25
+ * @since 2026-04-02
  */
 @Getter
 @Setter
 @ToString
-@TableName(value = "sys_fast_sql", autoResultMap = true)
+@TableName("sys_fast_sql")
 public class SysFastSql {
 
     /**
@@ -72,35 +61,30 @@ public class SysFastSql {
     /**
      * 语句类型
      */
-    private StatementType statementType;
+    private String statementType;
 
     /**
      * 排序字段
      */
-    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
-    private List<DataSortField> sortFields;
+    private String sortFields;
 
     /**
      * 参数
      */
-    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
-    private List<DynamicFilterParameter> parameters;
+    private String parameters;
 
     /**
      * 分页参数
      */
-    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
-    private DataPageOption dataPage;
+    private String dataPage;
 
     /**
      * 扩展字段
      */
-    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
-    private Map<String, Object> extend;
+    private String extend;
 
     /**
      * 数据字段绑定
      */
-    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
-    private List<DataFieldBind> dataFieldBinds;
+    private String dataFieldBinds;
 }

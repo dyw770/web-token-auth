@@ -5,6 +5,7 @@ import cn.dyw.engine.core.context.DeleteExecContext;
 import cn.dyw.engine.core.context.DynamicFilterParameter;
 import cn.dyw.engine.core.context.SelectExecContext;
 import cn.dyw.engine.core.context.UpdateExecContext;
+import cn.dyw.engine.core.datasource.DefaultDataSourceProvide;
 import cn.dyw.engine.core.exec.plugin.PageSqlExecPlugin;
 import cn.dyw.engine.core.exec.plugin.SingleLineResultExecPlugin;
 import cn.dyw.engine.core.exec.plugin.SortSqlExecPlugin;
@@ -39,9 +40,12 @@ public class ExecEngineTest {
         dataSource.init();
         this.dataSource = dataSource;
 
+         DefaultDataSourceProvide dataSourceProvide = new DefaultDataSourceProvide();
+         dataSourceProvide.add("default", dataSource);
+
         this.templateEngine = new MybatisTemplateEngine();
 
-        this.engine = new DefaultExecEngine(this.dataSource, this.templateEngine);
+        this.engine = new DefaultExecEngine(dataSourceProvide, this.templateEngine);
 
         configuration = new EngineConfiguration();
         configuration.addPlugins(new PageSqlExecPlugin());

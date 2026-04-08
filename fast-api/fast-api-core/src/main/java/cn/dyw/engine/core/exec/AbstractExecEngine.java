@@ -1,6 +1,7 @@
 package cn.dyw.engine.core.exec;
 
 import cn.dyw.engine.core.context.ExecContext;
+import cn.dyw.engine.core.datasource.DataSourceProvide;
 import cn.dyw.engine.core.exception.DataSourceException;
 import cn.dyw.engine.core.exception.ExecSqlException;
 import cn.dyw.engine.core.exception.SqlException;
@@ -16,15 +17,15 @@ import java.sql.Connection;
 @Slf4j
 public abstract class AbstractExecEngine implements IExecEngine {
 
-    private final DataSource dataSource;
+    private final DataSourceProvide<? extends DataSource> dataSourceProvide;
 
-    public AbstractExecEngine(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public AbstractExecEngine(DataSourceProvide<? extends DataSource> dataSourceProvide) {
+        this.dataSourceProvide = dataSourceProvide;
     }
 
-    private Connection getConnection() throws ExecSqlException {
+    private Connection getConnection(ExecContext context) throws ExecSqlException {
         try {
-            return dataSource.getConnection();
+            return dataSourceProvide.provide(context).getConnection();
         } catch (java.sql.SQLException e) {
             throw new ExecSqlException("获取数据库连接失败", e);
         }
@@ -33,7 +34,7 @@ public abstract class AbstractExecEngine implements IExecEngine {
     @Override
     public ExecResult exec(ExecContext context)
             throws SqlException {
-        try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection(context)) {
             return execDataQuery(context, connection);
         } catch (java.sql.SQLException e) {
             throw new DataSourceException("关闭数据库连接异常", e);

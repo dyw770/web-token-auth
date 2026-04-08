@@ -43,7 +43,7 @@ public class CodeGenerator {
                         .commentDate("yyyy-MM-dd")
                 )
                 .packageConfig(builder -> builder
-                        .parent("cn.dyw.engine.db")
+                        .parent("cn.dyw.engine.server.db")
                         .entity("domain")
                         .mapper("mapper")
                         .service("service")
@@ -60,7 +60,7 @@ public class CodeGenerator {
                                     .mapperBuilder()
                                     .mapperAnnotation(Mapper.class);
                             
-                            builder.addInclude("sys_fast_api", "sys_fast_sql")
+                            builder.addInclude("sys_fast_api", "sys_fast_sql", "sys_fast_data_source")
                                     .entityBuilder()
                                     .enableFileOverride();
                              

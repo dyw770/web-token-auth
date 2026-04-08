@@ -10,7 +10,7 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 /**
  * <p>
- * 
+ * 数据源配置
  * </p>
  *
  * @author dyw770
@@ -19,34 +19,44 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@TableName("sys_fast_api")
-public class SysFastApi {
+@TableName("sys_fast_data_source")
+public class SysFastDataSource {
 
     /**
-     * id
+     * 数据源名称
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @TableId(value = "source_name", type = IdType.INPUT)
+    private String sourceName;
 
     /**
-     * 名称
+     * jdbc url
      */
-    private String apiName;
+    private String jdbcUrl;
 
     /**
-     * 描述
+     * 用户名
      */
-    private String apiDescribe;
+    private String username;
 
     /**
-     * 路径
+     * 密码
      */
-    private String apiPath;
+    private String password;
 
     /**
-     * sql
+     * 驱动名称
      */
-    private Integer sysSql;
+    private String driverName;
+
+    /**
+     * 属性
+     */
+    private String properties;
+
+    /**
+     * 数据库类型
+     */
+    private String dbType;
 
     /**
      * 创建时间

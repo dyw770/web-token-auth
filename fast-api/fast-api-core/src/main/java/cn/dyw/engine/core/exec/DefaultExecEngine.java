@@ -1,6 +1,7 @@
 package cn.dyw.engine.core.exec;
 
 import cn.dyw.engine.core.context.*;
+import cn.dyw.engine.core.datasource.DataSourceProvide;
 import cn.dyw.engine.core.exception.EngineExecException;
 import cn.dyw.engine.core.exec.executor.DeleteEngineExecutor;
 import cn.dyw.engine.core.exec.executor.InsertEngineExecutor;
@@ -25,8 +26,8 @@ public class DefaultExecEngine extends AbstractExecEngine {
     @Getter
     private final ITemplateEngine templateEngine;
 
-    public DefaultExecEngine(DataSource dataSource, ITemplateEngine templateEngine) {
-        super(dataSource);
+    public DefaultExecEngine(DataSourceProvide<? extends DataSource> dataSourceProvide, ITemplateEngine templateEngine) {
+        super(dataSourceProvide);
         this.templateEngine = templateEngine;
     }
 
