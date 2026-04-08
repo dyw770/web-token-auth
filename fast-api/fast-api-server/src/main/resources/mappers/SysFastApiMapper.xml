@@ -13,6 +13,7 @@
             <result property="createTime" column="sql_create_time"/>
             <result property="updateTime" column="sql_update_time"/>
             <result property="statementType" column="statement_type"/>
+            <result property="dataSource" column="data_source"/>
             <result property="sortFields" column="sort_fields"
                     typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
             <result property="parameters" column="parameters"
@@ -46,7 +47,8 @@
                sfs.extend,
                sfs.data_field_binds,
                sfs.create_time as sql_create_time,
-               sfs.update_time as sql_update_time
+               sfs.update_time as sql_update_time,
+               sfs.data_source
         from sys_fast_api sfa
                  join sys_fast_sql sfs on sfa.sys_sql = sfs.id
         where sfa.api_path = #{path}
