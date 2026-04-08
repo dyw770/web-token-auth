@@ -554,4 +554,136 @@ declare namespace FastApi {
   }
 }
 
-export {FastSql, FastApi}
+declare namespace DataSource {
+  /**
+   * 数据源响应
+   */
+  interface SysFastDataSource {
+    /**
+     * 数据源名称
+     */
+    sourceName: string
+
+    /**
+     * jdbc url
+     */
+    jdbcUrl: string
+
+    /**
+     * 用户名
+     */
+    username?: string
+
+    /**
+     * 密码
+     */
+    password?: string
+
+    /**
+     * 驱动名称
+     */
+    driverName: string
+
+    /**
+     * 属性
+     */
+    properties?: string
+
+    /**
+     * 数据库类型
+     */
+    dbType: string
+
+    /**
+     * 创建时间
+     */
+    createTime: string
+
+    /**
+     * 更新时间
+     */
+    updateTime: string
+  }
+
+  /**
+   * 数据源创建请求
+   */
+  interface DataSourceCreateRq {
+    /**
+     * 数据源名称
+     */
+    sourceName: string
+
+    /**
+     * jdbc url
+     */
+    jdbcUrl: string
+
+    /**
+     * 用户名
+     */
+    username?: string
+
+    /**
+     * 密码
+     */
+    password?: string
+
+    /**
+     * 驱动名称
+     */
+    driverName: string
+
+    /**
+     * 属性
+     */
+    properties?: string
+
+    /**
+     * 数据库类型
+     */
+    dbType: string
+  }
+
+  /**
+   * 数据源编辑请求
+   */
+  interface DataSourceEditRq {
+    /**
+     * 数据源名称
+     */
+    sourceName: string
+
+    /**
+     * jdbc url
+     */
+    jdbcUrl: string
+
+    /**
+     * 用户名
+     */
+    username?: string
+
+    /**
+     * 密码
+     */
+    password?: string
+
+    /**
+     * 驱动名称
+     */
+    driverName: string
+
+    /**
+     * 属性
+     */
+    properties?: string
+
+    /**
+     * 数据库类型
+     */
+    dbType: string
+  }
+}
+
+export {FastSql, FastApi, DataSource}

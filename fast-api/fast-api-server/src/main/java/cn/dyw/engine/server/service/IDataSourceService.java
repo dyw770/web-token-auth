@@ -23,9 +23,9 @@ public interface IDataSourceService {
      /**
       * 删除数据源
       *
-      * @param id 数据源id
+      * @param name 数据源名称
       */
-      void remove(int id);
+      void remove(String name);
       
       /**
       * 修改数据源
@@ -37,7 +37,7 @@ public interface IDataSourceService {
       /**
       * 刷新数据源
       *
-      * @param name 数据源id
+      * @param name 数据源名称
       */
       void refresh(String name);
       

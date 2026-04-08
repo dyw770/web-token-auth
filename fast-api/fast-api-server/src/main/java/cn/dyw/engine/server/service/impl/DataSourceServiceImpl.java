@@ -46,26 +46,24 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public void remove(int id) {
-        SysFastDataSource dataSource = dataSourceService.getById(id);
+    public void remove(String name) {
+        SysFastDataSource dataSource = dataSourceService.getById(name);
         if (ObjectUtils.isEmpty(dataSource)) {
-            return;
+            throw new ExtensionBusinessException(MessageCode.PARAM_ERROR, "数据源不存在");
         }
-        dataSourceService.removeById(id);
-        dataSourceProvide.remove(dataSource.getSourceName());
+        dataSourceService.removeById(name);
+        dataSourceProvide.remove(name);
     }
 
     @Override
     public void update(DataSourceEditRq rq) {
         SysFastDataSource dataSource = dataSourceService.getById(rq.getSourceName());
         if (ObjectUtils.isEmpty(dataSource)) {
-            return;
+            throw new ExtensionBusinessException(MessageCode.PARAM_ERROR, "数据源不存在");
         }
-        SysFastDataSource newDataSource = new SysFastDataSource();
         BeanUtils.copyProperties(rq, dataSource);
-        newDataSource.setCreateTime(dataSource.getCreateTime());
-        newDataSource.setUpdateTime(LocalDateTime.now());
-        dataSourceService.updateById(newDataSource);
+        dataSource.setUpdateTime(LocalDateTime.now());
+        dataSourceService.updateById(dataSource);
         refresh(rq.getSourceName());
     }
 

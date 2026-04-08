@@ -7,6 +7,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,9 @@ public class DruidDataSourceProvide extends AbstractDataSourceProvide<DruidDataS
     @Override
     public void remove(String name) {
         DruidDataSource source = this.getDataSources().remove(name);
-        source.close();
+        if (ObjectUtils.isNotEmpty(source)) {
+            source.close();
+        }
     }
     
     public DruidDataSource create(SysFastDataSource dataSource) {

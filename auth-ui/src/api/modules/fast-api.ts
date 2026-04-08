@@ -1,5 +1,5 @@
 import api from '../index'
-import type {FastApi, FastSql} from '#/fast-api'
+import type {DataSource, FastApi, FastSql} from '#/fast-api'
 
 export default {
   // ==================== SQL模板管理 ====================
@@ -71,4 +71,31 @@ export default {
    * @param rq 执行参数
    */
   execApi: (apiPath: string, rq: FastSql.ExecParameterRq) => api.post(`/query${apiPath}`, rq),
+
+  // ==================== 数据源管理 ====================
+
+  /**
+   * 查询数据源列表
+   */
+  dataSourceList: () => api.get('/data/source/list'),
+
+  /**
+   * 添加数据源
+   */
+  dataSourceAdd: (rq: DataSource.DataSourceCreateRq) => api.post('/data/source/add', rq),
+
+  /**
+   * 编辑数据源
+   */
+  dataSourceEdit: (rq: DataSource.DataSourceEditRq) => api.put('/data/source/edit', rq),
+
+  /**
+   * 删除数据源
+   */
+  dataSourceDelete: (name: string) => api.delete(`/data/source/delete/${encodeURIComponent(name)}`),
+
+  /**
+   * 刷新数据源
+   */
+  dataSourceRefresh: (name: string) => api.get(`/data/source/refresh/${encodeURIComponent(name)}`),
 }

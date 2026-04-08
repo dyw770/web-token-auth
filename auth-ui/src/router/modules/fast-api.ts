@@ -41,6 +41,15 @@ const routes: RouteRecordRaw = {
         icon: 'i-heroicons-solid:menu-alt-3',
       },
     },
+    {
+      path: '/fast/data/source',
+      name: 'fastDataSource',
+      component: () => import('@/views/fast-api/data-source/index.vue'),
+      meta: {
+        title: '数据源',
+        icon: 'i-heroicons-solid:menu-alt-3',
+      },
+    },
   ],
 }
 
