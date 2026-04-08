@@ -159,6 +159,11 @@ declare namespace FastSql {
      * 数据字段绑定，必填
      */
     dataFieldBinds: DataFieldBind[]
+
+    /**
+     * 数据源名称
+     */
+    dataSource?: string
   }
 
   /**
@@ -219,6 +224,11 @@ declare namespace FastSql {
      * 数据字段绑定，必填
      */
     dataFieldBinds: DataFieldBind[]
+
+    /**
+     * 数据源名称
+     */
+    dataSource?: string
   }
 
   /**
@@ -289,6 +299,11 @@ declare namespace FastSql {
      * 数据字段绑定
      */
     dataFieldBinds?: DataFieldBind[]
+
+    /**
+     * 数据源名称
+     */
+    dataSource?: string
   }
 
   /**
@@ -354,6 +369,11 @@ declare namespace FastSql {
      * 扩展参数，必填
      */
     extend: Record<string, unknown>
+
+    /**
+     * 数据源名称
+     */
+    dataSource?: string
   }
 
   /**

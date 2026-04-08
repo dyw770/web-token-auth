@@ -84,4 +84,10 @@ public class SqlCreateRq {
      */
     @NotNull
     private List<DataFieldBind> dataFieldBinds;
+
+    /**
+     * 数据源名称
+     */
+    @Length(max = 32)
+    private String dataSource;
 }

@@ -6,11 +6,14 @@ import cn.dyw.engine.core.model.DataFieldBind;
 import cn.dyw.engine.core.model.DataPageOption;
 import cn.dyw.engine.core.model.DataSortField;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.ibatis.type.JdbcType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +30,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-@TableName("sys_fast_sql")
+@TableName(value = "sys_fast_sql", autoResultMap = true)
 public class SysFastSql {
 
     /**
@@ -74,26 +77,31 @@ public class SysFastSql {
     /**
      * 排序字段
      */
+    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
     private List<DataSortField> sortFields;
 
     /**
      * 参数
      */
+    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
     private List<DynamicFilterParameter> parameters;
 
     /**
      * 分页参数
      */
+    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
     private DataPageOption dataPage;
 
     /**
      * 扩展字段
      */
+    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
     private Map<String, Object> extend;
 
     /**
      * 数据字段绑定
      */
+    @TableField(typeHandler = JacksonTypeHandler.class, jdbcType = JdbcType.VARCHAR)
     private List<DataFieldBind> dataFieldBinds;
     
     /**

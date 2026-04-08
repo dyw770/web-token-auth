@@ -78,6 +78,19 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="数据源">
+                  <el-select v-model="form.dataSource" placeholder="请选择数据源（默认为主数据源）" clearable class="w-full">
+                    <el-option
+                      v-for="ds in dataSourceList"
+                      :key="ds.sourceName"
+                      :label="`${ds.sourceName} (${ds.dbType})`"
+                      :value="ds.sourceName"/>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
             <el-row :gutter="20" v-if="form.statementType === 'select'">
               <el-col :span="8">
                 <el-form-item label="开启分页">
@@ -187,7 +200,7 @@
 </template>
 
 <script setup lang="ts">
-import type {DataFieldBind, DynamicFilterParameter, FastSql, StatementType} from '#/fast-api'
+import type {DataFieldBind, DataSource, DynamicFilterParameter, FastSql, StatementType} from '#/fast-api'
 import fastApi from '@/api/modules/fast-api'
 import {toast} from 'vue-sonner'
 import {Delete, Edit} from '@element-plus/icons-vue'
@@ -212,7 +225,8 @@ const form = ref({
   sql: '',
   sqlName: '',
   sqlDescribe: '',
-  statementType: 'select' as StatementType
+  statementType: 'select' as StatementType,
+  dataSource: ''
 })
 
 const pageEnabled = ref(false)
@@ -224,13 +238,21 @@ const columnRenames = ref<Map<string, string>>(new Map())
 
 const parameters = ref<DynamicFilterParameter[]>([])
 
+const dataSourceList = ref<DataSource.SysFastDataSource[]>([])
+
+const loadDataSourceList = async () => {
+  const {data} = await fastApi.dataSourceList()
+  dataSourceList.value = data
+}
+
 const initForm = () => {
   if (props.sqlData) {
     form.value = {
       sql: props.sqlData.sqlTemplate || '',
       sqlName: props.sqlData.sqlName || '',
       sqlDescribe: props.sqlData.sqlDescribe || '',
-      statementType: props.sqlData.statementType || 'select'
+      statementType: props.sqlData.statementType || 'select',
+      dataSource: props.sqlData.dataSource || ''
     }
     pageEnabled.value = props.sqlData.dataPage?.needPage || false
     pageSize.value = props.sqlData.dataPage?.size || 20
@@ -265,6 +287,7 @@ watch(() => props.sqlData, () => {
 watch(show, (val) => {
   if (val) {
     initForm()
+    loadDataSourceList()
   }
 })
 
@@ -353,7 +376,8 @@ const executeSql = async () => {
       },
       extend: {
         single: singleRow.value
-      }
+      },
+      dataSource: form.value.dataSource || undefined
     }
 
     const {data} = await fastApi.exec(rq)
@@ -398,7 +422,8 @@ const hideDialog = () => {
     sql: '',
     sqlName: '',
     sqlDescribe: '',
-    statementType: 'select'
+    statementType: 'select',
+    dataSource: ''
   }
   execResult.value = null
   pageEnabled.value = false
@@ -459,7 +484,8 @@ const submitForm = async () => {
         extend: {
           single: singleRow.value
         },
-        dataFieldBinds
+        dataFieldBinds,
+        dataSource: form.value.dataSource || undefined
       }
       await fastApi.sqlEdit(rq)
       toast.success('SQL模板更新成功')
@@ -478,7 +504,8 @@ const submitForm = async () => {
         extend: {
           single: singleRow.value
         },
-        dataFieldBinds
+        dataFieldBinds,
+        dataSource: form.value.dataSource || undefined
       }
       await fastApi.sqlAdd(rq)
       toast.success('SQL模板创建成功')

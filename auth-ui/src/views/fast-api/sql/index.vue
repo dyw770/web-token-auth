@@ -26,6 +26,12 @@
       <el-table-column prop="sqlName" label="名称" align="center"/>
       <el-table-column prop="sqlDescribe" label="描述" align="center"/>
       <el-table-column prop="statementType" label="语句类型" align="center" width="100"/>
+      <el-table-column prop="dataSource" label="数据源" align="center" width="120">
+        <template #default="{ row }">
+          <el-tag v-if="row.dataSource" type="info" size="small">{{ row.dataSource }}</el-tag>
+          <span v-else class="text-gray-400">默认</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间" align="center" width="180"/>
       <el-table-column prop="updateTime" label="更新时间" align="center" width="180"/>
       <el-table-column label="操作" align="center" width="320">
@@ -56,6 +62,10 @@
           <el-descriptions-item label="模板名称">{{ viewSqlData.sqlName }}</el-descriptions-item>
           <el-descriptions-item label="描述">{{ viewSqlData.sqlDescribe }}</el-descriptions-item>
           <el-descriptions-item label="语句类型">{{ viewSqlData.statementType }}</el-descriptions-item>
+          <el-descriptions-item label="数据源">
+            <el-tag v-if="viewSqlData.dataSource" type="info" size="small">{{ viewSqlData.dataSource }}</el-tag>
+            <span v-else class="text-gray-400">默认数据源</span>
+          </el-descriptions-item>
           <el-descriptions-item label="创建时间">{{ viewSqlData.createTime }}</el-descriptions-item>
           <el-descriptions-item label="更新时间">{{ viewSqlData.updateTime }}</el-descriptions-item>
         </el-descriptions>

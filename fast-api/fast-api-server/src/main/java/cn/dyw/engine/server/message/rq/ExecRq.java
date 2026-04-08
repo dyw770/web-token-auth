@@ -70,4 +70,11 @@ public class ExecRq {
      */
     @NotNull
     private Map<String, Object> extend;
+
+    /**
+     * 数据源
+     */
+    @NotBlank
+    @Length(min = 1, max = 32)
+    private String dataSource;
 }

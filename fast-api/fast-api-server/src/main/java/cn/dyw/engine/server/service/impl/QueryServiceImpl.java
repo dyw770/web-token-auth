@@ -42,7 +42,8 @@ public class QueryServiceImpl implements IQueryService {
 
     public QueryServiceImpl(IExecEngine engine,
                             EngineConfiguration configuration,
-                            ISysFastSqlService sqlService, ISysFastApiService apiService) {
+                            ISysFastSqlService sqlService, 
+                            ISysFastApiService apiService) {
         this.engine = engine;
         this.configuration = configuration;
         this.sqlService = sqlService;
@@ -102,8 +103,10 @@ public class QueryServiceImpl implements IQueryService {
         }
         context.addParameter(parameters);
         context.setConfiguration(configuration);
-        // TODO 先固定写
+
+        context.setDataSource(rq.getDataSource());
         context.setDbType("mysql");
+        
         return context;
     }
 
@@ -145,6 +148,7 @@ public class QueryServiceImpl implements IQueryService {
         execRq.setParameters(rq.getParameters());
         execRq.setDataPage(rq.getDataPage());
         execRq.setSortFields(rq.getSortFields());
+        execRq.setDataSource(fastSql.getDataSource());
         return execRq;
     }
 }
