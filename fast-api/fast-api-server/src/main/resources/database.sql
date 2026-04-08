@@ -25,6 +25,7 @@ CREATE TABLE `sys_fast_sql`
     `data_page`        text comment '分页参数',
     `extend`           text comment '扩展字段',
     `data_field_binds` text comment '数据字段绑定',
+    `data_source`      varchar(32) comment '数据源'                                   NOT NULL,
     PRIMARY KEY (`id`)
 ) comment 'sql配置';
 

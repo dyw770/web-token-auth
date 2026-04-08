@@ -95,4 +95,9 @@ public class SysFastSql {
      * 数据字段绑定
      */
     private List<DataFieldBind> dataFieldBinds;
+    
+    /**
+     * 数据源
+     */
+    private String dataSource;
 }
