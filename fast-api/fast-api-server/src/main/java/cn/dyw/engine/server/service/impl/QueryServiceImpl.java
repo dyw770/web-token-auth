@@ -10,8 +10,10 @@ import cn.dyw.engine.core.exec.IExecEngine;
 import cn.dyw.engine.core.model.DataFieldBind;
 import cn.dyw.engine.core.model.DataPageOption;
 import cn.dyw.engine.core.model.DataSortField;
+import cn.dyw.engine.server.db.domain.SysFastDataSource;
 import cn.dyw.engine.server.db.domain.SysFastSql;
 import cn.dyw.engine.server.db.service.ISysFastApiService;
+import cn.dyw.engine.server.db.service.ISysFastDataSourceService;
 import cn.dyw.engine.server.db.service.ISysFastSqlService;
 import cn.dyw.engine.server.message.rq.ExecParameterRq;
 import cn.dyw.engine.server.message.rq.ExecRq;
@@ -40,14 +42,17 @@ public class QueryServiceImpl implements IQueryService {
 
     private final ISysFastApiService apiService;
 
+    private final ISysFastDataSourceService dataSourceService;
+
     public QueryServiceImpl(IExecEngine engine,
                             EngineConfiguration configuration,
-                            ISysFastSqlService sqlService, 
-                            ISysFastApiService apiService) {
+                            ISysFastSqlService sqlService,
+                            ISysFastApiService apiService, ISysFastDataSourceService dataSourceService) {
         this.engine = engine;
         this.configuration = configuration;
         this.sqlService = sqlService;
         this.apiService = apiService;
+        this.dataSourceService = dataSourceService;
     }
 
 
@@ -105,8 +110,8 @@ public class QueryServiceImpl implements IQueryService {
         context.setConfiguration(configuration);
 
         context.setDataSource(rq.getDataSource());
-        context.setDbType("mysql");
-        
+        context.setDbType(dataSourceType(rq.getDataSource()));
+
         return context;
     }
 
@@ -150,5 +155,13 @@ public class QueryServiceImpl implements IQueryService {
         execRq.setSortFields(rq.getSortFields());
         execRq.setDataSource(fastSql.getDataSource());
         return execRq;
+    }
+
+    private String dataSourceType(String dataSource) {
+        SysFastDataSource source = dataSourceService.getById(dataSource);
+        if (ObjectUtils.isEmpty(source)) {
+            throw new ExtensionBusinessException(MessageCode.ERROR, "未找到对应的数据源");
+        }
+        return source.getDbType();
     }
 }
