@@ -79,7 +79,6 @@ public class DataSourceServiceImpl implements IDataSourceService {
         } catch (SQLException e) {
             throw new ExtensionBusinessException(MessageCode.ERROR, "数据源初始化失败: " + e.getMessage());
         }
-        dataSourceProvide.remove(dataSource.getSourceName());
         dataSourceProvide.add(dataSource.getSourceName(), source);
 
     }

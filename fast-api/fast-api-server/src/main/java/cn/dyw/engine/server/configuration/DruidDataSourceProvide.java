@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -34,7 +35,12 @@ public class DruidDataSourceProvide extends AbstractDataSourceProvide<DruidDataS
 
     @Override
     public void add(String name, DruidDataSource dataSource) {
-        this.getDataSources().put(name, dataSource);
+        Map<String, DruidDataSource> dataSources = this.getDataSources();
+        DruidDataSource oldSource = dataSources.get(name);
+        dataSources.put(name, dataSource);
+        if (ObjectUtils.isNotEmpty(oldSource)) {
+            oldSource.close();
+        }
     }
 
     @Override
