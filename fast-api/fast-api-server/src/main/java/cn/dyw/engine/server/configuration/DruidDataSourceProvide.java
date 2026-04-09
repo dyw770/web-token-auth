@@ -38,7 +38,7 @@ public class DruidDataSourceProvide extends AbstractDataSourceProvide<DruidDataS
         Map<String, DruidDataSource> dataSources = this.getDataSources();
         DruidDataSource oldSource = dataSources.get(name);
         dataSources.put(name, dataSource);
-        if (ObjectUtils.isNotEmpty(oldSource)) {
+        if (ObjectUtils.isNotEmpty(oldSource) && oldSource != dataSource) {
             oldSource.close();
         }
     }
